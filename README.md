@@ -1,8 +1,8 @@
 # Probing Deep into Temporal Profile Makes the Infrared Small Target Detector Much Better
 
 > [!IMPORTANT]
-> This repository branch contains the CSIG2026 SatVideoIRSDT development line
-> built on top of the original DeepPro project. New experiments are
+> This repository contains the CSIG2026 development line built on top of the
+> original DeepPro project. New experiments are
 > **scratch-only**: `train.py` rejects `base_ckpt`, `spatial_ckpt`, and
 > `st_ckpt`. Runtime launchers only allow physical GPUs **0, 1, and 2**.
 
@@ -13,48 +13,43 @@
 > and reproduction scripts are frozen in
 > [`release/2026-08-29_final_submission_score91.30_scratch/`](release/2026-08-29_final_submission_score91.30_scratch/README.md).
 
-## CSIG2026 Final Submission and Development Status
+## Current Development Status
 
-The current priority candidate is the scratch-only `DeepPro-FeedbackSTS`: a
-five-level 3D U-Net with fixed-interval forward encoder propagation, backward
-decoder propagation, and pyramid deformable alignment. The earlier
-`DeepPro-Plus_BRTD3` / Raw-APMD family remains the audited score baseline.
+The active task is a scratch-only comparison of every retained DeepPro model on
+NUDT-MIRSDT. It covers 9 standalone architectures and all 20 historical BRTD3
+structure variants. The completed SatVideoIRSDT competition work remains frozen
+under `release/` and is not mixed with the new training outputs.
 
 | Item | Current setting |
 |---|---|
-| Dataset | `SatVideoIRSDT_v1` (stored outside this repository) |
-| Final submission | Scratch Hybrid-RMS epoch 86, score **91.30** |
-| Reproducible release | `release/2026-08-29_final_submission_score91.30_scratch/` |
-| Main candidate | `DeepPro-FeedbackSTS` |
-| Scratch website baseline | `raw_apmd_hybrid_rms`: `86.71` |
-| Completed recent runs | scratch-init `86.45`; bandpass `86.47` |
-| Active structural candidate | FeedbackSTS, 40 frames, T=2 + recall-oriented loss + sequence augmentation |
+| Active dataset | `datasets_v1/NUDT-MIRSDT` (stored beside this repository) |
+| Active comparison | 29 scratch-only model/structure runs, seed 49 |
+| Experiment definition | `experiments/nudt_mirsdt_all_models_2026-09-01/` |
+| Training protocol | 40 frames, global batch 4, 32 epochs, AMP network + FP32 loss |
+| Validation | Official `test.txt`, threshold 0.5, pixel IoU/P/R/F1 every 2 epochs |
 | Initialization | Random weights only; pretrained initialization is forbidden |
-| Loss | `f1_calibrated_ohem` with valid-frame masking |
-| Training devices | One DDP job on physical GPUs `0,1,2` |
-| Training throughput | 40 frames, global batch 24, AMP model compute + FP32 F1 loss |
-| Monitoring | SwanLab cloud plus complete local logs |
-| Finalization | Pixel-F1 Top-5 -> centroid sweep -> tracking TXT -> validated ZIP |
+| Training devices | Three independent queues on physical GPUs `0`, `1`, `2` |
+| Monitoring | SwanLab project `DeepPro-NUDT-MIRSDT` plus local logs |
+| Completed competition release | Scratch Hybrid-RMS epoch 86, website score **91.30** |
 
 Start with these documents before running or changing an experiment:
 
 - [Model evolution, current architecture, and loss](docs/MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md)
 - [F1-maximization research and FeedbackSTS decision](docs/F1_MAXIMIZATION_RESEARCH_2026-08-27.md)
 - [Documentation index](docs/README.md)
-- [Scratch-only model improvement record](SCRATCH_MODEL_IMPROVEMENT_2026-08-25.md)
-- [Website result analysis](WEBSITE_RESULTS_ANALYSIS_2026-08-25.md)
-- [Migration acceptance checklist](MIGRATION_ACCEPTANCE_2026-08-25.md)
+- [Scratch-only model improvement record](docs/SCRATCH_MODEL_IMPROVEMENT_2026-08-25.md)
+- [Website result analysis](docs/WEBSITE_RESULTS_ANALYSIS_2026-08-25.md)
+- [Migration acceptance checklist](docs/MIGRATION_ACCEPTANCE_2026-08-25.md)
 
 The principal implementation files are:
 
 ```text
 train.py                                      unified scratch-only DDP training
 test.py                                       AMP/chunked probability export
-networks/models/DeepPro-FeedbackSTS.py        priority model container
-networks/layers/feedback_sts.py               feedback/alignment backbone
 networks/losses/segmentation_losses.py        selectable segmentation losses
 tools/project_runtime_env.sh                  paths and GPU allowlist
-tools/run_feedbacksts_f1_experiment.sh        train-to-submission pipeline
+tools/run_nudt_mirsdt_all_models.sh            active three-GPU queue
+tools/summarize_nudt_mirsdt_results.py         comparable result aggregation
 ```
 
 Generated experiments, probability images, SwanLab caches, and submission
@@ -63,6 +58,25 @@ part of ordinary source commits. The curated historical release under
 `release/2026-08-22_pretrained_vs_scratch_seed47/` is retained for audit and
 must not be interpreted as permission to initialize new training from its
 checkpoints.
+
+## Repository Layout
+
+| Path | Purpose |
+|---|---|
+| `networks/` | Model, layer, and loss implementations |
+| `data_utils/` | Dataset discovery and sequence loaders |
+| `experiments/` | Versioned experiment manifests, protocols, and summaries |
+| `tools/` | Current and historical launch, evaluation, and packaging utilities |
+| `docs/` | Development decisions, migration records, and research notes |
+| `release/` | Frozen reproducible releases; never used as implicit training input |
+| `tools_forSatVideoIRSTD/` | Archived competition-format conversion tools and rules |
+| `paper/` | Reference paper retained with the project |
+| `log/` | Ignored runtime logs, checkpoints, predictions, and SwanLab caches |
+
+See the README inside `experiments/`, `release/`, and `tools/` before adding a
+new run or moving an artifact. Root-level Python files are executable entry
+points or compatibility utilities and intentionally remain at the repository
+root.
 
 ---
 
@@ -216,4 +230,4 @@ on SatVideoIRSDT
 <br>
 
 ## Contact
-Welcome to raise issues or email to [liruojing@nudt.edu.cn](liruojing@nudt.edu.cn) for any question.
+Welcome to raise issues or email [liruojing@nudt.edu.cn](mailto:liruojing@nudt.edu.cn) for any question.

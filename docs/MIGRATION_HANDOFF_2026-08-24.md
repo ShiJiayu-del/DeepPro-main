@@ -92,7 +92,7 @@ pixel F1 Top-5 checkpoint，再逐个导出概率并扫描质心阈值和面积�
 ```text
 DeepPro-main/
 ├── README.md
-├── MIGRATION_HANDOFF_2026-08-24.md       # 本文件
+├── docs/MIGRATION_HANDOFF_2026-08-24.md  # 本文件（整理后位置）
 ├── train.py                              # 统一训练入口
 ├── test.py                               # 推理/概率导出入口
 ├── runtime_utils.py                      # DDP、随机种子、checkpoint 工具

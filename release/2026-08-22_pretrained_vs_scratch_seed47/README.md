@@ -8,8 +8,8 @@
 
 当前模型与损失说明见
 [`docs/MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md`](../../docs/MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md)，
-文档导航见 [`docs/README.md`](../../docs/README.md)。完整迁移历史仍保存在根目录
-[`MIGRATION_HANDOFF_2026-08-24.md`](../../MIGRATION_HANDOFF_2026-08-24.md)，其中的预训练建议和旧服务器 GPU 配置仅用于审计。
+文档导航见 [`docs/README.md`](../../docs/README.md)。完整迁移历史保存在
+[`docs/MIGRATION_HANDOFF_2026-08-24.md`](../../docs/MIGRATION_HANDOFF_2026-08-24.md)，其中的预训练建议和旧服务器 GPU 配置仅用于审计。
 
 ## 核心结论
 

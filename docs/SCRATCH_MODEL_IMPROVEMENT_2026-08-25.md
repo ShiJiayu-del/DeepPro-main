@@ -146,7 +146,7 @@ ZIP 与 SHA256。网站提交 ID `902114` 得分 `86.45`，比历史 Hybrid-RMS 
 Scratch-init 和 bandpass 的网站结果分别为 `86.45`、`86.47`，都低于 `86.71` 基线。
 这说明继续围绕 Raw-APMD 做同类轻量增量的预期收益较低。下一轮不训练 detail，而是
 转向独立的 FeedbackSTS 风格双向时空反馈网络，并同时把损失从偏抑制 FP 改为偏恢复
-Recall；完整论证和验收见 `docs/F1_MAXIMIZATION_RESEARCH_2026-08-27.md`。新候选只有
+Recall；完整论证和验收见 `F1_MAXIMIZATION_RESEARCH_2026-08-27.md`。新候选只有
 在本地 Proxy F1 超过 `0.774414` 后才进入网站提交，网站超过 `86.71` 后才升级基线。
 
 ## AI 使用披露

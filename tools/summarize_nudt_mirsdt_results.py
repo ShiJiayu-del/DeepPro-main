@@ -115,7 +115,11 @@ def main():
         "elapsed_seconds",
     ]
     with csv_path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=fieldnames,
+            lineterminator="\n",
+        )
         writer.writeheader()
         for index, row in enumerate(ranked, start=1):
             output = dict(row)
