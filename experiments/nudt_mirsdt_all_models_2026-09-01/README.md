@@ -18,6 +18,13 @@
   `all-models-scratch-seed49`
 - GPU：只使用物理 GPU 0、1、2；每张卡串行执行一条队列
 
+历史模型的最小兼容调整：`DeepPro-Plus_TDCSTA` 使用物理 batch 1、梯度累积 4，保持
+有效 batch 4，并使用 `max_split_size_mb=128` 与逐序列缓存释放完成全帧验证；
+`DeepPro-FeedbackSTS` 使用 FP32，避免其反馈乘法在 FP16 下溢出/溢出；
+`PointCenter` 使用该网络要求的 `raw_apmd_hybrid_rms` 结构。其余训练变量保持不变。
+失败且尚无 checkpoint 的旧运行目录会移动到 `failed_attempts/` 后再干净重试，原始失败
+证据不会被覆盖。
+
 上述设置固定优化和数据变量，比较的是网络结构；PointCenter 的专用损失是该网络输出
 契约的一部分，因此单独记录，不能将其差异仅归因于结构。
 
@@ -49,8 +56,14 @@ DRY_RUN=1 bash tools/run_nudt_mirsdt_all_models.sh
 训练产物位于：
 
 ```text
-log/nudt_mirsdt_all_models_2026-09-01/sem_seg/<run_id>/
+log/sem_seg/<日期>/<数据集>__<开始时间>__<损失标签>-<run_id>_seed49_E32/
 ```
+
+精确位置见 `manifest.tsv` 的 `log_dir` 列（相对 `log/sem_seg/`）。
+日期来自当前训练日志首条记录；失败重试按保留下来的该次训练开始日期归档。
+队列状态和启动日志在 `log/sem_seg/_queues/nudt_mirsdt_all_models_2026-09-01/`。
+旧根目录入口已移除；批量脚本已读取新路径，
+手动训练或评测请使用 `--savepath log` / `--logpath log` 和清单中的 `--log_dir`。
 
 ## 汇总
 
@@ -60,6 +73,10 @@ log/nudt_mirsdt_all_models_2026-09-01/sem_seg/<run_id>/
 python tools/summarize_nudt_mirsdt_results.py
 ```
 
-输出为本目录下的 `results.csv` 和 `RESULTS.md`。排名主指标是每个实验在验证集上达到的
-最佳 pixel F1，同时保留同一轮的 IoU、Precision、Recall，以及最终轮指标，避免混用
-不同 epoch 的数值。
+输出为本目录下的 `results.csv` 和 `RESULTS.md`。这些是训练筛选指标：按每个实验在验证集
+达到的最佳 pixel F1 排列，同时保留同一轮的 IoU、Precision、Recall，以及最终轮指标，避免混用
+不同 epoch 的数值。汇总还以 BRTD 系列的直接父网络 `DeepPro-Plus` 为 baseline，报告
+上述五项指标的绝对变化；可通过 `--baseline-run-id` 更换对照实验。
+
+论文主结果必须运行 `tools/run_nudt_paper_metrics.sh` 并使用 `PAPER_METRICS.md` 中与
+DeepPro-Plus 论文一致的 Pd、Fa、AUC；pixel F1 不作为论文主指标。

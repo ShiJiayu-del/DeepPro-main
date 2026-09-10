@@ -1,0 +1,443 @@
+import os
+import cv2
+import torch
+import numpy as np
+from PIL import Image
+import math
+import random
+from skimage import measure
+from torch.utils.data import Dataset
+from data_utils.loader_utils import (
+    SATVIDEO_V1_DATASET,
+    SATVIDEO_V1_TRAIN_MEAN,
+    SATVIDEO_V1_TRAIN_STD,
+    discover_split_sequences,
+    read_sequence_names,
+    validate_frame_pairs,
+)
+
+
+NEAREST_RESAMPLE = (
+    Image.Resampling.NEAREST if hasattr(Image, 'Resampling') else Image.NEAREST
+)
+
+
+class SequenceGeometryAugmentation:
+    """Apply label-preserving spatial symmetries and temporal reversal."""
+
+    def __call__(self, images, labels):
+        if random.random() < 0.5:
+            images = images[..., ::-1, :]
+            labels = labels[..., ::-1, :]
+        if random.random() < 0.5:
+            images = images[..., ::-1]
+            labels = labels[..., ::-1]
+        if random.random() < 0.5:
+            images = images.swapaxes(-2, -1)
+            labels = labels.swapaxes(-2, -1)
+        if random.random() < 0.5:
+            images = images[:, ::-1]
+            labels = labels[::-1]
+        return np.ascontiguousarray(images), np.ascontiguousarray(labels)
+
+
+class LazySequenceWindow:
+    """Store a temporal window without duplicating every frame path."""
+
+    __slots__ = (
+        'image_root',
+        'label_root',
+        'images',
+        'labels',
+        'start',
+        'end',
+    )
+
+    def __init__(
+        self,
+        image_root,
+        label_root,
+        images,
+        labels,
+        start,
+        end,
+    ):
+        self.image_root = image_root
+        self.label_root = label_root
+        self.images = images
+        self.labels = labels
+        self.start = start
+        self.end = end
+
+    def __len__(self):
+        return self.end - self.start
+
+    def __getitem__(self, index):
+        if index < 0:
+            index += len(self)
+        if index < 0 or index >= len(self):
+            raise IndexError(index)
+        frame_index = self.start + index
+        return (
+            os.path.join(self.image_root, self.images[frame_index]),
+            os.path.join(self.label_root, self.labels[frame_index]),
+        )
+
+
+class TrainSeqDataLoader(Dataset):
+    def __init__(
+        self,
+        dataset,
+        data_root,
+        samplelist,
+        sample_p,
+        seq_len=100,
+        sample_rate=0.1,
+        patch_size=None,
+        transform=None,
+        return_center_heatmaps=False,
+        center_sigma=1.25,
+    ):
+        if not samplelist:
+            raise ValueError('Training sample list must not be empty.')
+        if not 0 < sample_rate <= 1:
+            raise ValueError('sample_rate must satisfy 0 < sample_rate <= 1.')
+        self.data_root = data_root
+        self.samplelist = samplelist
+        self.sample_p = sample_p
+        self.seq_len = seq_len
+        self.sample_rate = sample_rate
+        self.patch_size = patch_size
+        self.transform = transform
+        self.return_center_heatmaps = bool(return_center_heatmaps)
+        self.center_sigma = float(center_sigma)
+        if self.center_sigma <= 0.0:
+            raise ValueError('center_sigma must be positive.')
+        self.dataset = dataset
+        if 'NUDT-MIRSDT' in dataset:
+            self.train_mean = 105.4025
+            self.train_std = 26.6452
+        elif dataset == 'IRDST-simulation':
+            self.train_mean = 106.8523
+            self.train_std = 56.9243
+        elif dataset == 'RGB-T':
+            self.train_mean = 85.0799
+            self.train_std = 47.4845
+        elif dataset == 'SatVideoIRSDT':
+            self.train_mean = 111.47
+            self.train_std = 22.43
+        elif dataset == SATVIDEO_V1_DATASET:
+            # Computed from every image in SatVideoIRSDT_v1/train.
+            self.train_mean = SATVIDEO_V1_TRAIN_MEAN
+            self.train_std = SATVIDEO_V1_TRAIN_STD
+        elif dataset == 'IRSatVideo-LEO':
+            self.train_mean = 72.104
+            self.train_std = 12.303
+
+    def __len__(self):
+        return max(1, int(len(self.samplelist) * self.sample_rate))
+
+    def get_image_label(self, image_path, label_path):
+        with Image.open(image_path) as image_file:
+            if 'NUDT-MIRSDT' in self.dataset:
+                image_file = image_file.resize([256, 256])
+            elif self.dataset == 'IRSatVideo-LEO':
+                image_file = image_file.resize([512, 512])
+            # elif self.dataset == 'RGB-T':
+            #     image_file = image_file.resize([480, 480])
+            image = np.array(image_file, dtype=np.float32)
+        if image.ndim == 3:
+            image = image[:, :, 0]
+        image = np.expand_dims(np.expand_dims(image, axis=0), axis=0)
+
+        with Image.open(label_path) as label_file:
+            if 'NUDT-MIRSDT' in self.dataset:
+                label_file = label_file.resize(
+                    [256, 256], resample=NEAREST_RESAMPLE
+                )
+            elif self.dataset == 'IRSatVideo-LEO':
+                label_file = label_file.resize(
+                    [512, 512], resample=NEAREST_RESAMPLE
+                )
+            # elif self.dataset == 'RGB-T':
+            #     label_file = label_file.resize([480, 480])
+            label = np.array(label_file, dtype=np.float32) / 255.
+        if label.ndim == 3:
+            label = label[:, :, 0]
+        label[label > 0] = 1.
+        label = np.expand_dims(label, axis=0)
+
+        return image, label
+
+    def sample_sequence(self, idx):
+        # sample = np.random.choice(self.samplelist, p=self.sample_p)
+        sample_idx = np.random.choice(
+            len(self.samplelist),
+            p=self.sample_p,
+        )
+        sample = self.samplelist[sample_idx]
+        # sample = random.choice(self.samplelist, weights=self.sample_p)  ## weights不需要合为1
+        if len(sample) == 0:
+            raise ValueError('Training sample must contain at least one frame.')
+
+        image_path, label_path = sample[0]
+        image, label = self.get_image_label(image_path, label_path)
+        _, _, h, w = image.shape
+        images = np.empty(
+            [1, len(sample), h, w],
+            dtype=image.dtype,
+        )
+        labels = np.empty(
+            [len(sample), h, w],
+            dtype=label.dtype,
+        )
+        images[:, 0:1, :, :] = image
+        labels[0:1, :, :] = label
+
+        for i in range(1, len(sample)):
+            image_path, label_path = sample[i]
+            image, label = self.get_image_label(image_path, label_path)
+            images[:, i:i+1, :, :] = image
+            labels[i:i+1, :, :] = label
+
+        images = (images - self.train_mean) / self.train_std
+        t = labels.shape[0]
+        if t < self.seq_len and idx % 2 == 1:
+            images = np.concatenate((images, np.zeros(
+                [1, self.seq_len-t, h, w], dtype=images.dtype
+            )), axis=1)
+            labels = np.concatenate((labels, np.zeros(
+                [self.seq_len-t, h, w], dtype=labels.dtype
+            )), axis=0)
+        elif t < self.seq_len and idx % 2 == 0:
+            images = np.concatenate((np.zeros(
+                [1, self.seq_len-t, h, w], dtype=images.dtype
+            ), images), axis=1)
+            labels = np.concatenate((np.zeros(
+                [self.seq_len-t, h, w], dtype=labels.dtype
+            ), labels), axis=0)
+
+        if self.patch_size is not None:
+            if self.patch_size > h or self.patch_size > w:
+                raise ValueError(
+                    'patch_size %d exceeds image size %dx%d.'
+                    % (self.patch_size, h, w)
+                )
+            if idx % 2 == 1:
+                mid_idx = int(t/2)
+            else:
+                mid_idx = self.seq_len - math.ceil(t / 2)
+            mid_lab = labels[mid_idx, :, :]
+            labelimage = measure.label(mid_lab, connectivity=2)  # 标记8连通区域
+            props = measure.regionprops(labelimage, cache=True)     #测量标记连通区域的属性
+            prob = random.uniform(0,1)
+            shake_range = int(self.patch_size / 2 / 3)
+            if len(props) > 0 and prob < 0.75:
+                tar_idx = torch.randint(0, len(props), [1])[0]
+                r0 = int(props[tar_idx].centroid[0] + (torch.rand(1)-0.5) * 2 * shake_range - self.patch_size / 2)
+                c0 = int(props[tar_idx].centroid[1] + (torch.rand(1)-0.5) * 2 * shake_range - self.patch_size / 2)
+                r0 = min(max(r0, 0), h-self.patch_size)
+                c0 = min(max(c0, 0), w-self.patch_size)
+            else:
+                r0 = int(torch.randint(0, h - self.patch_size + 1, [1])[0])
+                c0 = int(torch.randint(0, w - self.patch_size + 1, [1])[0])
+
+            images = images[:, :, r0:r0+self.patch_size, c0:c0+self.patch_size]
+            labels = labels[:, r0:r0+self.patch_size, c0:c0+self.patch_size]
+
+        if self.transform is not None:
+            images, labels = self.transform(images, labels)
+
+        center_heatmaps = None
+        if self.return_center_heatmaps:
+            center_heatmaps = self._component_center_heatmaps(labels)
+
+        images = torch.from_numpy(images)
+        labels = torch.from_numpy(labels)
+
+        if center_heatmaps is not None:
+            return images, labels, torch.from_numpy(center_heatmaps)
+        return images, labels
+
+    def _component_center_heatmaps(self, labels):
+        """Create one exact Gaussian peak for every connected target."""
+        frame_count, height, width = labels.shape
+        heatmaps = np.zeros(
+            (frame_count, height, width), dtype=np.float32
+        )
+        radius = max(1, int(math.ceil(3.0 * self.center_sigma)))
+        offsets = np.arange(-radius, radius + 1, dtype=np.float32)
+        gaussian = np.exp(
+            -(offsets[:, None] ** 2 + offsets[None, :] ** 2)
+            / (2.0 * self.center_sigma ** 2)
+        ).astype(np.float32)
+        for frame_index, label in enumerate(labels):
+            component_count, _, _, centroids = (
+                cv2.connectedComponentsWithStats(
+                    np.asarray(label > 0, dtype=np.uint8),
+                    connectivity=8,
+                )
+            )
+            for center_x, center_y in centroids[1:component_count]:
+                column = min(
+                    width - 1, max(0, int(math.floor(center_x + 0.5)))
+                )
+                row = min(
+                    height - 1, max(0, int(math.floor(center_y + 0.5)))
+                )
+                row_start = max(0, row - radius)
+                row_end = min(height, row + radius + 1)
+                column_start = max(0, column - radius)
+                column_end = min(width, column + radius + 1)
+                kernel_rows = slice(
+                    row_start - (row - radius),
+                    row_end - (row - radius),
+                )
+                kernel_columns = slice(
+                    column_start - (column - radius),
+                    column_end - (column - radius),
+                )
+                np.maximum(
+                    heatmaps[
+                        frame_index,
+                        row_start:row_end,
+                        column_start:column_end,
+                    ],
+                    gaussian[kernel_rows, kernel_columns],
+                    out=heatmaps[
+                        frame_index,
+                        row_start:row_end,
+                        column_start:column_end,
+                    ],
+                )
+        return heatmaps
+
+    def __getitem__(self, idx):
+        return self.sample_sequence(idx)
+
+
+
+class TrainIRSeqDataLoader(TrainSeqDataLoader):
+    def __init__(
+        self,
+        dataset='NUDT-MIRSDT',
+        data_root='./datasets/IRSeq',
+        seq_len=100,
+        sample_rate=0.1,
+        patch_size=None,
+        transform=None,
+        return_center_heatmaps=False,
+        center_sigma=1.25,
+        sequence_list_file=None,
+    ):
+        if dataset == SATVIDEO_V1_DATASET:
+            default_list_file = None
+            sequence_root = os.path.join(data_root, 'train')
+        elif 'NUDT-MIRSDT' in dataset or dataset == 'RGB-T' or dataset == 'SatVideoIRSDT':
+            default_list_file = os.path.join(data_root, 'train.txt')
+            if dataset == 'RGB-T':
+                sequence_root = os.path.join(data_root, 'train2017')
+            elif dataset == 'SatVideoIRSDT':
+                sequence_root = os.path.join(data_root, 'train')
+            else:
+                sequence_root = data_root
+        elif dataset == 'IRDST-simulation':
+            default_list_file = os.path.join(
+                data_root, 'img_idx/train_IRDST-simulation.txt'
+            )
+            sequence_root = os.path.join(data_root, 'images')
+        elif dataset == 'IRSatVideo-LEO':
+            default_list_file = os.path.join(
+                data_root, 'annotations/train_sequences.txt'
+            )
+            sequence_root = os.path.join(data_root, 'images')
+        else:
+            raise ValueError('Unsupported training dataset: %s' % dataset)
+        self.seq_list_file = (
+            os.fspath(sequence_list_file)
+            if sequence_list_file is not None else default_list_file
+        )
+        if self.seq_list_file is None:
+            seq_names = discover_split_sequences(data_root, 'train')
+        else:
+            seq_names = read_sequence_names(
+                self.seq_list_file,
+                sequence_root,
+            )
+
+        samplelist = []
+        sample_p = []
+        for seq_name in seq_names:
+            if 'NUDT-MIRSDT' in dataset:
+                image_root = os.path.join(data_root, seq_name, 'images')
+                label_root = os.path.join(data_root, seq_name, 'masks').replace('NUDT-MIRSDT-Noise/'+dataset, 'NUDT-MIRSDT')
+                images = np.sort(os.listdir(image_root))
+                labels = np.sort(os.listdir(label_root))
+            elif dataset in ['IRDST-simulation', 'IRSatVideo-LEO']:
+                image_root = os.path.join(data_root, 'images', seq_name)
+                label_root = os.path.join(data_root, 'masks', seq_name)
+                images = os.listdir(image_root)
+                labels = os.listdir(label_root)
+                images.sort(key=lambda x:int(x.split('.')[0]))
+                labels.sort(key=lambda x:int(x.split('.')[0]))
+            if dataset == 'RGB-T':
+                image_root = os.path.join(data_root, 'train2017', seq_name, '01')
+                label_root = os.path.join(data_root, 'segmentations', seq_name)
+                images = np.sort(os.listdir(image_root))
+                labels = np.sort(os.listdir(label_root))
+            if dataset in ['SatVideoIRSDT', SATVIDEO_V1_DATASET]:
+                image_root = os.path.join(data_root, 'train', seq_name, 'img')
+                label_root = os.path.join(data_root, 'train', seq_name, 'mask')
+                images = np.sort(os.listdir(image_root))
+                labels = np.sort(os.listdir(label_root))
+
+            validate_frame_pairs(
+                image_root,
+                label_root,
+                images,
+                labels,
+                seq_name,
+                minimum_frames=(
+                    1 if dataset == SATVIDEO_V1_DATASET else seq_len
+                ),
+            )
+
+            first_window_end = max(1, int(seq_len * 0.1))
+            for window_end in range(first_window_end, len(images) + 1):
+                window_start = max(0, window_end - seq_len)
+                if dataset == SATVIDEO_V1_DATASET:
+                    sample = LazySequenceWindow(
+                        image_root,
+                        label_root,
+                        images,
+                        labels,
+                        window_start,
+                        window_end,
+                    )
+                else:
+                    sample = [
+                        (
+                            os.path.join(image_root, images[x]),
+                            os.path.join(label_root, labels[x]),
+                        )
+                        for x in range(window_start, window_end)
+                    ]
+                samplelist.extend([sample])
+                sample_p.append(len(sample))
+
+        total_sample_weight = sum(sample_p)
+        if total_sample_weight <= 0:
+            raise ValueError('No valid training windows were generated.')
+        sample_p = [p / total_sample_weight for p in sample_p]
+        super(TrainIRSeqDataLoader, self).__init__(
+            dataset,
+            data_root,
+            samplelist,
+            sample_p,
+            seq_len,
+            sample_rate,
+            patch_size,
+            transform,
+            return_center_heatmaps=return_center_heatmaps,
+            center_sigma=center_sigma,
+        )

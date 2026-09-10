@@ -1,0 +1,2010 @@
+{
+  "artifact_policy": {
+    "checkpoint_and_metric_files_are_hashed_by_reference": true,
+    "checkpoints_copied": false,
+    "datasets_copied": false,
+    "metrics_copied": false
+  },
+  "completion_audit": {
+    "completed_run_count": 12,
+    "expected_metric_count": 24,
+    "expected_run_count": 12,
+    "metric_count": 24,
+    "passed": true,
+    "runs": [
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/b1_none_seed47.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/b1_none_seed47.done",
+          "sha256": "4c0c1a0d89e72e54ddee1e208a1d3598e89603a940df432530cfdd3e89746d02",
+          "size_bytes": 139
+        },
+        "run_id": "b1_none_seed47",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1497",
+          "finished_at": "2026-09-09T00:26:42+08:00",
+          "gpu": "0",
+          "run_id": "b1_none_seed47",
+          "seed": "47",
+          "started_at": "2026-09-09T00:01:45+08:00",
+          "wave": "1"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/b1_none_seed49.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/b1_none_seed49.done",
+          "sha256": "6b10774372b5e889848357842cbbe8c11112ff4ecaa3e106743704df18828486",
+          "size_bytes": 139
+        },
+        "run_id": "b1_none_seed49",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1540",
+          "finished_at": "2026-09-09T00:27:25+08:00",
+          "gpu": "1",
+          "run_id": "b1_none_seed49",
+          "seed": "49",
+          "started_at": "2026-09-09T00:01:45+08:00",
+          "wave": "1"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/b1_none_seed51.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/b1_none_seed51.done",
+          "sha256": "2b32031dff6e95caf52e02dfc71cc763b2d62187df895b195449c8b41bd4bed5",
+          "size_bytes": 139
+        },
+        "run_id": "b1_none_seed51",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1519",
+          "finished_at": "2026-09-09T00:27:04+08:00",
+          "gpu": "2",
+          "run_id": "b1_none_seed51",
+          "seed": "51",
+          "started_at": "2026-09-09T00:01:45+08:00",
+          "wave": "1"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c0_temporal_control_seed47.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c0_temporal_control_seed47.done",
+          "sha256": "c5dd96d1db38dd2be440be7c862885b06c85fd738a0b68067787312558809932",
+          "size_bytes": 151
+        },
+        "run_id": "c0_temporal_control_seed47",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1524",
+          "finished_at": "2026-09-09T00:52:49+08:00",
+          "gpu": "0",
+          "run_id": "c0_temporal_control_seed47",
+          "seed": "47",
+          "started_at": "2026-09-09T00:27:25+08:00",
+          "wave": "2"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c0_temporal_control_seed49.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c0_temporal_control_seed49.done",
+          "sha256": "c5fcd1019292667e6abcfaceff3a2221d3f16164cd03562381e0744228a6f5f1",
+          "size_bytes": 151
+        },
+        "run_id": "c0_temporal_control_seed49",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1567",
+          "finished_at": "2026-09-09T00:53:32+08:00",
+          "gpu": "1",
+          "run_id": "c0_temporal_control_seed49",
+          "seed": "49",
+          "started_at": "2026-09-09T00:27:25+08:00",
+          "wave": "2"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c0_temporal_control_seed51.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c0_temporal_control_seed51.done",
+          "sha256": "55d6905302b6f475c8358c55a358ff5c90f6215e90d0b0dbbeaf580219f58413",
+          "size_bytes": 151
+        },
+        "run_id": "c0_temporal_control_seed51",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1546",
+          "finished_at": "2026-09-09T00:53:11+08:00",
+          "gpu": "2",
+          "run_id": "c0_temporal_control_seed51",
+          "seed": "51",
+          "started_at": "2026-09-09T00:27:25+08:00",
+          "wave": "2"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c1_center_multiscale_seed47.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c1_center_multiscale_seed47.done",
+          "sha256": "81ce35e30f154abd3896807c28e878b2674e9548f97a45e5f01806b5c4086cb3",
+          "size_bytes": 152
+        },
+        "run_id": "c1_center_multiscale_seed47",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1538",
+          "finished_at": "2026-09-09T01:19:10+08:00",
+          "gpu": "0",
+          "run_id": "c1_center_multiscale_seed47",
+          "seed": "47",
+          "started_at": "2026-09-09T00:53:32+08:00",
+          "wave": "3"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c1_center_multiscale_seed49.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c1_center_multiscale_seed49.done",
+          "sha256": "18beac2e031d538ee72ee6593f39a7c9343f5e335132379440e00c331f89eac5",
+          "size_bytes": 152
+        },
+        "run_id": "c1_center_multiscale_seed49",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1580",
+          "finished_at": "2026-09-09T01:19:52+08:00",
+          "gpu": "1",
+          "run_id": "c1_center_multiscale_seed49",
+          "seed": "49",
+          "started_at": "2026-09-09T00:53:32+08:00",
+          "wave": "3"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c1_center_multiscale_seed51.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c1_center_multiscale_seed51.done",
+          "sha256": "a938e1cb51717c96352f9837bf453ef8bd51cabbdce7f5bbcbf28989c70cece7",
+          "size_bytes": 152
+        },
+        "run_id": "c1_center_multiscale_seed51",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1559",
+          "finished_at": "2026-09-09T01:19:31+08:00",
+          "gpu": "2",
+          "run_id": "c1_center_multiscale_seed51",
+          "seed": "51",
+          "started_at": "2026-09-09T00:53:32+08:00",
+          "wave": "3"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c2_center_ring_seed47.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c2_center_ring_seed47.done",
+          "sha256": "3dfd1c1ae009061981535995345f8d25c01bebfc3d469506034abf5b6adeb2b6",
+          "size_bytes": 146
+        },
+        "run_id": "c2_center_ring_seed47",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1540",
+          "finished_at": "2026-09-09T11:24:09+08:00",
+          "gpu": "0",
+          "run_id": "c2_center_ring_seed47",
+          "seed": "47",
+          "started_at": "2026-09-09T10:58:29+08:00",
+          "wave": "4"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c2_center_ring_seed49.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c2_center_ring_seed49.done",
+          "sha256": "b7f29e27f991fb0186bccde8c4887f9e3c39f5526d5d7437b62cc0184dbf7abc",
+          "size_bytes": 146
+        },
+        "run_id": "c2_center_ring_seed49",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1582",
+          "finished_at": "2026-09-09T11:24:51+08:00",
+          "gpu": "1",
+          "run_id": "c2_center_ring_seed49",
+          "seed": "49",
+          "started_at": "2026-09-09T10:58:29+08:00",
+          "wave": "4"
+        }
+      },
+      {
+        "marker": {
+          "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c2_center_ring_seed51.done",
+          "repo_relative_path": "log/sem_seg/_queues/bc_tpro_stage1_2026-09-08/status/c2_center_ring_seed51.done",
+          "sha256": "e82d213cbe4a5d759e46eed60e2429336a4ffccea8a3c2319ae3921773466135",
+          "size_bytes": 146
+        },
+        "run_id": "c2_center_ring_seed51",
+        "status": "done",
+        "status_fields": {
+          "elapsed_seconds": "1561",
+          "finished_at": "2026-09-09T11:24:30+08:00",
+          "gpu": "2",
+          "run_id": "c2_center_ring_seed51",
+          "seed": "51",
+          "started_at": "2026-09-09T10:58:29+08:00",
+          "wave": "4"
+        }
+      }
+    ]
+  },
+  "created_at_utc": "2026-09-09T05:14:58.230626+00:00",
+  "data_list_audit": {
+    "clean_train_sequence_count": 80,
+    "files": {
+      "clean_test_index": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT/test.txt",
+        "repo_relative_path": "../datasets/NUDT-MIRSDT/test.txt",
+        "sha256": "eb039aa35aaabab2eae559b9d627e53d3fa114eb0410f343498f154c81a9d5d0",
+        "size_bytes": 50300
+      },
+      "clean_train_index": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT/train.txt",
+        "repo_relative_path": "../datasets/NUDT-MIRSDT/train.txt",
+        "sha256": "31e71368775adbc6c893bcb29ae1f39df6ffc83a693f42f84a4322bcf5235a8c",
+        "size_bytes": 199100
+      },
+      "fixed_train_split": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/splits/train_sequences.txt",
+        "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/splits/train_sequences.txt",
+        "sha256": "3e18da9a5c8dccea57b5155c244de1327ded05c6867f0059336f7a231ebbd967",
+        "size_bytes": 696
+      },
+      "fixed_validation_split": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/splits/val_sequences.txt",
+        "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/splits/val_sequences.txt",
+        "sha256": "bb92ecfdb0c379acc9971eaffed99154a2f985b063fd1f091aa8bceb09b07338",
+        "size_bytes": 175
+      },
+      "noise8_test_index": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT-Noise8.0_FJY/test.txt",
+        "repo_relative_path": "../datasets/NUDT-MIRSDT-Noise8.0_FJY/test.txt",
+        "sha256": "eb039aa35aaabab2eae559b9d627e53d3fa114eb0410f343498f154c81a9d5d0",
+        "size_bytes": 50300
+      },
+      "noise8_train_index": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT-Noise8.0_FJY/train.txt",
+        "repo_relative_path": "../datasets/NUDT-MIRSDT-Noise8.0_FJY/train.txt",
+        "sha256": "31e71368775adbc6c893bcb29ae1f39df6ffc83a693f42f84a4322bcf5235a8c",
+        "size_bytes": 199100
+      },
+      "split_manifest": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/splits/split_manifest.json",
+        "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/splits/split_manifest.json",
+        "sha256": "cee0983f56d75ac319613369930622be329b12c7bf6f5b183099a93ea234b063",
+        "size_bytes": 627
+      }
+    },
+    "passed": true,
+    "split_manifest_payload": {
+      "method": "numpy.PCG64.choice_without_replacement",
+      "schema_version": 1,
+      "seed": 20260908,
+      "source_list": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT/train.txt",
+      "source_sequence_count": 80,
+      "source_sha256": "31e71368775adbc6c893bcb29ae1f39df6ffc83a693f42f84a4322bcf5235a8c",
+      "train_list": "train_sequences.txt",
+      "train_sequence_count": 64,
+      "train_sha256": "3e18da9a5c8dccea57b5155c244de1327ded05c6867f0059336f7a231ebbd967",
+      "validation_list": "val_sequences.txt",
+      "validation_sequence_count": 16,
+      "validation_sha256": "bb92ecfdb0c379acc9971eaffed99154a2f985b063fd1f091aa8bceb09b07338"
+    },
+    "train_sequence_count": 64,
+    "validation_sequence_count": 16
+  },
+  "environment": {
+    "cuda_compiler": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2023 NVIDIA Corporation\nBuilt on Tue_Feb__7_19:32:13_PST_2023\nCuda compilation tools, release 12.1, V12.1.66\nBuild cuda_12.1.r12.1/compiler.32415258_0"
+    },
+    "gpu_driver_inventory": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=index,uuid,name,driver_version,memory.total",
+        "--format=csv,noheader,nounits"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "0, GPU-d9f350d6-d112-7be9-26fc-8310c3dbb0e9, NVIDIA GeForce RTX 3090, 560.35.03, 24576\n1, GPU-cd15451f-034b-d4ea-a464-e1370b9235ef, NVIDIA GeForce RTX 3090, 560.35.03, 24576\n2, GPU-2c3d6a89-404c-69d4-9b2e-13302400a29f, NVIDIA GeForce RTX 3090, 560.35.03, 24576\n3, GPU-f83ab776-1938-3d50-115e-8ed47f9523ec, NVIDIA GeForce RTX 3090, 560.35.03, 24576"
+    },
+    "pip_freeze": {
+      "command": [
+        "/home/user/anaconda3/envs/sjyPID/bin/python",
+        "-m",
+        "pip",
+        "freeze",
+        "--all"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "absl-py==2.1.0\naccelerate==1.0.1\naiohttp==3.9.3\naiosignal==1.3.1\nannotated-types==0.7.0\nantlr4-python3-runtime==4.9.3\nastunparse==1.6.3\nasync-timeout==4.0.3\nattrs==23.2.0\nbeautifulsoup4==4.14.3\nBLEURT @ file:///home/user/YLF/lora_finetune/LoRA-main/examples/NLG/eval/GenerationEval/bleurt\nBrotli @ file:///tmp/abs_ecyw11_7ze/croots/recipe/brotli-split_1659616059936/work\ncachetools==4.2.4\ncertifi @ file:///croot/certifi_1700501669400/work/certifi\ncffi @ file:///tmp/abs_98z5h56wf8/croots/recipe/cffi_1659598650955/work\ncharset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work\nclick==8.1.8\nclip==0.2.0\ncontourpy==1.1.1\ncryptography @ file:///croot/cryptography_1694444244250/work\ncycler==0.12.1\ndominate==2.9.1\nefficientnet_pytorch==0.7.1\neinops==0.7.0\neval_type_backport==0.2.0\nfilelock @ file:///croot/filelock_1700591183607/work\nfonttools==4.48.1\nfrozenlist==1.4.1\nfsspec==2023.12.2\nfuture==0.18.3\ngast==0.4.0\ngdown==5.2.2\ngmpy2 @ file:///tmp/build/80754af9/gmpy2_1645455532332/work\ngoogle-auth==1.35.0\ngoogle-auth-oauthlib==0.4.6\ngoogle-pasta==0.2.0\ngrpcio==1.60.0\nh5py==3.10.0\nhuggingface-hub==0.22.2\nidna @ file:///croot/idna_1666125576474/work\nimageio==2.33.1\nimportlib-metadata==7.0.1\nimportlib-resources==6.1.1\nJinja2 @ file:///croot/jinja2_1666908132255/work\njoblib==1.4.2\nkiwisolver==1.4.5\nkmeans==1.0.2\nkornia==0.7.1\nlazy_loader==0.4\nlightning-utilities==0.10.1\nlpips==0.1.4\nMarkdown==3.5.2\nmarkdown-it-py==3.0.0\nMarkupSafe @ file:///croot/markupsafe_1704205993651/work\nmatplotlib==3.7.4\nmdurl==0.1.2\nmkl-fft==1.3.1\nmkl-random @ file:///tmp/build/80754af9/mkl_random_1626186064646/work\nmkl-service==2.4.0\nmpmath @ file:///croot/mpmath_1690848262763/work\nmultidict==6.0.4\nmunch==4.0.0\nnetworkx @ file:///croot/networkx_1690561992265/work\nnumpy==1.24.4\nnvidia-ml-py==13.595.45\noauthlib==3.2.2\nomegaconf==2.3.0\nopencv-python==4.9.0.80\nopencv-python-headless==4.10.0.84\nopt-einsum==3.3.0\npackaging==23.2\npandas==1.3.4\npi_heif==0.18.0\npiexif==1.1.3\npillow==10.4.0\npip==25.0.1\nplatformdirs==4.3.6\npolars==1.8.2\npretrainedmodels==0.7.4\nprettytable==3.11.0\nprotobuf==3.20.1\npsutil==6.1.0\nptflops==0.7.3\npyasn1==0.5.1\npyasn1-modules==0.3.0\npycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work\npydantic==2.10.1\npydantic_core==2.27.1\npyDeprecate==0.3.1\npyecharts==2.1.0\nPygments==2.19.2\npyOpenSSL @ file:///croot/pyopenssl_1690223430423/work\npyparsing==3.1.1\nPySocks @ file:///tmp/build/80754af9/pysocks_1605305779399/work\npython-dateutil==2.8.2\npytorch-fid==0.3.0\npytorch-lightning==1.4.2\npytz==2023.4\nPyWavelets==1.4.1\nPyYAML @ file:///croot/pyyaml_1698096049011/work\nrequests @ file:///croot/requests_1690400202158/work\nrequests-oauthlib==1.3.1\nrich==13.9.4\nrsa==4.9\nsafetensors==0.4.5\nscikit-image==0.16.2\nscikit-learn==1.3.2\nscipy==1.9.3\nsegmentation-models-pytorch==0.3.3\nsentencepiece==0.1.99\nsetuptools==68.2.2\nsimplejson==3.20.2\nsix @ file:///tmp/build/80754af9/six_1644875935023/work\nsoupsieve==2.7\nswanlab==0.7.15\nsympy @ file:///croot/sympy_1701397643339/work\ntensorboard==2.2.0\ntensorboard-plugin-wit==1.8.1\ntensorboardX==2.6.2.2\ntest-tube==0.7.5\ntf-slim==1.1.0\nthop==0.1.1.post2209072238\nthreadpoolctl==3.5.0\ntifffile==2023.7.10\ntimm==0.9.2\ntorch==2.1.2\ntorchfile==0.1.0\ntorchmetrics==0.7.0\ntorchvision==0.16.2\ntqdm==4.66.1\ntriton==2.1.0\ntyping_extensions==4.12.2\ntzdata==2023.4\n-e git+ssh://git@github.com/ShiJiayu-del/ultralytics-main.git@afe59746bc57697560ba57e79362e4b927317eeb#egg=ultralytics\nultralytics-thop==2.0.18\nurllib3 @ file:///croot/urllib3_1698257533958/work\nwcwidth==0.6.0\nWerkzeug==3.0.1\nwheel==0.41.2\nwrapt==2.0.1\nyacs==0.1.8\nyarl==1.9.4\nzipp==3.17.0"
+    },
+    "platform": {
+      "machine": "x86_64",
+      "platform": "Linux-5.4.0-216-generic-x86_64-with-glibc2.10",
+      "processor": "x86_64",
+      "uname": [
+        "Linux",
+        "user-System-Product-Name",
+        "5.4.0-216-generic",
+        "#236-Ubuntu SMP Fri Apr 11 19:53:21 UTC 2025",
+        "x86_64",
+        "x86_64"
+      ]
+    },
+    "python": {
+      "executable": "/home/user/anaconda3/envs/sjyPID/bin/python",
+      "implementation": "CPython",
+      "version": "3.8.5 (default, Sep  4 2020, 07:30:14) \n[GCC 7.3.0]"
+    },
+    "selected_environment_variables": {
+      "CONDA_DEFAULT_ENV": "base",
+      "CONDA_PREFIX": "/home/user/anaconda3"
+    },
+    "selected_packages": {
+      "Pillow": "10.4.0",
+      "numpy": "1.24.4",
+      "opencv-python": "4.9.0.80",
+      "scikit-image": "0.16.2",
+      "scikit-learn": "1.3.2",
+      "scipy": "1.9.3",
+      "swanlab": "0.7.15",
+      "torch": "2.1.2",
+      "torchvision": "0.16.2"
+    },
+    "torch_build": {
+      "compiled_cuda_version": "12.1",
+      "cuda_runtime_was_queried": false,
+      "cudnn_version": 8902,
+      "version": "2.1.2"
+    }
+  },
+  "experiment_root_at_freeze": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08",
+  "git": {
+    "branch": "nudt-mirsdt-all-models-2026-09-01",
+    "diff_head_binary_sha256": "d52a4af83c48a33a7184ee008d8dc0cc62ecde63b4378a6f0a64716eb6f7bf6b",
+    "diff_head_binary_size_bytes": 4588230,
+    "head": "2914290fe8ee837855bc31d3e26dfac829954226",
+    "is_dirty": true,
+    "status_porcelain_v1": [
+      " M data_utils/TestDataLoader.py",
+      " M data_utils/TrainDataLoader.py",
+      " M data_utils/loader_utils.py",
+      " M docs/README.md",
+      " M experiments/README.md",
+      " M experiments/nudt_mirsdt_all_models_2026-09-01/README.md",
+      " M experiments/nudt_mirsdt_all_models_2026-09-01/RESULTS.md",
+      " M experiments/nudt_mirsdt_all_models_2026-09-01/manifest.tsv",
+      " M experiments/nudt_mirsdt_all_models_2026-09-01/results.csv",
+      " M networks/models/DeepPro-Plus_TDCSTA.py",
+      " M release/2026-08-22_pretrained_vs_scratch_seed47/README.md",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/SHA256SUMS",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_pretrained_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_pretrained_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_pretrained_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_pretrained_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_scratch_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_scratch_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_scratch_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_multiscale_contrast_scratch_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_pretrained_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_pretrained_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_pretrained_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_pretrained_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_scratch_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_scratch_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_scratch_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_motion_detrend_scratch_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_pretrained_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_pretrained_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_pretrained_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_pretrained_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_scratch_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_scratch_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_scratch_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_multiscale_contrast_scratch_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_pretrained_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_pretrained_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_pretrained_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_pretrained_seed47/submission_validation.txt",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_scratch_seed47/selected_submission.json",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_scratch_seed47/submission_best_proxy_f1.zip",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_scratch_seed47/submission_best_proxy_f1.zip.sha256",
+      " D release/2026-08-22_pretrained_vs_scratch_seed47/runs/brtd3_raw_apmd_hybrid_rms_scratch_seed47/submission_validation.txt",
+      " M release/2026-08-29_final_submission_score91.30_scratch/MANIFEST.md",
+      " M release/2026-08-29_final_submission_score91.30_scratch/README.md",
+      " D release/2026-08-29_final_submission_score91.30_scratch/SHA256SUMS",
+      " D release/2026-08-29_final_submission_score91.30_scratch/artifacts/TXT_SHA256SUMS",
+      " D release/2026-08-29_final_submission_score91.30_scratch/artifacts/submit_hrms_scratch_epoch86_adaptive_thr0p16_highres0p96.zip",
+      " D release/2026-08-29_final_submission_score91.30_scratch/evidence/submission_validation_adaptive.txt",
+      " D release/2026-08-29_final_submission_score91.30_scratch/evidence/tracking_adaptive_thr0p16_highres0p96.log",
+      " M release/README.md",
+      " M test.py",
+      " M tools/run_nudt_mirsdt_all_models.sh",
+      " M tools/summarize_nudt_mirsdt_results.py",
+      " M train.py",
+      " M write_results.py",
+      "?? docs/CLEANUP_2026-09-08.md",
+      "?? docs/CLEANUP_LOG_ENTRIES_2026-09-08.md",
+      "?? docs/IMPORTANT_FILES_GUIDE.md",
+      "?? docs/LOG_LAYOUT_2026-09-08.md",
+      "?? docs/TRAINING_REVIEW_2026-09-08.md",
+      "?? experiments/PAPER_COMPARISON_2026-09-08.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/ANALYSIS.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/CUDA_INCIDENT.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/EXACT_LOGIT_PROTOCOL_AMENDMENT.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/EXPERIMENT_PLAN.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/PRECHECK.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/PROTOCOL_AMENDMENT_2026-09-09.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/REPRODUCIBILITY_README.md",
+      "?? experiments/bc_tpro_stage1_2026-09-08/bootstrap_summary.csv",
+      "?? experiments/bc_tpro_stage1_2026-09-08/manifest.tsv",
+      "?? experiments/bc_tpro_stage1_2026-09-08/results.csv",
+      "?? experiments/bc_tpro_stage1_2026-09-08/summary.csv",
+      "?? experiments/nudt_mirsdt_all_models_2026-09-01/ANALYSIS.md",
+      "?? experiments/nudt_mirsdt_all_models_2026-09-01/PAPER_METRICS.md",
+      "?? experiments/nudt_mirsdt_all_models_2026-09-01/paper_metrics.csv",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/ANALYSIS.md",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/PAPER_METRICS.md",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/README.md",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/RESULTS.md",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/manifest.tsv",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/paper_metrics.csv",
+      "?? experiments/nudt_mirsdt_noise8_fjy_all_models_2026-09-03/results.csv",
+      "?? networks/layers/bc_tpro_adapter.py",
+      "?? networks/models/DeepPro-Plus_BCTPro.py",
+      "?? paper/DEEPPRO_PLUS_METRIC_ALIGNMENT.md",
+      "?? tests/test_analyze_bc_tpro_stage1.py",
+      "?? tests/test_bc_tpro_stage1.py",
+      "?? tests/test_evaluate_bc_tpro_exact_logit.py",
+      "?? tests/test_snapshot_bc_tpro_stage1.py",
+      "?? tools/analyze_bc_tpro_stage1.py",
+      "?? tools/analyze_nudt_experiments.py",
+      "?? tools/analyze_nudt_paper_metrics.py",
+      "?? tools/create_nudt_sequence_split.py",
+      "?? tools/evaluate_bc_tpro_exact_logit.py",
+      "?? tools/run_bc_tpro_exact_logit.sh",
+      "?? tools/run_bc_tpro_stage1.sh",
+      "?? tools/run_clean_then_noise8_all_models.sh",
+      "?? tools/run_nudt_paper_metrics.sh",
+      "?? tools/run_paper_metrics_after_noise8.sh",
+      "?? tools/snapshot_bc_tpro_stage1.py",
+      "?? tools/summarize_nudt_paper_metrics.py"
+    ],
+    "status_sha256": "46785f22eb34156d49f4e223eb6486fe41501d51168b029c2ab8acae88dd0cad"
+  },
+  "kind": "bc_tpro_stage1_reproducibility_freeze",
+  "repo_root_at_freeze": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main",
+  "run_snapshot_consistency_audit": {
+    "canonical_sources": {
+      "adapter": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/networks/layers/bc_tpro_adapter.py",
+        "repo_relative_path": "networks/layers/bc_tpro_adapter.py",
+        "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+        "size_bytes": 12024
+      },
+      "loss": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/networks/losses/segmentation_losses.py",
+        "repo_relative_path": "networks/losses/segmentation_losses.py",
+        "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+        "size_bytes": 43295
+      },
+      "model": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/networks/models/DeepPro-Plus_BCTPro.py",
+        "repo_relative_path": "networks/models/DeepPro-Plus_BCTPro.py",
+        "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+        "size_bytes": 5484
+      }
+    },
+    "passed": true,
+    "run_count": 12,
+    "runs": [
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "b1_none_seed47"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "b1_none_seed49"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "b1_none_seed51"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c0_temporal_control_seed47"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c0_temporal_control_seed49"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c0_temporal_control_seed51"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c1_center_multiscale_seed47"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c1_center_multiscale_seed49"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c1_center_multiscale_seed51"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c2_center_ring_seed47"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c2_center_ring_seed49"
+      },
+      {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c2_center_ring_seed51"
+      }
+    ],
+    "unique_hash_count_by_source": {
+      "adapter": 1,
+      "loss": 1,
+      "model": 1
+    }
+  },
+  "runs": [
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "4f32a4249191bffdf311da0384eb2de2685e8afea50b75da0efec9d6fec6a7c2",
+        "size_bytes": 945074
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "none"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "none"
+      },
+      "gpu": 0,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed47__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed47__clean_val.json",
+            "sha256": "8aeda28e1c59f7d92db681dde3b4f73b839b96828f6cd627e145374abcee90e2",
+            "size_bytes": 81362
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed47__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed47__noise8_val.json",
+            "sha256": "fa3a0268f836989a80b6c15f0916a4d1b1882155e5831989f47a03717103900b",
+            "size_bytes": 87483
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "b1_none_seed47",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "b1_none_seed47"
+      },
+      "seed": 47,
+      "structure_variant": "none",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "681af78d08de9fa5d179223948997819c99d34907c8fce4ee78c616eb5e932bc",
+        "size_bytes": 35048
+      },
+      "wave": 1
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "b279bb0997460b181873b9a88f355711bfa6fcd4cbe2d9e7a6125213142fbc6f",
+        "size_bytes": 945074
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "none"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "none"
+      },
+      "gpu": 1,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed49__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed49__clean_val.json",
+            "sha256": "744922290caa8e811655317cafde0d8025e5ccb0d7d175ef5210409a41b630b5",
+            "size_bytes": 81257
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed49__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed49__noise8_val.json",
+            "sha256": "95530db95874d33af728b0912d38575e2cd5e7650355a7f62b784ab0d35c6b01",
+            "size_bytes": 87631
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "b1_none_seed49",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "b1_none_seed49"
+      },
+      "seed": 49,
+      "structure_variant": "none",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "f952e3f48cdede1ecdb574089a2a278ef0e16c4f1643105c72d6286250823b1c",
+        "size_bytes": 35048
+      },
+      "wave": 1
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "3a2a85fe7464392ccfdcd10b132fa4c616f7903483c84b18e3d3f8c49ae576a3",
+        "size_bytes": 945074
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "none"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "none"
+      },
+      "gpu": 2,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed51__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed51__clean_val.json",
+            "sha256": "4fcb0555e91d369875c8823363cba2b277c4a5a7dc58625c45647444560ada84",
+            "size_bytes": 81308
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed51__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/b1_none_seed51__noise8_val.json",
+            "sha256": "49061fa8acd2e232ba7c38bd5e959e9c38e93c149a92e3e2b982c2731faed328",
+            "size_bytes": 87353
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "b1_none_seed51",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "b1_none_seed51"
+      },
+      "seed": 51,
+      "structure_variant": "none",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-B1_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "2ac2fd806ab055767d73e966fdfd210af6192cf5cde374c24a1190be7bbb52d7",
+        "size_bytes": 35048
+      },
+      "wave": 1
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "4945a0938949e563763853b01bf1606bbbad089c4492acb124278510fa7564ef",
+        "size_bytes": 953954
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "temporal_control"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "temporal_control"
+      },
+      "gpu": 0,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed47__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed47__clean_val.json",
+            "sha256": "0969e3e0211972148970318191249cc1baa51506448cd93d1bcc35829e7c6ec4",
+            "size_bytes": 81348
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed47__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed47__noise8_val.json",
+            "sha256": "9dd00c7d2cf3dcb8fdd8a342ba93c2afef86fd869125e6c3dc1e4428b33a9222",
+            "size_bytes": 86907
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c0_temporal_control_seed47",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c0_temporal_control_seed47"
+      },
+      "seed": 47,
+      "structure_variant": "temporal_control",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "6647cdd009a3593cdaa36e0fec030f310fa80773d5d29ea2ecb38e8c44fb69e4",
+        "size_bytes": 35060
+      },
+      "wave": 2
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "7835385e252d818fcf94d7804bee68856981a87f072101c56ca31f95278a25a2",
+        "size_bytes": 953954
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "temporal_control"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "temporal_control"
+      },
+      "gpu": 1,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed49__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed49__clean_val.json",
+            "sha256": "7a5e068b10a2bf3d9eb6ecc81c6c87f6327bf92a2dc2e0132391e494d051c037",
+            "size_bytes": 81253
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed49__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed49__noise8_val.json",
+            "sha256": "5afee5d1d08e874b573cb9061b92d2e2eb92529f5cd29fdba55a4b9ea1055e1c",
+            "size_bytes": 86903
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c0_temporal_control_seed49",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c0_temporal_control_seed49"
+      },
+      "seed": 49,
+      "structure_variant": "temporal_control",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "5bb360105d64bea36307d3f22f271fc886d85a15a59774a241cd71124a99f879",
+        "size_bytes": 35060
+      },
+      "wave": 2
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "6a227fea82259e6b1f58a599e225bafa066e9ca445acd40e129184408b3068e3",
+        "size_bytes": 953954
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "temporal_control"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "temporal_control"
+      },
+      "gpu": 2,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed51__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed51__clean_val.json",
+            "sha256": "cd251e57c6fa7f6c422a6f744fbcb91171e8a51359be70ef5ebfd5dd9defc56c",
+            "size_bytes": 81235
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed51__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c0_temporal_control_seed51__noise8_val.json",
+            "sha256": "ae0a9c2ea22baad6b095d7791b645913b2b339a22623de94b74bfba840bd4539",
+            "size_bytes": 87275
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c0_temporal_control_seed51",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c0_temporal_control_seed51"
+      },
+      "seed": 51,
+      "structure_variant": "temporal_control",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C0_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "1914a864b87edab84a8fc67a5ad4a15abbd468510096f691387b8ae7f395d386",
+        "size_bytes": 35060
+      },
+      "wave": 2
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "99271f0c1489092ca05253aea0aab71f0ef1c51218221c44cb9734d7e56277a2",
+        "size_bytes": 953954
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "center_multiscale"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "center_multiscale"
+      },
+      "gpu": 0,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed47__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed47__clean_val.json",
+            "sha256": "36ed2df52415bb03c6aa19985b1153ed51ed54de05d3f900b59c867a70e615ae",
+            "size_bytes": 81292
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed47__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed47__noise8_val.json",
+            "sha256": "f87e4536cf84a472a832e6d3b97e589f36de16f6fe5a6415b7d746ea0afb428a",
+            "size_bytes": 87919
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c1_center_multiscale_seed47",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c1_center_multiscale_seed47"
+      },
+      "seed": 47,
+      "structure_variant": "center_multiscale",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "9aa4867b4243282a8bb28a27d93447c20d0aed18edc5ba2b6118c9a51a54b537",
+        "size_bytes": 35528
+      },
+      "wave": 3
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "0d98b9fa163ea90cce90f4a8d16f82a13d2743038eebf8c98a472b42c89f4431",
+        "size_bytes": 953954
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "center_multiscale"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "center_multiscale"
+      },
+      "gpu": 1,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed49__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed49__clean_val.json",
+            "sha256": "a9f72b9757ed3418b37abdbacd5482a63b12a7edb60909302d5e5d12d25fbccb",
+            "size_bytes": 81285
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed49__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed49__noise8_val.json",
+            "sha256": "642dc12be2f4e4f68aae61dd03eb2ee5fe7510119491ba6a9346a7aaaa4a1d54",
+            "size_bytes": 88725
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c1_center_multiscale_seed49",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c1_center_multiscale_seed49"
+      },
+      "seed": 49,
+      "structure_variant": "center_multiscale",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "f858f3f838f9cd87894a5bfb8c99f64aa934e14b3348c87965c089fb41936182",
+        "size_bytes": 35528
+      },
+      "wave": 3
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "2f37c861d2c2243367d421ee2ab1be9f257cf86dac2530b9e0cc0f4e6cd61970",
+        "size_bytes": 953954
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "center_multiscale"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "center_multiscale"
+      },
+      "gpu": 2,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed51__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed51__clean_val.json",
+            "sha256": "6b4398b77a431e2a46c979a6178668b6460e15d85c09a612239cd117f5dcf36d",
+            "size_bytes": 81270
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed51__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c1_center_multiscale_seed51__noise8_val.json",
+            "sha256": "faa4889181d786efc87d40c3f90e6149d7a04bfced5b9e55c08a7960e439eeae",
+            "size_bytes": 88017
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c1_center_multiscale_seed51",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c1_center_multiscale_seed51"
+      },
+      "seed": 51,
+      "structure_variant": "center_multiscale",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C1_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "a71708bfd96662b7a69fd663085ee9efb3c8942305971566391d2a62243dd1d4",
+        "size_bytes": 35528
+      },
+      "wave": 3
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "7b0592f8b13bf7a5358f24494099f538574d8927adc650bce56467822be0aaea",
+        "size_bytes": 954530
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "center_ring"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "center_ring"
+      },
+      "gpu": 0,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed47__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed47__clean_val.json",
+            "sha256": "6248bb25e14f096a5345833be96977bcefef2c994a05e20b0c5cd7c57edaa728",
+            "size_bytes": 81392
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed47__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed47__noise8_val.json",
+            "sha256": "8b75d1915e035df6d8e35f5027a1166eeb01145fbdd50e61a0709c1c70320a36",
+            "size_bytes": 87899
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c2_center_ring_seed47",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c2_center_ring_seed47"
+      },
+      "seed": 47,
+      "structure_variant": "center_ring",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed47_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "c8a147cade896032e3cfcce6b625efcc43dea51bbfd40009fdc76ef78c0efb15",
+        "size_bytes": 35055
+      },
+      "wave": 4
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "578845358500af3d85ec3c810344c7bea8de52e291127104e55e866e4fa48e77",
+        "size_bytes": 954530
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "center_ring"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "center_ring"
+      },
+      "gpu": 1,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed49__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed49__clean_val.json",
+            "sha256": "c7bf4bfaa19a959d095596e4e0bb4d521516e2a9f1a79f157203aa535e90789f",
+            "size_bytes": 81280
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed49__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed49__noise8_val.json",
+            "sha256": "ddf3200bd3a84ef4952a96722cfded8eb8bdd9894ff89b9c638cc8fe7436357c",
+            "size_bytes": 88438
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c2_center_ring_seed49",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c2_center_ring_seed49"
+      },
+      "seed": 49,
+      "structure_variant": "center_ring",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed49_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "02c97cc9b7b02c4f8e06c4f13cb8757904c65b21241f088503f831beefcba9a3",
+        "size_bytes": 35055
+      },
+      "wave": 4
+    },
+    {
+      "checkpoint": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/checkpoints/epoch_32_model.pth",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/checkpoints/epoch_32_model.pth",
+        "sha256": "6ea13d495f4661c2aaa74b3a900d72529d229e54f8dc0272371c9d5aa1025212",
+        "size_bytes": 954530
+      },
+      "checkpoint_identity": {
+        "model_config": {
+          "eval_chunk_rows": 32,
+          "structure_bottleneck_channels": 8,
+          "structure_variant": "center_ring"
+        },
+        "model_name": "DeepPro-Plus_BCTPro",
+        "stored_epoch_zero_based": 31,
+        "structure_variant": "center_ring"
+      },
+      "gpu": 2,
+      "log_dir": "2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32",
+      "metrics": [
+        {
+          "condition": "clean_val",
+          "dataset": "NUDT-MIRSDT",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed51__clean_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed51__clean_val.json",
+            "sha256": "4383773d70bf8f795d6e4b4b9ac759d8a4ca78424c9187fff73cbe11f173c19b",
+            "size_bytes": 81282
+          }
+        },
+        {
+          "condition": "noise8_val",
+          "dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+          "file": {
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed51__noise8_val.json",
+            "repo_relative_path": "experiments/bc_tpro_stage1_2026-09-08/metrics/c2_center_ring_seed51__noise8_val.json",
+            "sha256": "06a034e7c5570db1126d0a67f236ac03a720f7ffdab07a2ccb596ab5c607752f",
+            "size_bytes": 87948
+          }
+        }
+      ],
+      "model": "DeepPro-Plus_BCTPro",
+      "run_id": "c2_center_ring_seed51",
+      "run_source_snapshot": {
+        "files": {
+          "adapter": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/bc_tpro_adapter.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/bc_tpro_adapter.py",
+            "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+            "size_bytes": 12024
+          },
+          "loss": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/segmentation_losses.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/segmentation_losses.py",
+            "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+            "size_bytes": 43295
+          },
+          "model": {
+            "matches_canonical": true,
+            "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/DeepPro-Plus_BCTPro.py",
+            "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+            "size_bytes": 5484
+          }
+        },
+        "passed": true,
+        "run_id": "c2_center_ring_seed51"
+      },
+      "seed": 51,
+      "structure_variant": "center_ring",
+      "training_log": {
+        "path": "/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "repo_relative_path": "log/sem_seg/2026-09-08/NUDT-MIRSDT__SoftIoU-BCTPro-C2_seed51_E32/logs/DeepPro-Plus_BCTPro.txt",
+        "sha256": "ea4f1fd873d3513e427e2388ae58da3daf45b207be33a28459ee41065d7cfd84",
+        "size_bytes": 35055
+      },
+      "wave": 4
+    }
+  ],
+  "schema_version": 1,
+  "source_snapshot": {
+    "file_count": 37,
+    "files": [
+      {
+        "path": "train.py",
+        "sha256": "126f95289448ae9868f7a4705565cb78eded866f8b6ffdfdcd81331d3267c03e",
+        "size_bytes": 73016
+      },
+      {
+        "path": "test.py",
+        "sha256": "da64ebac02784ab6bb9494a55860bdc1dbc12ad67118e8e18a4e45a2f2e33991",
+        "size_bytes": 32213
+      },
+      {
+        "path": "runtime_utils.py",
+        "sha256": "6202c0bddbc34075d345a4115796c5396e65ef04948b3f2c4267dac7d7d2436d",
+        "size_bytes": 4881
+      },
+      {
+        "path": "sequence_utils.py",
+        "sha256": "ded7df074a1c3cd73f3590536cfd8d1124beddf16fa39b91e8c1c11c39a1c633",
+        "size_bytes": 3719
+      },
+      {
+        "path": "ShootingRules.py",
+        "sha256": "3f81fbacab2d0a3883ceed22dcf14a10a45ebb6600d5ec1c6165786c98b9606c",
+        "size_bytes": 6072
+      },
+      {
+        "path": "write_results.py",
+        "sha256": "b9940f5d463b93af511ee21c9fb1af015d73e582fc80d57f55a355abeca1fc1d",
+        "size_bytes": 10054
+      },
+      {
+        "path": "data_utils/TrainDataLoader.py",
+        "sha256": "98b61da419dbe1768c818383738759395c25571f77e864cced9b2fd2d784da16",
+        "size_bytes": 16700
+      },
+      {
+        "path": "data_utils/TestDataLoader.py",
+        "sha256": "98c58d3006cae290236c3607f37c7b7b68aa26f7be708f1a38e96ddf34675d95",
+        "size_bytes": 14543
+      },
+      {
+        "path": "data_utils/loader_utils.py",
+        "sha256": "c13dcc599fc85d36f0eb0107ad955916c083fac23159594a735972b10094183a",
+        "size_bytes": 3959
+      },
+      {
+        "path": "networks/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "networks/models/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "networks/models/DeepPro-Plus_BCTPro.py",
+        "sha256": "8314f74bec165a67a5c17934e1ec6ee1e59fe2d2976efd488bf0e069b26127ce",
+        "size_bytes": 5484
+      },
+      {
+        "path": "networks/layers/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "networks/layers/basic.py",
+        "sha256": "000d204655d38ba503a2ad01fc2544fd5136c95dc3fda48dc95f5d059e7827c7",
+        "size_bytes": 8268
+      },
+      {
+        "path": "networks/layers/TPro.py",
+        "sha256": "3310c06c7400549067a6485afadb3b976a593a6fe3bdeffca335489dd03e4f83",
+        "size_bytes": 4132
+      },
+      {
+        "path": "networks/layers/bc_tpro_adapter.py",
+        "sha256": "2c50ba490ed7f238cc95b2c9edca00ce18700582f0c876854eaef52c14671fd6",
+        "size_bytes": 12024
+      },
+      {
+        "path": "networks/losses/__init__.py",
+        "sha256": "f7d0374dd22c6f51c11f4cc7a9ac30dac75a7122ce186e95f020bdcaa3056872",
+        "size_bytes": 304
+      },
+      {
+        "path": "networks/losses/segmentation_losses.py",
+        "sha256": "021de82a00e2413828140fb9f4f22fbccb6bbe22db8ff0df2ed0178a153cd283",
+        "size_bytes": 43295
+      },
+      {
+        "path": "tools_forSatVideoIRSTD/seg2centroid_txt.py",
+        "sha256": "503ac80f06ec7df6685df732dc81970cbc97f5a0b241e49963e15e59025971b9",
+        "size_bytes": 3893
+      },
+      {
+        "path": "tools/project_runtime_env.sh",
+        "sha256": "17fe1318830a62f97f883dbe80e5043622be8360e79740bc433f310c823988ab",
+        "size_bytes": 2926
+      },
+      {
+        "path": "tools/create_nudt_sequence_split.py",
+        "sha256": "d987eba746d435a5ba3f691fe0f1989d27fa3a2c9ea6c79cbc9170f8112da344",
+        "size_bytes": 4005
+      },
+      {
+        "path": "tools/run_bc_tpro_stage1.sh",
+        "sha256": "34a37e5b57af318ff20e6bbad0236c111e5aaf9cafb77ea0c9da5196b17d61f3",
+        "size_bytes": 9880
+      },
+      {
+        "path": "tools/analyze_bc_tpro_stage1.py",
+        "sha256": "2eafb6e9a8efa59946678fba9622693b9d0196f9ed8af69ccb49586a30dfac58",
+        "size_bytes": 70012
+      },
+      {
+        "path": "tools/snapshot_bc_tpro_stage1.py",
+        "sha256": "b8c4c2b97dc9922213cb70675bedda6953106c69c4efd57cc12ef183a991dd0b",
+        "size_bytes": 36858
+      },
+      {
+        "path": "tests/test_bc_tpro_stage1.py",
+        "sha256": "4ac5db3ada54dbccab32471f966ea3709beca5bb24d3222384a784cd411f27fa",
+        "size_bytes": 11025
+      },
+      {
+        "path": "tests/test_analyze_bc_tpro_stage1.py",
+        "sha256": "980f3f1fb86ec605628e3de0465397798e3f23ac21a4bcf3bf7ba0284bb869a3",
+        "size_bytes": 28420
+      },
+      {
+        "path": "tests/test_snapshot_bc_tpro_stage1.py",
+        "sha256": "58b568eb55ed445fe3c0cbf620e86c746457e1e6644499c0ee6d8eae134df3b7",
+        "size_bytes": 11744
+      },
+      {
+        "path": "docs/environment_sjyPID_2026-08-24.yml",
+        "sha256": "b79023307e13ed6981f19ec19f3cd173b9385d3f083ff495961065f6ea4ac6bd",
+        "size_bytes": 5173
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/manifest.tsv",
+        "sha256": "0c43bf7624a9957d81c08ec2fc8736819af90d4f7bb614a479eba7a8c6681a15",
+        "size_bytes": 1445
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/splits/split_manifest.json",
+        "sha256": "cee0983f56d75ac319613369930622be329b12c7bf6f5b183099a93ea234b063",
+        "size_bytes": 627
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/splits/train_sequences.txt",
+        "sha256": "3e18da9a5c8dccea57b5155c244de1327ded05c6867f0059336f7a231ebbd967",
+        "size_bytes": 696
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/splits/val_sequences.txt",
+        "sha256": "bb92ecfdb0c379acc9971eaffed99154a2f985b063fd1f091aa8bceb09b07338",
+        "size_bytes": 175
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/EXPERIMENT_PLAN.md",
+        "sha256": "8ad08257b3f7f873b6b359c76aed2568365f22c55909b04c7b82d93942f0eac2",
+        "size_bytes": 5589
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/PRECHECK.md",
+        "sha256": "1c0653c3b30eca5439a75a2a7b7c954b660d1c97e03c183741073782bdc25e48",
+        "size_bytes": 2210
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/CUDA_INCIDENT.md",
+        "sha256": "07f1500e5189ac2bb5026703050e606a6383e368cb2932e7987dd73da7479ed0",
+        "size_bytes": 2345
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/PROTOCOL_AMENDMENT_2026-09-09.md",
+        "sha256": "6cf677fe6209bdf7efb188352d53d2f08cc5003f82a1dd5ddb73b2b25e5bcd62",
+        "size_bytes": 5683
+      },
+      {
+        "path": "experiments/bc_tpro_stage1_2026-09-08/REPRODUCIBILITY_README.md",
+        "sha256": "7857232556d39f5835e169d96c8a14dc743240e1742193b59b5f278583f9506b",
+        "size_bytes": 2040
+      }
+    ],
+    "path": "source_snapshot",
+    "reused_existing_identical_snapshot": false,
+    "sha256s_file": "SOURCE_SHA256SUMS",
+    "sha256s_file_sha256": "ddc996efe73f470cb76a9eea11cab53b23fca0922fafe7d0f3781a8d5024aa1f"
+  }
+}

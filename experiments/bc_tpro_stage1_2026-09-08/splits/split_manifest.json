@@ -1,0 +1,14 @@
+{
+  "method": "numpy.PCG64.choice_without_replacement",
+  "schema_version": 1,
+  "seed": 20260908,
+  "source_list": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT/train.txt",
+  "source_sequence_count": 80,
+  "source_sha256": "31e71368775adbc6c893bcb29ae1f39df6ffc83a693f42f84a4322bcf5235a8c",
+  "train_list": "train_sequences.txt",
+  "train_sequence_count": 64,
+  "train_sha256": "3e18da9a5c8dccea57b5155c244de1327ded05c6867f0059336f7a231ebbd967",
+  "validation_list": "val_sequences.txt",
+  "validation_sequence_count": 16,
+  "validation_sha256": "bb92ecfdb0c379acc9971eaffed99154a2f985b063fd1f091aa8bceb09b07338"
+}
