@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "profile": "upstream8fa1a68_fp32",
+  "upstream_repository": "https://github.com/TinaLRJ/DeepPro.git",
+  "upstream_commit": "8fa1a68b94eb22e94ccd0529e6c5ceccdaa7ec28",
+  "training_precision": "fp32",
+  "evaluation_precision": "fp32",
+  "upstream_compat": true,
+  "metric_amendment": "OFFICIAL_METRIC_AMENDMENT_2026-09-10.md",
+  "detection_metric_contract": {
+    "operating_threshold": 0.5,
+    "reported_detection_metrics": [
+      "Pd_at_threshold_0.5",
+      "Fa_at_threshold_0.5",
+      "Pd-Fa_AUC_27_thresholds"
+    ],
+    "raw_logit_and_dense_grid_role": "supplemental_only"
+  },
+  "aligned_semantics": [
+    "Pillow-default mask resize followed by positive-pixel binarization",
+    "legacy temporal-window endpoints excluding the final frame",
+    "legacy crop upper bound size-minus-patch-minus-one"
+  ],
+  "retained_research_safeguards": [
+    "deterministic seeds 47,49,51",
+    "fixed official-train-derived 64/16 internal split",
+    "scratch-only initialization",
+    "fixed epoch-32 checkpoint",
+    "official test excluded from Stage1"
+  ]
+}

@@ -1,5 +1,12 @@
 # DeepPro 模型历次更新、当前框架与损失函数说明
 
+> **历史快照警告（2026-09-10）：** 本文冻结的是 2026-08-26 至 08-27 的 SatVideo
+> 比赛研发状态。文中把 FeedbackSTS、F1-OHEM、100 epoch、AMP、Proxy F1 和提交 ZIP
+> 写成“当前”的段落均已过时，不得作为现行命令执行。PointCenter、两套 NUDT 29 模型
+> 论文指标、比赛最终 91.30、BC-TPro 和当前 Pd/Fa/AUC 协议请以
+> [`EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md`](EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md)
+> 为准。
+
 > 文档日期：2026-08-26<br>
 > 适用仓库：`DeepPro-main` / `migration-2026-08-24`<br>
 > 当前研发约束：所有新训练必须从随机权重开始，禁止加载任何预训练初始化权重<br>

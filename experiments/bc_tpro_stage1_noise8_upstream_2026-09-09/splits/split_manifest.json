@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "method": "numpy.PCG64.choice_without_replacement",
+  "seed": 20260908,
+  "source_list": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT-Noise8.0_FJY/train.txt",
+  "source_entry_count": 8000,
+  "source_sequence_count": 80,
+  "train_list": "train_sequences.txt",
+  "train_sequence_count": 64,
+  "validation_list": "val_sequences.txt",
+  "validation_sequence_count": 16,
+  "official_test_list": "/home/user/4T_Storage/SJY/CSIG2026/datasets/NUDT-MIRSDT-Noise8.0_FJY/test.txt",
+  "official_test_sequence_count": 20,
+  "official_test_usage": "metadata-only isolation check; never train/evaluate"
+}

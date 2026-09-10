@@ -1,0 +1,94 @@
+{
+  "scope": "smoke_only_no_saved_weights",
+  "dataset_length": 614,
+  "batch_shape": [
+    4,
+    1,
+    40,
+    128,
+    128
+  ],
+  "physical_gpu": 0,
+  "runs": [
+    {
+      "variant": "center_multiscale",
+      "parameters": 71233,
+      "losses": [
+        0.9962804913520813,
+        0.9962062239646912
+      ],
+      "gradients": [
+        {
+          "fusion_l1": 0.0,
+          "projection_l1": 0.0009013620438054204
+        },
+        {
+          "fusion_l1": 4.453233486856334e-06,
+          "projection_l1": 0.0009075538255274296
+        }
+      ],
+      "peak_allocated_gib": 6.404226779937744,
+      "peak_reserved_gib": 7.369140625
+    },
+    {
+      "variant": "center_ring_difference",
+      "parameters": 71233,
+      "losses": [
+        0.9962804913520813,
+        0.9962062835693359
+      ],
+      "gradients": [
+        {
+          "fusion_l1": 0.0,
+          "projection_l1": 0.0008499448304064572
+        },
+        {
+          "fusion_l1": 4.207759957353119e-06,
+          "projection_l1": 0.0008551403880119324
+        }
+      ],
+      "peak_allocated_gib": 6.404226779937744,
+      "peak_reserved_gib": 7.4765625
+    },
+    {
+      "variant": "temporal_bandpass",
+      "parameters": 71233,
+      "losses": [
+        0.9962804913520813,
+        0.9962060451507568
+      ],
+      "gradients": [
+        {
+          "fusion_l1": 0.0,
+          "projection_l1": 0.0011318930191919208
+        },
+        {
+          "fusion_l1": 4.891871412837645e-06,
+          "projection_l1": 0.0011284493375569582
+        }
+      ],
+      "peak_allocated_gib": 6.404226779937744,
+      "peak_reserved_gib": 9.505859375
+    },
+    {
+      "variant": "center_spatial_smooth",
+      "parameters": 71233,
+      "losses": [
+        0.9962804913520813,
+        0.9962062835693359
+      ],
+      "gradients": [
+        {
+          "fusion_l1": 0.0,
+          "projection_l1": 0.0008575705578550696
+        },
+        {
+          "fusion_l1": 4.303031346353237e-06,
+          "projection_l1": 0.0008639658917672932
+        }
+      ],
+      "peak_allocated_gib": 6.404226779937744,
+      "peak_reserved_gib": 9.595703125
+    }
+  ]
+}

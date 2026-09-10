@@ -12,6 +12,7 @@ import csv
 import importlib
 import json
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -234,7 +235,7 @@ def load_verified_rows(experiment, reference_experiment, log_root):
     return add_comparisons(rows)
 
 
-def markdown_report(rows):
+def markdown_report(rows, report_root):
     lines = ['# BC-TPro 无门控结构实验结果', '', '## Material Passport', '',
              '- Origin workflow: academic-research-suite / experiment-agent / analyze',
              '- Verification: COMPLETED; ARTIFACTS_VERIFIED; SINGLE_SEED', '',
@@ -257,12 +258,37 @@ def markdown_report(rows):
                 row['label'], row[prefix + 'pd_pp'], row[prefix + 'fa_delta'],
                 '%+.6f' % (reduction * 100) if reduction is not None else '未定义',
                 row[prefix + 'auc_delta'], row[prefix + 'relation']))
+    c1_relations = {
+        row['label']: row['vs_c1_relation']
+        for row in rows if row['label'].startswith('NG')
+    }
+    dominated = [label for label, value in c1_relations.items()
+                 if value == 'dominated']
+    tradeoffs = [label for label, value in c1_relations.items()
+                 if value == 'tradeoff']
+    lines += ['', '## 结果判读', '']
+    if dominated:
+        lines.append('- 相对 C1 被三指标共同支配：%s。' % '、'.join(dominated))
+    if tradeoffs:
+        lines.append('- 相对 C1 存在指标取舍：%s。' % '、'.join(tradeoffs))
+    if not any(value == 'dominates' for value in c1_relations.values()):
+        lines.append('- 本轮没有新增结构在 Pd、Fa、AUC 三项上综合支配 C1。')
+    lines.append('- 单seed结果不用于宣称统计稳定性或唯一综合最优模型。')
     lines += ['', '## 协议与限制', ''] + ['- ' + note for note in PROTOCOL_NOTES]
     lines += ['', '## 原始证据', '']
     for row in rows:
-        lines.append('- %s：[指标](%s)、[checkpoint](%s)、[训练日志](%s)、[评测日志](%s)、[完成标记](%s)。' % (
-            row['label'], row['metrics_path'], row['checkpoint_path'], row['training_log'],
-            row['evaluation_log'], row['done_path']))
+        metrics_link = os.path.relpath(row['metrics_path'], start=report_root)
+        runtime_paths = []
+        for key in ('checkpoint_path', 'training_log', 'evaluation_log', 'done_path'):
+            path = Path(row[key]).resolve()
+            try:
+                runtime_paths.append(str(path.relative_to(REPO_ROOT)))
+            except ValueError:
+                runtime_paths.append(str(path))
+        lines.append(
+            '- %s：[指标](%s)；本地运行证据：`%s`、`%s`、`%s`、`%s`。'
+            % (row['label'], metrics_link, *runtime_paths)
+        )
     return '\n'.join(lines) + '\n'
 
 
@@ -342,7 +368,9 @@ def write_reports(rows, experiment, xlsx=False):
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
-    (experiment / 'RESULTS.md').write_text(markdown_report(rows), encoding='utf-8')
+    (experiment / 'RESULTS.md').write_text(
+        markdown_report(rows, experiment), encoding='utf-8'
+    )
     if xlsx:
         write_xlsx(rows, experiment / 'NG_EXPERIMENT_RESULTS_2026-09-10.xlsx')
 

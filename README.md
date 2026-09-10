@@ -8,35 +8,40 @@
 
 > [!NOTE]
 > The CSIG2026 submission stage is complete. The final scratch-only Hybrid-RMS
-> submission scored **91.30** (submission ID `907655`). Its checkpoint, exact
-> source snapshots, validated ZIP, threshold sweeps, environment, evidence,
-> and reproduction scripts are frozen in
+> submission scored **91.30** (submission ID `907655`). Its checkpoint, source
+> snapshots, threshold summaries, environment, and historical verification
+> evidence are retained in
 > [`release/2026-08-29_final_submission_score91.30_scratch/`](release/2026-08-29_final_submission_score91.30_scratch/README.md).
+> The submitted ZIP, trajectory TXT files, and their validation/hash files were
+> removed after the competition.
 
 ## Current Development Status
 
-The active task is a scratch-only comparison of every retained DeepPro model on
-NUDT-MIRSDT. It covers 9 standalone architectures and all 20 historical BRTD3
-structure variants. The completed SatVideoIRSDT competition work remains frozen
-under `release/` and is not mixed with the new training outputs.
+The active research line is an upstream-aligned, scratch-only BC-TPro study on
+`NUDT-MIRSDT-Noise8.0_FJY`. The seed-47 B1/C0/C1/C2 comparison and the three
+non-gated NG1/NG2/NG3 ablations are complete. Models are compared jointly using
+high Pd, low Fa, and high official 27-threshold Pd-Fa AUC; there is no scalar
+score or AUC-first ordering.
 
 | Item | Current setting |
 |---|---|
-| Active dataset | `datasets_v1/NUDT-MIRSDT` (stored beside this repository) |
-| Active comparison | 29 scratch-only model/structure runs, seed 49 |
-| Experiment definition | `experiments/nudt_mirsdt_all_models_2026-09-01/` |
-| Training protocol | 40 frames, global batch 4, 32 epochs, AMP network + FP32 loss |
-| Validation | Official `test.txt`, threshold 0.5, pixel IoU/P/R/F1 every 2 epochs |
+| Active dataset | `../datasets/NUDT-MIRSDT-Noise8.0_FJY` |
+| Upstream comparison | [B1/C0/C1/C2, seed 47](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md) ([Excel](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx)) |
+| Non-gated comparison | [NG1/NG2/NG3 results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) ([Excel](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)) |
+| Training protocol | T=40, global batch 4, 32 epochs, FP32, Soft-IoU, seed 47 |
+| Validation | Fixed internal-val16; Pd@0.5, Fa@0.5, official AUC27 |
 | Initialization | Random weights only; pretrained initialization is forbidden |
-| Training devices | Three independent queues on physical GPUs `0`, `1`, `2` |
-| Monitoring | SwanLab project `DeepPro-NUDT-MIRSDT` plus local logs |
+| Training devices | Independent single-GPU runs on physical GPUs `0`, `1`, `2` |
+| Current conclusion | C1 is the strongest overall trade-off; no new non-gated branch jointly exceeds it |
 | Completed competition release | Scratch Hybrid-RMS epoch 86, website score **91.30** |
 
 Start with these documents before running or changing an experiment:
 
-- [Model evolution, current architecture, and loss](docs/MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md)
-- [F1-maximization research and FeedbackSTS decision](docs/F1_MAXIMIZATION_RESEARCH_2026-08-27.md)
 - [Documentation index](docs/README.md)
+- [Current experiment handoff](docs/EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md)
+- [Upstream-aligned BC-TPro comparison](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md)
+- [Non-gated BC-TPro results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md)
+- [Model evolution history](docs/MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md)
 - [Scratch-only model improvement record](docs/SCRATCH_MODEL_IMPROVEMENT_2026-08-25.md)
 - [Website result analysis](docs/WEBSITE_RESULTS_ANALYSIS_2026-08-25.md)
 - [Migration acceptance checklist](docs/MIGRATION_ACCEPTANCE_2026-08-25.md)
@@ -45,11 +50,13 @@ The principal implementation files are:
 
 ```text
 train.py                                      unified scratch-only DDP training
-test.py                                       AMP/chunked probability export
+test.py                                       FP32/chunked probability export and Pd/Fa/AUC
+networks/models/DeepPro-Plus_BCTPro.py        current BC-TPro model family
+networks/layers/bc_tpro_adapter.py            current evidence/residual variants
 networks/losses/segmentation_losses.py        selectable segmentation losses
 tools/project_runtime_env.sh                  paths and GPU allowlist
-tools/run_nudt_mirsdt_all_models.sh            active three-GPU queue
-tools/summarize_nudt_mirsdt_results.py         comparable result aggregation
+tools/run_bc_tpro_nongate.py                  three-GPU non-gated experiment runner
+tools/analyze_bc_tpro_nongate.py              Pareto analysis and result export
 ```
 
 Generated experiments, probability images, SwanLab caches, and submission
@@ -81,6 +88,10 @@ root.
 ---
 
 ## Original DeepPro Project
+
+The section below preserves the upstream project description. Its “under peer
+review” sentence is historical; the paper is now published in IEEE TPAMI,
+DOI [`10.1109/TPAMI.2026.3683258`](https://doi.org/10.1109/TPAMI.2026.3683258).
 
 Pytorch implementation of our deep temporal probe network (DeepPro).&nbsp;[**[Paper]**](https://arxiv.org/pdf/2506.12766)
 
