@@ -1,11 +1,10 @@
 # 发布清单
 
-## 必需产物
+## 保留的核心产物
 
 - `checkpoint/epoch_86_model.pth`：最终 scratch checkpoint；
-- `artifacts/submit_hrms_scratch_epoch86_adaptive_thr0p16_highres0p96.zip`：最终提交；
-- `artifacts/TXT_SHA256SUMS`：ZIP 内 220 个 TXT 的内容哈希；
-- `SHA256SUMS`：本发布目录全部冻结文件的哈希。
+
+比赛提交 ZIP、轨迹 TXT 哈希、提交校验记录和发布哈希清单已于 2026-09-04 清理。
 
 ## 关键源码
 
@@ -25,7 +24,7 @@
 
 - `validation/hrms_epoch_86.json`：同一 checkpoint 的完整 AMP 阈值扫描；
 - `validation/highres.json`：10 个 1024×1024 标注序列专项阈值扫描；
-- `evidence/independent_audit.txt`：最终 ZIP 独立语义审计；
+- `evidence/independent_audit.txt`：最终 ZIP 的历史独立语义审计；
 - `evidence/provenance.txt`：模型、阈值、轨迹和内存优化来源；
 - `evidence/training.log`：完整 scratch 训练日志；
 - `evidence/scratch_training_evidence.txt`：随机初始化关键日志摘录。
