@@ -4,6 +4,7 @@ Date: Nov 2019
 """
 import argparse
 import inspect
+import json
 import os
 from data_utils.TestDataLoader import TestIRSeqDataLoader
 import torch
@@ -40,9 +41,13 @@ def parse_args():
     parser.add_argument('--gpu', type=str, default='0', help='specify gpu device')
     parser.add_argument('--seqlen', type=int, default=40, help='Frame number as an input [default: 100]')
     parser.add_argument('--datapath', type=str, default='./datasets/NUDT-MIRSDT', help='Data path')
+    parser.add_argument(
+        '--sequence_list', type=str, default=None,
+        help='Optional explicit sequence list; overrides the dataset split file.',
+    )
     parser.add_argument('--dataset', type=str, default='NUDT-MIRSDT', help='dataset name [default: NUDT-MIRSDT, IRDST-simulation, RGB-T, SatVideoIRSDT]')
     parser.add_argument('--split', choices=('val', 'test'), default='val',
-                        help='SatVideoIRSDT_v1 split to load [default: val]')
+                        help='Evaluation split; final annotated NUDT runs use test [default: val]')
     parser.add_argument('--sequence_start', type=int, default=0,
                         help='First sequence index to evaluate [default: 0]')
     parser.add_argument('--sequence_stop', type=int, default=None,
@@ -80,6 +85,12 @@ def parse_args():
     parser.add_argument('--overwrite_outputs', action='store_true', default=False,
                         help='Allow writing into non-empty visual/centroid directories')
     parser.add_argument('--threshold_eval', type=float, default=0.5, help='Threshold in evaluation [default: 0.5]')
+    parser.add_argument('--metrics_json', type=str, default=None,
+                        help='Optional machine-readable paper-metric output path')
+    parser.add_argument(
+        '--threshold_grid_step', type=float, default=0.0,
+        help='Add a dense probability-threshold grid with this step; 0 keeps the paper grid.',
+    )
     parser.add_argument('--attribution', action='store_true', default=False, help='This test is attribution analysis or not')
     return parser.parse_args()
 
@@ -190,6 +201,16 @@ def main(args):
         raise ValueError('prefetch_factor must be positive.')
     if args.eval_chunk_rows is not None and args.eval_chunk_rows < 0:
         raise ValueError('eval_chunk_rows must be non-negative.')
+    if args.threshold_grid_step < 0 or args.threshold_grid_step > 1:
+        raise ValueError('threshold_grid_step must be in [0, 1].')
+    if args.sequence_list == '':
+        args.sequence_list = None
+    if args.sequence_list is not None:
+        args.sequence_list = str(Path(args.sequence_list).expanduser().resolve())
+        if not Path(args.sequence_list).is_file():
+            raise FileNotFoundError(
+                'Sequence list does not exist: %s' % args.sequence_list
+            )
     if args.sequence_start < 0:
         raise ValueError('--sequence_start must be non-negative.')
     if args.sequence_stop is not None and args.sequence_stop <= args.sequence_start:
@@ -199,9 +220,15 @@ def main(args):
             '--output_only requires --visual and/or --centroid_txt.'
         )
     if args.split == 'test':
-        if args.dataset != 'SatVideoIRSDT_v1':
-            raise ValueError('--split test is only supported for SatVideoIRSDT_v1.')
-        if not args.output_only:
+        if (
+            args.dataset != 'SatVideoIRSDT_v1'
+            and 'NUDT-MIRSDT' not in args.dataset
+        ):
+            raise ValueError(
+                '--split test is supported only for SatVideoIRSDT_v1 and '
+                'annotated NUDT-MIRSDT datasets.'
+            )
+        if args.dataset == 'SatVideoIRSDT_v1' and not args.output_only:
             raise ValueError('--split test requires --output_only (no labels exist).')
     if args.attribution:
         raise NotImplementedError(
@@ -273,6 +300,7 @@ def main(args):
         transform=None,
         load_annotations=(not args.output_only or args.attribution),
         split=args.split,
+        sequence_list_file=args.sequence_list,
     )
     sequence_stop = (
         len(TEST_DATASET) if args.sequence_stop is None
@@ -330,6 +358,7 @@ def main(args):
         clean_model_state_dict(checkpoint['model_state_dict']),
         strict=True,
     )
+    checkpoint_epoch = int(checkpoint.get('epoch', -1)) + 1
     del checkpoint
     detector = detector.cuda().eval()
     torch.cuda.empty_cache()
@@ -347,8 +376,26 @@ def main(args):
         total_predicted_positive_mid = 0
         total_target_positive_mid = 0
 
-        Th_Seg = np.array([0, 1e-20, 1e-10, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.2, 0.3, .35, 0.4,
-                           .45, 0.5, .55, 0.6, .65, 0.7, 0.8, 0.85, 0.9, 0.95, 0.99, 1])
+        paper_thresholds = np.array([
+            0, 1e-20, 1e-10, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4,
+            1e-3, 1e-2, 1e-1, 0.2, 0.3, .35, 0.4, .45, 0.5,
+            .55, 0.6, .65, 0.7, 0.8, 0.85, 0.9, 0.95, 0.99, 1,
+        ], dtype=np.float64)
+        if args.threshold_grid_step > 0:
+            dense_thresholds = np.arange(
+                0.0,
+                1.0 + args.threshold_grid_step * 0.5,
+                args.threshold_grid_step,
+                dtype=np.float64,
+            )
+            # Decimal threshold grids such as 0.01 otherwise produce values
+            # like 0.35000000000000003, duplicating exact paper thresholds.
+            dense_thresholds = np.round(
+                np.clip(dense_thresholds, 0.0, 1.0), decimals=12
+            )
+            Th_Seg = np.unique(np.concatenate((paper_thresholds, dense_thresholds)))
+        else:
+            Th_Seg = paper_thresholds
         FalseNumAll = np.zeros([len(TEST_DATASET),len(Th_Seg)])
         TrueNumAll = np.zeros([len(TEST_DATASET),len(Th_Seg)])
         TgtNumAll = np.zeros([len(TEST_DATASET),len(Th_Seg)])
@@ -476,6 +523,11 @@ def main(args):
                             (expected_w, expected_h),
                         )[None, :, :]
                     if not args.output_only:
+                        if not np.isfinite(midpred_ti).all():
+                            raise FloatingPointError(
+                                'Non-finite prediction in %s frame %s; '
+                                'retry with FP32 (omit --amp).' % (seq_name, ti)
+                            )
                         false_numbers, true_numbers, target_numbers = (
                             evaluator.evaluate_thresholds(
                                 midpred_ti,
@@ -525,6 +577,12 @@ def main(args):
                 del seq_midpred_all
                 if not args.output_only:
                     del targets_all, centroids_all
+                if getattr(
+                    detector,
+                    'clear_validation_cache_each_sequence',
+                    False,
+                ):
+                    torch.cuda.empty_cache()
 
         if args.visual and args.visual_count > 0:
             for seq_name, png_name, visual_array in visual_reservoir:
@@ -553,12 +611,27 @@ def main(args):
         # print('FPS=%.3f' % (2000*1.2 / (time_end - time_start)))
         ############### log Pd&Fa results ###############
         if not args.output_only:
-            if 'NUDT-MIRSDT' in args.dataset:
-                writeNUDTMIRSDT_ROC(FalseNumAll, TrueNumAll, TgtNumAll, pixelsNumber, total_intersection_mid,
-                                    total_union_mid, Th_Seg, TEST_DATASET, log_string)
+            paper_indices = np.array([
+                int(np.flatnonzero(Th_Seg == threshold)[0])
+                for threshold in paper_thresholds
+            ], dtype=np.int64)
+            paper_false_counts = FalseNumAll[:, paper_indices]
+            paper_true_counts = TrueNumAll[:, paper_indices]
+            paper_target_counts = TgtNumAll[:, paper_indices]
+            if 'NUDT-MIRSDT' in args.dataset and args.sequence_list is None:
+                paper_metrics = writeNUDTMIRSDT_ROC(
+                    paper_false_counts, paper_true_counts,
+                    paper_target_counts, pixelsNumber,
+                    total_intersection_mid, total_union_mid, paper_thresholds,
+                    TEST_DATASET, log_string,
+                )
             else:
-                writeMIRST_ROC(FalseNumAll, TrueNumAll, TgtNumAll, pixelsNumber, total_intersection_mid,
-                               total_union_mid, Th_Seg, TEST_DATASET, log_string)
+                paper_metrics = writeMIRST_ROC(
+                    paper_false_counts, paper_true_counts,
+                    paper_target_counts, pixelsNumber,
+                    total_intersection_mid, total_union_mid, paper_thresholds,
+                    TEST_DATASET, log_string,
+                )
             pixel_precision = total_intersection_mid / max(
                 total_predicted_positive_mid, 1
             )
@@ -569,9 +642,78 @@ def main(args):
                 total_predicted_positive_mid + total_target_positive_mid,
                 1,
             )
+            if 'NUDT-MIRSDT' in args.dataset:
+                log_string(
+                    'Legacy pixel diagnostics below are not NUDT paper '
+                    'detection metrics and are ignored by active selectors.'
+                )
             log_string('Eval pixel precision: %f' % pixel_precision)
             log_string('Eval pixel recall: %f' % pixel_recall)
             log_string('Eval pixel F1: %f' % pixel_f1)
+            if args.metrics_json:
+                dense_pd = np.divide(
+                    TrueNumAll.sum(axis=0),
+                    TgtNumAll.sum(axis=0),
+                    out=np.zeros(Th_Seg.size, dtype=np.float64),
+                    where=TgtNumAll.sum(axis=0) != 0,
+                )
+                dense_fa = np.divide(
+                    FalseNumAll.sum(axis=0),
+                    pixelsNumber.sum(),
+                    out=np.zeros(Th_Seg.size, dtype=np.float64),
+                    where=pixelsNumber.sum() != 0,
+                )
+                paper_metrics['all']['auc_dense_grid'] = float(abs(np.trapz(
+                    dense_pd, dense_fa
+                )))
+                paper_metrics['paper_thresholds'] = paper_thresholds.tolist()
+                paper_metrics.update({
+                    'schema_version': 2,
+                    'inference_amp': bool(args.amp),
+                    'dataset': args.dataset,
+                    'model': model_name,
+                    'checkpoint': str(checkpoint_path),
+                    'checkpoint_epoch': checkpoint_epoch,
+                    'sequence_length': int(args.seqlen),
+                    'sequence_count': len(sequence_names),
+                    'evaluation_windows': int(num_batches),
+                    'elapsed_seconds': float(time_end - time_start),
+                    'cuda_peak_allocated_gib': float(
+                        torch.cuda.max_memory_allocated() / (1024 ** 3)
+                    ),
+                    'cuda_peak_reserved_gib': float(
+                        torch.cuda.max_memory_reserved() / (1024 ** 3)
+                    ),
+                    'parameters_m': float(
+                        sum(parameter.numel() for parameter in detector.parameters())
+                        / 1e6
+                    ),
+                    'pixel_iou_at_0_5': float(
+                        total_intersection_mid / max(total_union_mid, 1)
+                    ),
+                    'pixel_precision_at_0_5': float(pixel_precision),
+                    'pixel_recall_at_0_5': float(pixel_recall),
+                    'pixel_f1_at_0_5': float(pixel_f1),
+                    'curve_counts': {
+                        'thresholds': Th_Seg.tolist(),
+                        'sequence_names': list(sequence_names),
+                        'false_pixels_by_sequence': FalseNumAll.tolist(),
+                        'true_targets_by_sequence': TrueNumAll.tolist(),
+                        'total_targets_by_sequence': TgtNumAll.tolist(),
+                        'pixel_count_by_sequence': pixelsNumber.tolist(),
+                    },
+                })
+                metrics_path = Path(args.metrics_json).expanduser().resolve()
+                metrics_path.parent.mkdir(parents=True, exist_ok=True)
+                temporary_path = metrics_path.with_suffix(
+                    metrics_path.suffix + '.tmp'
+                )
+                temporary_path.write_text(
+                    json.dumps(paper_metrics, indent=2, sort_keys=True) + '\n',
+                    encoding='utf-8',
+                )
+                temporary_path.replace(metrics_path)
+                log_string('Paper-aligned metrics saved to %s.' % metrics_path)
 
         if args.profile_flops:
             try:

@@ -26,9 +26,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-requirements.txt
-!examples/**/requirements.txt
-setup.py
 ultralytics.egg-info
 
 # PyInstaller
@@ -194,15 +191,12 @@ calibration_*.npy
 *.bmp
 *.tiff
 *.gif
-*.svg
 *.webp
 *.heic
 *.ico
 *.raw
-*.json
 *.pth
 *.zip
-*.txt
 
 # DeepPro runtime and experiment artifacts
 /log/

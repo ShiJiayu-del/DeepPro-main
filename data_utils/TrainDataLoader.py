@@ -12,6 +12,7 @@ from data_utils.loader_utils import (
     SATVIDEO_V1_TRAIN_MEAN,
     SATVIDEO_V1_TRAIN_STD,
     discover_split_sequences,
+    read_sequence_names,
     validate_frame_pairs,
 )
 
@@ -96,6 +97,7 @@ class TrainSeqDataLoader(Dataset):
         transform=None,
         return_center_heatmaps=False,
         center_sigma=1.25,
+        upstream_compat=False,
     ):
         if not samplelist:
             raise ValueError('Training sample list must not be empty.')
@@ -108,6 +110,11 @@ class TrainSeqDataLoader(Dataset):
         self.sample_rate = sample_rate
         self.patch_size = patch_size
         self.transform = transform
+        self.upstream_compat = bool(upstream_compat)
+        if self.upstream_compat and 'NUDT-MIRSDT' not in dataset:
+            raise ValueError(
+                'upstream_compat is only defined for NUDT-MIRSDT datasets.'
+            )
         self.return_center_heatmaps = bool(return_center_heatmaps)
         self.center_sigma = float(center_sigma)
         if self.center_sigma <= 0.0:
@@ -151,9 +158,15 @@ class TrainSeqDataLoader(Dataset):
 
         with Image.open(label_path) as label_file:
             if 'NUDT-MIRSDT' in self.dataset:
-                label_file = label_file.resize(
-                    [256, 256], resample=NEAREST_RESAMPLE
-                )
+                if self.upstream_compat:
+                    # Match TinaLRJ/DeepPro commit 8fa1a68 exactly: Pillow's
+                    # default resize filter is used before every positive
+                    # interpolated mask value is binarized below.
+                    label_file = label_file.resize([256, 256])
+                else:
+                    label_file = label_file.resize(
+                        [256, 256], resample=NEAREST_RESAMPLE
+                    )
             elif self.dataset == 'IRSatVideo-LEO':
                 label_file = label_file.resize(
                     [512, 512], resample=NEAREST_RESAMPLE
@@ -231,15 +244,25 @@ class TrainSeqDataLoader(Dataset):
             props = measure.regionprops(labelimage, cache=True)     #测量标记连通区域的属性
             prob = random.uniform(0,1)
             shake_range = int(self.patch_size / 2 / 3)
+            maximum_row_start = h - self.patch_size
+            maximum_column_start = w - self.patch_size
+            if self.upstream_compat:
+                maximum_row_start -= 1
+                maximum_column_start -= 1
+                if maximum_row_start < 0 or maximum_column_start < 0:
+                    raise ValueError(
+                        'upstream_compat requires patch_size to be smaller '
+                        'than both resized image dimensions.'
+                    )
             if len(props) > 0 and prob < 0.75:
                 tar_idx = torch.randint(0, len(props), [1])[0]
                 r0 = int(props[tar_idx].centroid[0] + (torch.rand(1)-0.5) * 2 * shake_range - self.patch_size / 2)
                 c0 = int(props[tar_idx].centroid[1] + (torch.rand(1)-0.5) * 2 * shake_range - self.patch_size / 2)
-                r0 = min(max(r0, 0), h-self.patch_size)
-                c0 = min(max(c0, 0), w-self.patch_size)
+                r0 = min(max(r0, 0), maximum_row_start)
+                c0 = min(max(c0, 0), maximum_column_start)
             else:
-                r0 = int(torch.randint(0, h - self.patch_size + 1, [1])[0])
-                c0 = int(torch.randint(0, w - self.patch_size + 1, [1])[0])
+                r0 = int(torch.randint(0, maximum_row_start + 1, [1])[0])
+                c0 = int(torch.randint(0, maximum_column_start + 1, [1])[0])
 
             images = images[:, :, r0:r0+self.patch_size, c0:c0+self.patch_size]
             labels = labels[:, r0:r0+self.patch_size, c0:c0+self.patch_size]
@@ -327,23 +350,47 @@ class TrainIRSeqDataLoader(TrainSeqDataLoader):
         transform=None,
         return_center_heatmaps=False,
         center_sigma=1.25,
+        sequence_list_file=None,
+        upstream_compat=False,
     ):
+        if upstream_compat and 'NUDT-MIRSDT' not in dataset:
+            raise ValueError(
+                'upstream_compat is only defined for NUDT-MIRSDT datasets.'
+            )
         if dataset == SATVIDEO_V1_DATASET:
-            self.seq_list_file = None
-            seq_names = discover_split_sequences(data_root, 'train')
+            default_list_file = None
+            sequence_root = os.path.join(data_root, 'train')
         elif 'NUDT-MIRSDT' in dataset or dataset == 'RGB-T' or dataset == 'SatVideoIRSDT':
-            self.seq_list_file = os.path.join(data_root, 'train.txt')
+            default_list_file = os.path.join(data_root, 'train.txt')
+            if dataset == 'RGB-T':
+                sequence_root = os.path.join(data_root, 'train2017')
+            elif dataset == 'SatVideoIRSDT':
+                sequence_root = os.path.join(data_root, 'train')
+            else:
+                sequence_root = data_root
         elif dataset == 'IRDST-simulation':
-            self.seq_list_file = os.path.join(data_root, 'img_idx/train_IRDST-simulation.txt')
+            default_list_file = os.path.join(
+                data_root, 'img_idx/train_IRDST-simulation.txt'
+            )
+            sequence_root = os.path.join(data_root, 'images')
         elif dataset == 'IRSatVideo-LEO':
-            self.seq_list_file = os.path.join(data_root, 'annotations/train_sequences.txt')
+            default_list_file = os.path.join(
+                data_root, 'annotations/train_sequences.txt'
+            )
+            sequence_root = os.path.join(data_root, 'images')
         else:
             raise ValueError('Unsupported training dataset: %s' % dataset)
-        if self.seq_list_file is not None:
-            self._check_preprocess()
-            seq_names = list(dict.fromkeys([
-                x.split('/')[0] for x in self.ann_f
-            ]))
+        self.seq_list_file = (
+            os.fspath(sequence_list_file)
+            if sequence_list_file is not None else default_list_file
+        )
+        if self.seq_list_file is None:
+            seq_names = discover_split_sequences(data_root, 'train')
+        else:
+            seq_names = read_sequence_names(
+                self.seq_list_file,
+                sequence_root,
+            )
 
         samplelist = []
         sample_p = []
@@ -382,8 +429,14 @@ class TrainIRSeqDataLoader(TrainSeqDataLoader):
                 ),
             )
 
-            first_window_end = max(1, int(seq_len * 0.1))
-            for window_end in range(first_window_end, len(images) + 1):
+            first_window_end = (
+                int(seq_len * 0.1)
+                if upstream_compat else max(1, int(seq_len * 0.1))
+            )
+            final_window_end = (
+                len(images) if upstream_compat else len(images) + 1
+            )
+            for window_end in range(first_window_end, final_window_end):
                 window_start = max(0, window_end - seq_len)
                 if dataset == SATVIDEO_V1_DATASET:
                     sample = LazySequenceWindow(
@@ -420,12 +473,5 @@ class TrainIRSeqDataLoader(TrainSeqDataLoader):
             transform,
             return_center_heatmaps=return_center_heatmaps,
             center_sigma=center_sigma,
+            upstream_compat=upstream_compat,
         )
-
-    def _check_preprocess(self):
-        if not os.path.isfile(self.seq_list_file):
-            raise FileNotFoundError('No such file: %s.' % self.seq_list_file)
-        self.ann_f = np.atleast_1d(
-            np.loadtxt(self.seq_list_file, dtype=bytes).astype(str)
-        )
-        return True

@@ -65,6 +65,58 @@ def get_nudt_mirsdt_snr_indices(sequence_names):
     return low_snr, high_snr
 
 
+def _threshold_index(thresholds, operating_threshold):
+    matches = np.flatnonzero(np.isclose(thresholds, operating_threshold))
+    if matches.size != 1:
+        raise ValueError(
+            'Operating threshold %.6f is absent or duplicated.'
+            % operating_threshold
+        )
+    return int(matches[0])
+
+
+def _roc_summary(false_counts, true_counts, target_counts, pixel_count,
+                 thresholds, operating_threshold):
+    pd_curve = _safe_divide(np.sum(true_counts, axis=0), np.sum(target_counts, axis=0))
+    fa_curve = _safe_divide(np.sum(false_counts, axis=0), pixel_count)
+    threshold_index = _threshold_index(thresholds, operating_threshold)
+    return {
+        'pd': float(pd_curve[threshold_index]),
+        'pd_percent': float(pd_curve[threshold_index] * 100.0),
+        'fa': float(fa_curve[threshold_index]),
+        'fa_x1e5': float(fa_curve[threshold_index] * 1e5),
+        'auc': float(auc(fa_curve, pd_curve)),
+        'true_targets': int(np.sum(true_counts[:, threshold_index])),
+        'total_targets': int(np.sum(target_counts[:, threshold_index])),
+        'false_pixels': int(np.sum(false_counts[:, threshold_index])),
+        'pixel_count': int(pixel_count),
+    }
+
+
+def summarize_nudt_mirsdt_roc(FalseNumAll, TrueNumAll, TgtNumAll,
+                              pixelsNumber, Th_Seg, sequence_names,
+                              operating_threshold=0.5):
+    """Return the Pd/Fa/AUC protocol used by the DeepPro-Plus paper."""
+    low_snr, high_snr = get_nudt_mirsdt_snr_indices(sequence_names)
+    return {
+        'operating_threshold': float(operating_threshold),
+        'low_snr': _roc_summary(
+            FalseNumAll[low_snr, :], TrueNumAll[low_snr, :],
+            TgtNumAll[low_snr, :], pixelsNumber[low_snr].sum(),
+            Th_Seg, operating_threshold,
+        ),
+        'high_snr': _roc_summary(
+            FalseNumAll[high_snr, :], TrueNumAll[high_snr, :],
+            TgtNumAll[high_snr, :], pixelsNumber[high_snr].sum(),
+            Th_Seg, operating_threshold,
+        ),
+        'all': _roc_summary(
+            FalseNumAll, TrueNumAll, TgtNumAll, pixelsNumber.sum(),
+            Th_Seg, operating_threshold,
+        ),
+    }
+
+
 def writeNUDTMIRSDT_ROC(FalseNumAll, TrueNumAll, TgtNumAll, pixelsNumber, total_intersection_mid, total_union_mid,
                         Th_Seg, TEST_DATASET, log_string):
     low_snr, high_snr = get_nudt_mirsdt_snr_indices(TEST_DATASET.seq_names)
@@ -120,7 +172,14 @@ def writeNUDTMIRSDT_ROC(FalseNumAll, TrueNumAll, TgtNumAll, pixelsNumber, total_
     mIoU_mid = _safe_divide(total_intersection_mid, total_union_mid)
     log_string('Eval avg class IoU of prediction: %f' % (mIoU_mid))
 
-    return
+    return summarize_nudt_mirsdt_roc(
+        FalseNumAll,
+        TrueNumAll,
+        TgtNumAll,
+        pixelsNumber,
+        Th_Seg,
+        TEST_DATASET.seq_names,
+    )
 
 
 
@@ -147,5 +206,14 @@ def writeMIRST_ROC(FalseNumAll, TrueNumAll, TgtNumAll, pixelsNumber, total_inter
     mIoU_mid = _safe_divide(total_intersection_mid, total_union_mid)
     log_string('Eval avg class IoU of prediction: %f' % (mIoU_mid))
 
-    return
-
+    return {
+        'operating_threshold': 0.5,
+        'all': _roc_summary(
+            FalseNumAll,
+            TrueNumAll,
+            TgtNumAll,
+            pixelsNumber.sum(),
+            Th_Seg,
+            0.5,
+        ),
+    }

@@ -1,9 +1,53 @@
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 SATVIDEO_V1_DATASET = 'SatVideoIRSDT_v1'
 SATVIDEO_V1_TRAIN_MEAN = 82.20451526467026
 SATVIDEO_V1_TRAIN_STD = 50.753589902516666
+
+
+def read_sequence_names(sequence_list_file, sequence_root):
+    """Read unique sequence names from a sequence- or frame-level list."""
+    list_path = Path(sequence_list_file).expanduser().resolve()
+    if not list_path.is_file():
+        raise FileNotFoundError('No such sequence list: %s.' % list_path)
+
+    sequence_names = []
+    seen = set()
+    for line_number, raw_line in enumerate(
+        list_path.read_text(encoding='utf-8').splitlines(), start=1
+    ):
+        entry = raw_line.strip()
+        if not entry:
+            continue
+        normalized = entry.replace('\\', '/')
+        path = PurePosixPath(normalized)
+        if path.is_absolute() or '..' in path.parts:
+            raise ValueError(
+                'Sequence-list entries must be relative paths; %s line %d: %s'
+                % (list_path, line_number, entry)
+            )
+        parts = tuple(part for part in path.parts if part not in {'', '.'})
+        if not parts:
+            continue
+        sequence_name = parts[0]
+        if sequence_name not in seen:
+            seen.add(sequence_name)
+            sequence_names.append(sequence_name)
+
+    if not sequence_names:
+        raise ValueError('Sequence list is empty: %s.' % list_path)
+
+    root = Path(sequence_root).expanduser().resolve()
+    missing = [
+        name for name in sequence_names if not (root / name).is_dir()
+    ]
+    if missing:
+        raise FileNotFoundError(
+            'Sequence list %s references missing directories under %s: %s'
+            % (list_path, root, ', '.join(missing[:10]))
+        )
+    return sequence_names
 
 
 def discover_split_sequences(data_root, split):

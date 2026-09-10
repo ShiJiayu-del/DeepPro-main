@@ -132,6 +132,11 @@ class detector(nn.Module):
                  spatial_ckpt=None, st_ckpt=None, freeze_pretrained=False):
         super(detector, self).__init__()
         self.out_len = out_len
+        # Full 256x256 validation fits on a 24GB GPU, but the shifted-window
+        # attention allocator leaves large non-reusable cached blocks between
+        # sequences. Ask the shared evaluator to release only that cache while
+        # preserving full-frame numerical behavior.
+        self.clear_validation_cache_each_sequence = True
         # self.conv_in = nn.Sequential(SDifferenceConv(in_channels=1, out_channels=8, kernel_size=(5,7,7), stride=(1,1,1), padding=(2,3,3)),
         #                              nn.BatchNorm3d(8), nn.ReLU(inplace=True))
         # self.layer1 = nn.Sequential(STD_Resblock(8, 16), STD_Resblock(16, 32))

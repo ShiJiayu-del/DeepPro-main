@@ -12,6 +12,7 @@ from data_utils.TrainDataLoader import (
     TrainIRSeqDataLoader,
 )
 from data_utils.TestDataLoader import TestIRSeqDataLoader
+from data_utils.loader_utils import read_sequence_names
 from networks.losses import (
     LOSS_DESCRIPTIONS,
     LOSS_NAMES,
@@ -242,6 +243,11 @@ def evaluate_sequences(
     loss_count = 0
     validation_iterator = iter(validation_loader)
     previous_spatial_size = None
+    clear_cache_each_sequence = bool(getattr(
+        unwrap_model(detector),
+        'clear_validation_cache_each_sequence',
+        False,
+    ))
 
     with torch.inference_mode():
         for local_sequence_index, sequence_dataset in enumerate(tqdm(
@@ -250,6 +256,8 @@ def evaluate_sequences(
             smoothing=0.9,
             disable=not show_progress,
         )):
+            if clear_cache_each_sequence and local_sequence_index > 0:
+                torch.cuda.empty_cache()
             accumulator = SequenceAccumulator()
             for window_index in range(len(sequence_dataset)):
                 images, targets, _centroids, first_end = next(
@@ -335,6 +343,100 @@ def multiprocessing_loader_options(worker_count, prefetch_factor):
     return options
 
 
+def build_validation_data(args, runtime, root, sequence_length):
+    """Build in-process validation data, or return immediately when disabled."""
+    if args.skip_inprocess_validation:
+        return None, None, None
+
+    test_dataset = TestIRSeqDataLoader(
+        args.dataset,
+        data_root=root,
+        seq_len=sequence_length,
+        cat_len=int(sequence_length * 0.1),
+        transform=None,
+        sequence_list_file=args.val_sequence_list,
+    )
+    sequence_datasets = [
+        test_dataset[index]
+        for index in range(runtime.rank, len(test_dataset), runtime.world_size)
+    ]
+    if not sequence_datasets:
+        finalize_distributed(runtime)
+        raise RuntimeError('Validation shard contains no sequences.')
+    validation_loader = torch.utils.data.DataLoader(
+        ConcatDataset(sequence_datasets),
+        batch_size=1,
+        shuffle=False,
+        pin_memory=True,
+        **multiprocessing_loader_options(
+            args.val_workers,
+            args.prefetch_factor,
+        )
+    )
+    return test_dataset, sequence_datasets, validation_loader
+
+
+def snapshot_training_sources(experiment_dir, model_source, adapter_sources=()):
+    """Copy the executable source closure without overwriting changed files."""
+    source_root = Path(ROOT_DIR).resolve()
+    experiment_dir = Path(experiment_dir)
+    model_source = Path(model_source).resolve()
+    adapter_sources = tuple(Path(path).resolve() for path in adapter_sources)
+    loss_source = (
+        source_root / 'networks' / 'losses' / 'segmentation_losses.py'
+    )
+    fixed_relative_paths = (
+        'train.py',
+        'test.py',
+        'ShootingRules.py',
+        'write_results.py',
+        'data_utils/TrainDataLoader.py',
+        'data_utils/TestDataLoader.py',
+        'data_utils/loader_utils.py',
+        'networks/layers/basic.py',
+        'networks/layers/TPro.py',
+    )
+    nested_sources = [
+        *(source_root / relative_path for relative_path in fixed_relative_paths),
+        model_source,
+        loss_source,
+        *adapter_sources,
+    ]
+    copy_pairs = [
+        (model_source, experiment_dir / model_source.name),
+        (loss_source, experiment_dir / loss_source.name),
+        *(
+            (source, experiment_dir / source.name)
+            for source in adapter_sources
+        ),
+        *(
+            (
+                source,
+                experiment_dir / 'source_snapshot'
+                / source.relative_to(source_root),
+            )
+            for source in nested_sources
+        ),
+    ]
+
+    for source, destination in copy_pairs:
+        if not source.is_file():
+            raise FileNotFoundError('Snapshot source does not exist: %s' % source)
+        if destination.exists():
+            if not destination.is_file() or (
+                source.read_bytes() != destination.read_bytes()
+            ):
+                raise RuntimeError(
+                    'Existing source snapshot differs; refusing overwrite: %s'
+                    % destination
+                )
+
+    for source, destination in copy_pairs:
+        if not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+
+
 def binary_segmentation_metrics(
     true_positive,
     predicted_positive,
@@ -354,6 +456,22 @@ def binary_segmentation_metrics(
     return tuple(metrics.tolist())
 
 
+def filter_swanlab_metrics_for_protocol(metrics, upstream_compat=False):
+    """Exclude non-paper pixel diagnostics from upstream-compatible runs."""
+    filtered = dict(metrics)
+    if upstream_compat:
+        for key in (
+            'train/precision',
+            'train/recall',
+            'train/f1',
+            'eval/precision',
+            'eval/recall',
+            'eval/f1',
+        ):
+            filtered.pop(key, None)
+    return filtered
+
+
 def parse_args():
     parser = argparse.ArgumentParser('Model')
     parser.add_argument('--model', type=str, default='DeepPro-Plus', help='model name [default: pointnet_sem_seg]')
@@ -370,6 +488,14 @@ def parse_args():
     parser.add_argument('--gpu_num', type=int, default=1, help='GPU to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD [default: Adam]')
     parser.add_argument('--datapath', type=str, default='./datasets/NUDT-MIRSDT')
+    parser.add_argument(
+        '--train_sequence_list', type=str, default=None,
+        help='Optional explicit training-sequence list; overrides the dataset train split.',
+    )
+    parser.add_argument(
+        '--val_sequence_list', type=str, default=None,
+        help='Optional explicit validation-sequence list; overrides the dataset test split.',
+    )
     parser.add_argument('--dataset', type=str, default='NUDT-MIRSDT', help='dataset name [default: NUDT-MIRSDT, NUDT-MIRSDT-HiNo, '
                                             'RGB-T, SatVideoIRSDT, IRDST-simulation, IRSatVideo-LEO]')
     parser.add_argument('--log_dir', type=str, default=None, help='Log path [default: None]')
@@ -383,6 +509,14 @@ def parse_args():
     parser.add_argument(
         '--sequence_augmentation', type=int, default=0, choices=[0, 1],
         help='Enable spatial symmetry and temporal reversal augmentation.',
+    )
+    parser.add_argument(
+        '--upstream_compat', type=int, default=0, choices=[0, 1],
+        help=(
+            'Reproduce TinaLRJ/DeepPro commit 8fa1a68 NUDT training-loader '
+            'semantics (default Pillow mask resize, terminal-frame exclusion, '
+            'and legacy crop bounds). Default 0 preserves current behavior.'
+        ),
     )
     parser.add_argument(
         '--mask_padded_frames', type=int, default=0, choices=[0, 1],
@@ -408,9 +542,9 @@ def parse_args():
     parser.add_argument(
         '--early_stopping_metric',
         choices=['eval_f1', 'eval_iou', 'eval_loss'],
-        default='eval_f1',
+        default='eval_iou',
         help='Validation metric monitored by early stopping '
-             '[default: eval_f1].',
+             '[default: eval_iou].',
     )
     parser.add_argument(
         '--loss',
@@ -505,6 +639,14 @@ def parse_args():
         '--eval_interval', type=int, default=1,
         help='Run full validation every N epochs and always on the final epoch.',
     )
+    parser.add_argument(
+        '--skip_inprocess_validation', type=int, default=0, choices=[0, 1],
+        help=(
+            'Skip full-resolution validation inside the long-lived training '
+            'CUDA process. Use only with fixed-epoch training followed by a '
+            'fresh external test.py evaluation.'
+        ),
+    )
     parser.add_argument('--seed', type=int, default=46)
     parser.add_argument('--deterministic', type=int, default=0, choices=[0, 1],
                         help='Use deterministic cuDNN kernels (may reduce speed)')
@@ -543,8 +685,11 @@ def parse_args():
             'lfp_shallow', 'lfp_deep',
             'global_align', 'local_align', 'multiscale_head',
             'bidirectional', 'tdc_dual_stream',
+            'none', 'temporal_control', 'center_multiscale', 'center_ring',
+            'center_ring_difference', 'temporal_bandpass',
+            'center_spatial_smooth',
         ],
-        help='Structural adapter used by DeepPro-Plus_BRTD3.',
+        help='Structural adapter used by DeepPro-Plus_BRTD3/BCTPro.',
     )
     parser.add_argument(
         '--structure_bottleneck_channels', type=int, default=8,
@@ -576,6 +721,40 @@ def main(args):
             'Scratch-only policy forbids pretrained initialization: %s'
             % requested_pretrained
         )
+    args.datapath = str(Path(args.datapath).expanduser().resolve())
+    if bool(args.train_sequence_list) != bool(args.val_sequence_list):
+        raise ValueError(
+            '--train_sequence_list and --val_sequence_list must be supplied together.'
+        )
+    if args.train_sequence_list and args.val_sequence_list:
+        args.train_sequence_list = str(
+            Path(args.train_sequence_list).expanduser().resolve()
+        )
+        args.val_sequence_list = str(
+            Path(args.val_sequence_list).expanduser().resolve()
+        )
+        train_sequence_names = read_sequence_names(
+            args.train_sequence_list, args.datapath
+        )
+        val_sequence_names = read_sequence_names(
+            args.val_sequence_list, args.datapath
+        )
+        overlap = sorted(set(train_sequence_names) & set(val_sequence_names))
+        if overlap:
+            raise ValueError(
+                'Training and validation sequence lists overlap: %s'
+                % ', '.join(overlap[:10])
+            )
+        if 'NUDT-MIRSDT' in args.dataset:
+            official_train = set(read_sequence_names(
+                Path(args.datapath) / 'train.txt', args.datapath
+            ))
+            selected = set(train_sequence_names) | set(val_sequence_names)
+            if selected != official_train:
+                raise ValueError(
+                    'Explicit NUDT train/validation lists must partition exactly '
+                    'the official train.txt sequences.'
+                )
     if args.train_workers < 0 or args.val_workers < 0:
         raise ValueError('DataLoader worker counts must be non-negative.')
     if args.prefetch_factor <= 0:
@@ -593,6 +772,14 @@ def main(args):
         raise ValueError('eval_chunk_rows must be non-negative.')
     if args.eval_interval <= 0:
         raise ValueError('eval_interval must be positive.')
+    if args.skip_inprocess_validation and args.early_stopping_patience > 0:
+        raise ValueError(
+            '--skip_inprocess_validation is incompatible with early stopping.'
+        )
+    if args.upstream_compat and 'NUDT-MIRSDT' not in args.dataset:
+        raise ValueError(
+            '--upstream_compat is only supported for NUDT-MIRSDT datasets.'
+        )
     if args.early_stopping_patience < 0:
         raise ValueError('early_stopping_patience must be non-negative.')
     if args.early_stopping_min_delta < 0:
@@ -776,7 +963,6 @@ def main(args):
                 % error
             ) from error
 
-    args.datapath = str(Path(args.datapath).expanduser().resolve())
     root = args.datapath
     NUM_CLASSES = 1
     SEQ_LEN = args.seqlen
@@ -800,6 +986,8 @@ def main(args):
         transform=train_transform,
         return_center_heatmaps=(args.loss == 'center_consistency_f1'),
         center_sigma=args.point_center_sigma,
+        sequence_list_file=args.train_sequence_list,
+        upstream_compat=bool(args.upstream_compat),
     )
     train_sampler = None
     if runtime.distributed:
@@ -835,39 +1023,33 @@ def main(args):
             'reduce --batch_size.'
         )
 
-    TEST_DATASET = None
-    sequence_datasets = None
-    validationDataLoader = None
-    if runtime.is_main:
+    if not args.skip_inprocess_validation and runtime.is_main:
         log_string("start loading validation data ...")
-    TEST_DATASET = TestIRSeqDataLoader(
-        args.dataset,
-        data_root=root,
-        seq_len=SEQ_LEN,
-        cat_len=int(SEQ_LEN * 0.1),
-        transform=None,
-    )
-    sequence_datasets = [
-        TEST_DATASET[index]
-        for index in range(runtime.rank, len(TEST_DATASET), runtime.world_size)
-    ]
-    if not sequence_datasets:
-        finalize_distributed(runtime)
-        raise RuntimeError('Validation shard contains no sequences.')
-    validationDataLoader = torch.utils.data.DataLoader(
-        ConcatDataset(sequence_datasets),
-        batch_size=1,
-        shuffle=False,
-        pin_memory=True,
-        **multiprocessing_loader_options(
-            args.val_workers,
-            args.prefetch_factor,
-        )
+    TEST_DATASET, sequence_datasets, validationDataLoader = (
+        build_validation_data(args, runtime, root, SEQ_LEN)
     )
 
     log_string("The number of training data is: %d" % len(TRAIN_DATASET))
     if runtime.is_main:
-        log_string("The number of test data is: %d sequences" % len(TEST_DATASET))
+        if TEST_DATASET is None:
+            log_string(
+                'In-process validation disabled; validation dataset was not '
+                'constructed.'
+            )
+        else:
+            log_string(
+                "The number of test data is: %d sequences" % len(TEST_DATASET)
+            )
+        if args.train_sequence_list:
+            log_string(
+                'Explicit sequence split: train=%d, validation=%d; train=%s; val=%s'
+                % (
+                    len(train_sequence_names),
+                    len(val_sequence_names),
+                    args.train_sequence_list,
+                    args.val_sequence_list,
+                )
+            )
         log_string(
             "DDP world_size=%d, global_batch=%d, per_rank_batch=%d; "
             "gradient_accumulation=%d, effective_batch=%d; "
@@ -894,31 +1076,32 @@ def main(args):
         finalize_distributed(runtime)
         raise ValueError('Unknown or unsafe model name: %s' % args.model)
     MODEL = importlib.import_module(args.model)
+    adapter_filenames = {
+        'DeepPro-Plus_BRTD': ('brtd_adapter.py',),
+        'DeepPro-Plus_BRTD2': ('brtd_v2_adapter.py',),
+        'DeepPro-Plus_BRTD3': ('structure_adapters.py',),
+        'DeepPro-Plus_BRTD3_PointCenter': ('structure_adapters.py',),
+        'DeepPro-FeedbackSTS': ('feedback_sts.py',),
+        'DeepPro-Plus_BCTPro': ('bc_tpro_adapter.py',),
+    }.get(args.model, ())
+    adapter_sources = tuple(
+        Path(ROOT_DIR) / 'networks' / 'layers' / adapter_filename
+        for adapter_filename in adapter_filenames
+    )
+    snapshot_error = None
     if runtime.is_main:
-        model_snapshot = experiment_dir / model_source.name
-        loss_source = (
-            Path(ROOT_DIR) / 'networks' / 'losses' / 'segmentation_losses.py'
-        )
-        loss_snapshot = experiment_dir / loss_source.name
-        if not model_snapshot.exists():
-            shutil.copy2(model_source, model_snapshot)
-        if not loss_snapshot.exists():
-            shutil.copy2(loss_source, loss_snapshot)
-        adapter_filenames = {
-            'DeepPro-Plus_BRTD': ('brtd_adapter.py',),
-            'DeepPro-Plus_BRTD2': ('brtd_v2_adapter.py',),
-            'DeepPro-Plus_BRTD3': ('structure_adapters.py',),
-            'DeepPro-Plus_BRTD3_PointCenter': ('structure_adapters.py',),
-            'DeepPro-FeedbackSTS': ('feedback_sts.py',),
-        }.get(args.model, ())
-        for adapter_filename in adapter_filenames:
-            adapter_source = (
-                Path(ROOT_DIR) / 'networks' / 'layers'
-                / adapter_filename
+        try:
+            snapshot_training_sources(
+                experiment_dir,
+                model_source,
+                adapter_sources=adapter_sources,
             )
-            adapter_snapshot = experiment_dir / adapter_source.name
-            if not adapter_snapshot.exists():
-                shutil.copy2(adapter_source, adapter_snapshot)
+        except Exception as error:
+            snapshot_error = '%s: %s' % (type(error).__name__, error)
+    snapshot_error = broadcast_object(snapshot_error, runtime)
+    if snapshot_error is not None:
+        finalize_distributed(runtime)
+        raise RuntimeError(snapshot_error)
     distributed_barrier(runtime)
 
     config = model_configuration(MODEL, args)
@@ -1402,6 +1585,11 @@ def main(args):
 
         log_string('Training mean loss: %f' % train_loss)
         log_string('Training accuracy (IoU) of prediction: %f' % train_iou)
+        if args.upstream_compat:
+            log_string(
+                'Training diagnostic only (not a paper detection metric): '
+                'pixel precision, recall and F1.'
+            )
         log_string('Training pixel precision: %f' % train_precision)
         log_string('Training pixel recall: %f' % train_recall)
         log_string('Training pixel F1: %f' % train_f1)
@@ -1423,11 +1611,20 @@ def main(args):
                 'train/loss_component/' + name: value
                 for name, value in component_means.items()
             })
-            swanlab_module.log(swanlab_metrics, step=epoch + 1)
+            swanlab_module.log(
+                filter_swanlab_metrics_for_protocol(
+                    swanlab_metrics,
+                    upstream_compat=bool(args.upstream_compat),
+                ),
+                step=epoch + 1,
+            )
 
         should_evaluate = (
-            (epoch + 1) % args.eval_interval == 0
-            or epoch + 1 == args.epoch
+            not args.skip_inprocess_validation
+            and (
+                (epoch + 1) % args.eval_interval == 0
+                or epoch + 1 == args.epoch
+            )
         )
         if not should_evaluate:
             distributed_barrier(runtime)
@@ -1444,12 +1641,28 @@ def main(args):
                 )
                 latest_path = checkpoints_dir / 'latest_model.pth'
                 atomic_torch_save(state, latest_path)
+                if epoch + 1 == args.epoch:
+                    epoch_path = checkpoints_dir / (
+                        'epoch_%d_model.pth' % (epoch + 1)
+                    )
+                    atomic_torch_save(state, epoch_path)
+                    log_string(
+                        'Saved fixed-final-epoch checkpoint at %s for '
+                        'external validation.' % epoch_path
+                    )
                 del state
-                log_string(
-                    'Skipped full validation at epoch %d '
-                    '(eval_interval=%d); saved recoverable checkpoint.'
-                    % (epoch + 1, args.eval_interval)
-                )
+                if args.skip_inprocess_validation:
+                    log_string(
+                        'Skipped in-process full validation at epoch %d; '
+                        'saved recoverable checkpoint for fresh-process '
+                        'evaluation.' % (epoch + 1)
+                    )
+                else:
+                    log_string(
+                        'Skipped full validation at epoch %d '
+                        '(eval_interval=%d); saved recoverable checkpoint.'
+                        % (epoch + 1, args.eval_interval)
+                    )
             distributed_barrier(runtime)
             release_cuda_memory('validation skip cleanup')
             continue
@@ -1491,6 +1704,11 @@ def main(args):
         if runtime.is_main:
             log_string('Eval mean loss: %f' % eval_loss)
             log_string('Eval avg class IoU of prediction: %f' % (mIoU_mid))
+            if args.upstream_compat:
+                log_string(
+                    'Validation diagnostic only (not a paper detection '
+                    'metric): pixel precision, recall and F1.'
+                )
             log_string('Eval pixel precision: %f' % eval_precision)
             log_string('Eval pixel recall: %f' % eval_recall)
             log_string('Eval pixel F1: %f' % eval_f1)
@@ -1587,7 +1805,11 @@ def main(args):
                         ),
                     })
                 swanlab_module.log(
-                    eval_swanlab_metrics, step=epoch + 1
+                    filter_swanlab_metrics_for_protocol(
+                        eval_swanlab_metrics,
+                        upstream_compat=bool(args.upstream_compat),
+                    ),
+                    step=epoch + 1,
                 )
             if stop_training:
                 log_string(
@@ -1663,6 +1885,11 @@ if __name__ == '__main__':
             '--eval_chunk_rows',
             str(args.eval_chunk_rows),
         ]
+        if args.val_sequence_list:
+            test_command.extend([
+                '--sequence_list',
+                args.val_sequence_list,
+            ])
         if args.eval_amp:
             test_command.append('--amp')
         subprocess.run(test_command, check=True, cwd=BASE_DIR)

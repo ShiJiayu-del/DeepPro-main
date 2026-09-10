@@ -10,6 +10,7 @@ from data_utils.loader_utils import (
     SATVIDEO_V1_TRAIN_MEAN,
     SATVIDEO_V1_TRAIN_STD,
     discover_split_sequences,
+    read_sequence_names,
     validate_frame_pairs,
 )
 
@@ -184,6 +185,7 @@ class TestIRSeqDataLoader(object):
         transform=None,
         load_annotations=True,
         split='val',
+        sequence_list_file=None,
     ):
         if seq_len <= 0:
             raise ValueError('seq_len must be positive.')
@@ -198,46 +200,76 @@ class TestIRSeqDataLoader(object):
         self.split = split
         if dataset == SATVIDEO_V1_DATASET:
             self.seq_list_file = None
-            if split == 'val':
-                self.seq_names = discover_split_sequences(data_root, split)
-            elif split == 'test':
-                if load_annotations:
-                    raise ValueError(
-                        'SatVideoIRSDT_v1 test split has no annotations.'
-                    )
-                image_root = os.path.join(data_root, split, 'img')
-                if not os.path.isdir(image_root):
-                    raise FileNotFoundError(
-                        'Test image directory does not exist: %s' % image_root
-                    )
-                self.seq_names = sorted(
-                    name for name in os.listdir(image_root)
-                    if os.path.isdir(os.path.join(image_root, name))
-                )
-                if not self.seq_names:
-                    raise ValueError(
-                        'No test sequences found in %s.' % image_root
-                    )
-            else:
+            if split not in {'val', 'test'}:
                 raise ValueError(
                     'SatVideoIRSDT_v1 split must be val or test, got: %s'
                     % split
                 )
+            if split == 'test' and load_annotations:
+                raise ValueError(
+                    'SatVideoIRSDT_v1 test split has no annotations.'
+                )
+            sequence_root = os.path.join(
+                data_root,
+                split,
+                'img' if split == 'test' else '',
+            )
+            if sequence_list_file is not None:
+                self.seq_list_file = os.fspath(sequence_list_file)
+                self.seq_names = read_sequence_names(
+                    self.seq_list_file,
+                    sequence_root,
+                )
+            elif split == 'val':
+                self.seq_names = discover_split_sequences(data_root, split)
+            else:
+                if not os.path.isdir(sequence_root):
+                    raise FileNotFoundError(
+                        'Test image directory does not exist: %s'
+                        % sequence_root
+                    )
+                self.seq_names = sorted(
+                    name for name in os.listdir(sequence_root)
+                    if os.path.isdir(os.path.join(sequence_root, name))
+                )
+                if not self.seq_names:
+                    raise ValueError(
+                        'No test sequences found in %s.' % sequence_root
+                    )
         elif 'NUDT-MIRSDT' in dataset or 'RGB-T' in dataset:
-            self.seq_list_file = os.path.join(data_root, 'test.txt')
+            if 'NUDT-MIRSDT' in dataset and split not in {'val', 'test'}:
+                raise ValueError(
+                    'NUDT-MIRSDT split must be val or test, got: %s' % split
+                )
+            default_list_file = os.path.join(data_root, 'test.txt')
+            sequence_root = (
+                os.path.join(data_root, 'test2017')
+                if 'RGB-T' in dataset else data_root
+            )
         elif dataset == 'IRDST-simulation':
-            self.seq_list_file = os.path.join(data_root, 'img_idx/test_IRDST-simulation.txt')
+            default_list_file = os.path.join(
+                data_root, 'img_idx/test_IRDST-simulation.txt'
+            )
+            sequence_root = os.path.join(data_root, 'images')
         elif dataset == 'SatVideoIRSDT':
-            self.seq_list_file = os.path.join(data_root, 'val.txt')
+            default_list_file = os.path.join(data_root, 'val.txt')
+            sequence_root = os.path.join(data_root, split)
         elif dataset == 'IRSatVideo-LEO':
-            self.seq_list_file = os.path.join(data_root, 'annotations/val_sequences.txt')
+            default_list_file = os.path.join(
+                data_root, 'annotations/val_sequences.txt'
+            )
+            sequence_root = os.path.join(data_root, 'images')
         else:
             raise ValueError('Unsupported test dataset: %s' % dataset)
-        if self.seq_list_file is not None:
-            self._check_preprocess()
-            self.seq_names = list(dict.fromkeys([
-                x.split('/')[0] for x in self.ann_f
-            ]))
+        if dataset != SATVIDEO_V1_DATASET:
+            self.seq_list_file = (
+                os.fspath(sequence_list_file)
+                if sequence_list_file is not None else default_list_file
+            )
+            self.seq_names = read_sequence_names(
+                self.seq_list_file,
+                sequence_root,
+            )
         # self.seq_names = list([str(self.ann_f)])
 
     def __len__(self):
@@ -365,11 +397,3 @@ class TestIRSeqDataLoader(object):
             self.transform,
             load_annotations=self.load_annotations,
         )
-
-    def _check_preprocess(self):
-        if not os.path.isfile(self.seq_list_file):
-            raise FileNotFoundError('No such file: %s.' % self.seq_list_file)
-        self.ann_f = np.atleast_1d(
-            np.loadtxt(self.seq_list_file, dtype=bytes).astype(str)
-        )
-        return True
