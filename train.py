@@ -197,6 +197,9 @@ def make_checkpoint_state(
         'checkpoint_selection': {
             'metric': 'eval_iou',
             'mode': 'max',
+            'overlap_policy': getattr(
+                args, 'validation_overlap_policy', 'official_window'
+            ),
             'best_value': float(best_iou),
             'best_epoch': int(best_epoch),
         },
@@ -273,8 +276,13 @@ def evaluate_sequences(
     epoch,
     show_progress,
     use_amp=False,
+    overlap_policy='official_window',
 ):
-    """Return local validation sums after overlap-aware stitching."""
+    """Return validation sums using official or stitched overlap semantics."""
+    if overlap_policy not in {'official_window', 'sequence_max'}:
+        raise ValueError(
+            'Unknown validation overlap policy: %s' % overlap_policy
+        )
     detector.eval()
     metric_counts = torch.zeros(3, dtype=torch.int64)
     loss_sum = 0.0
@@ -296,7 +304,11 @@ def evaluate_sequences(
         )):
             if clear_cache_each_sequence and local_sequence_index > 0:
                 torch.cuda.empty_cache()
-            accumulator = SequenceAccumulator()
+            accumulator = (
+                SequenceAccumulator()
+                if overlap_policy == 'sequence_max'
+                else None
+            )
             for window_index in range(len(sequence_dataset)):
                 images, targets, _centroids, first_end = next(
                     validation_iterator
@@ -318,12 +330,19 @@ def evaluate_sequences(
                     sequence_features, sequence_logits = detector(images)
                 del sequence_features
                 if sequence_logits.shape[-2:] != targets.shape[-2:]:
-                    sequence_logits = F.interpolate(
-                        sequence_logits,
-                        size=targets.shape[-2:],
-                        mode='bilinear',
-                        align_corners=False,
-                    )
+                    if overlap_policy == 'official_window':
+                        sequence_logits = F.interpolate(
+                            sequence_logits,
+                            size=targets.shape[-2:],
+                            mode='nearest',
+                        )
+                    else:
+                        sequence_logits = F.interpolate(
+                            sequence_logits,
+                            size=targets.shape[-2:],
+                            mode='bilinear',
+                            align_corners=False,
+                        )
                 valid_length = frame_range_length(first_end)
                 valid_logits = sequence_logits[:, :valid_length]
                 valid_targets = targets[:, :valid_length]
@@ -347,23 +366,37 @@ def evaluate_sequences(
                     )
                 loss_sum += float(window_loss.detach().cpu())
                 loss_count += 1
-                accumulator.add(
-                    torch.sigmoid(valid_logits.float()).cpu(),
-                    valid_targets.cpu(),
-                    first_end,
-                )
+                probabilities = torch.sigmoid(valid_logits.float()).cpu()
+                cpu_targets = valid_targets.cpu()
+                if overlap_policy == 'official_window':
+                    predicted = probabilities.gt(threshold)
+                    target = cpu_targets.gt(0)
+                    metric_counts[0] += torch.logical_and(
+                        predicted, target
+                    ).sum(dtype=torch.int64)
+                    metric_counts[1] += predicted.sum(dtype=torch.int64)
+                    metric_counts[2] += target.sum(dtype=torch.int64)
+                    del predicted, target
+                else:
+                    accumulator.add(
+                        probabilities,
+                        cpu_targets,
+                        first_end,
+                    )
+                del probabilities, cpu_targets
                 del window_loss
                 del sequence_logits, valid_logits, valid_targets, valid_images
                 del images, targets, _centroids
 
-            predicted = accumulator.predictions.gt(threshold)
-            target = accumulator.targets.gt(0)
-            metric_counts[0] += torch.logical_and(predicted, target).sum(
-                dtype=torch.int64
-            )
-            metric_counts[1] += predicted.sum(dtype=torch.int64)
-            metric_counts[2] += target.sum(dtype=torch.int64)
-            del accumulator, predicted, target
+            if accumulator is not None:
+                predicted = accumulator.predictions.gt(threshold)
+                target = accumulator.targets.gt(0)
+                metric_counts[0] += torch.logical_and(
+                    predicted, target
+                ).sum(dtype=torch.int64)
+                metric_counts[1] += predicted.sum(dtype=torch.int64)
+                metric_counts[2] += target.sum(dtype=torch.int64)
+                del accumulator, predicted, target
 
     if loss_count == 0:
         raise RuntimeError('Validation loader contains no windows.')
@@ -526,7 +559,7 @@ def parse_args():
         help='Accumulate this many physical batches before each optimizer step.',
     )
     parser.add_argument('--epoch', default=32, type=int, help='Epoch to run [default: 32]')
-    parser.add_argument('--learning_rate', default=0.005, type=float, help='Initial learning rate [default: 0.001]')
+    parser.add_argument('--learning_rate', default=0.001, type=float, help='Initial learning rate [default: 0.001]')
     parser.add_argument('--gpu', type=str, default='0', help='GPU to use [default: GPU 0]')
     parser.add_argument('--gpu_num', type=int, default=1, help='GPU to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD [default: Adam]')
@@ -691,6 +724,16 @@ def parse_args():
         help='Run full validation every N epochs and always on the final epoch.',
     )
     parser.add_argument(
+        '--validation_overlap_policy',
+        choices=['official_window', 'sequence_max'],
+        default='official_window',
+        help=(
+            'Aggregate validation IoU per window with repeated overlap frames '
+            '(official_window), or after max-stitching unique sequence frames '
+            '(sequence_max) [default: official_window].'
+        ),
+    )
+    parser.add_argument(
         '--skip_inprocess_validation', type=int, default=0, choices=[0, 1],
         help=(
             'Skip full-resolution validation inside the long-lived training '
@@ -795,6 +838,10 @@ def validate_bctpro_validation_schedule(args, environment=None):
         not bool(args.skip_inprocess_validation)
         and int(args.eval_interval) == 1
         and bool(getattr(args, 'validation_safe_cudnn', 0))
+        and getattr(
+            args, 'validation_overlap_policy', 'official_window'
+        ) == 'official_window'
+        and int(args.eval_chunk_rows) == 32
         and int(args.early_stopping_patience) == 0
         and args.early_stopping_metric == 'eval_iou'
         and not bool(args.run_test_after_train)
@@ -818,7 +865,10 @@ def validate_bctpro_validation_schedule(args, environment=None):
         'New NUDT BC-TPro runs with an explicit train/validation split must '
         'use '
         '--eval_interval 1, --skip_inprocess_validation 0, and '
-        '--validation_safe_cudnn 1, select by --early_stopping_metric '
+        '--validation_safe_cudnn 1, aggregate with '
+        '--validation_overlap_policy official_window on the verified '
+        'chunked path (--eval_chunk_rows 32), and select by '
+        '--early_stopping_metric '
         'eval_iou with early stopping disabled, and set '
         '--run_test_after_train 0. The legacy '
         'override only permits the exact frozen external-only schedule.'
@@ -1814,6 +1864,7 @@ def main(args):
                 epoch,
                 show_progress=runtime.is_main,
                 use_amp=bool(args.eval_amp),
+                overlap_policy=args.validation_overlap_policy,
             )
         )
         eval_loss_stats = torch.tensor(
@@ -1888,6 +1939,7 @@ def main(args):
                 'precision': float(eval_precision),
                 'recall': float(eval_recall),
                 'f1': float(eval_f1),
+                'overlap_policy': args.validation_overlap_policy,
             }
             state = make_checkpoint_state(
                 detector,

@@ -72,6 +72,24 @@ class BestValidationLauncherTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'registered seven-run design'):
             launcher.read_manifest(self.manifest)
 
+    def test_repository_protocol_locks_official_validation_semantics(self):
+        protocol_path = (
+            REPO_ROOT / 'experiments' / launcher.EXPERIMENT_NAME
+            / 'PROTOCOL.json'
+        )
+        payload = launcher.validate_protocol(protocol_path)
+        self.assertEqual(
+            payload['validation']['checkpoint_selection_metric'],
+            'official_window_micro_pixel_iou_at_0.5',
+        )
+        changed = dict(payload)
+        changed['validation'] = dict(payload['validation'])
+        changed['validation']['eval_chunk_rows'] = 0
+        local_protocol = self.runner.experiment / 'PROTOCOL.json'
+        local_protocol.write_text(json.dumps(changed), encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'eval_chunk_rows'):
+            launcher.validate_protocol(local_protocol)
+
     def test_dry_run_is_read_only_and_prints_correct_bestval_protocol(self):
         self.assertEqual(self.runner.environment['CSIG_ALLOWED_GPU_IDS'], '0,1,2')
         self.assertNotIn(
@@ -98,9 +116,11 @@ class BestValidationLauncherTests(unittest.TestCase):
                 '--batch_size': '4',
                 '--train_amp': '0',
                 '--eval_amp': '0',
+                '--eval_chunk_rows': '32',
                 '--eval_interval': '1',
                 '--skip_inprocess_validation': '0',
                 '--validation_safe_cudnn': '1',
+                '--validation_overlap_policy': 'official_window',
                 '--early_stopping_metric': 'eval_iou',
                 '--early_stopping_patience': '0',
                 '--run_test_after_train': '0',
@@ -120,6 +140,7 @@ class BestValidationLauncherTests(unittest.TestCase):
                 str(self.runner.run_dir(job) / 'source_snapshot/test.py'), evaluation
             )
             self.assertEqual(option(evaluation, '--gpu'), job['gpu'])
+            self.assertEqual(option(evaluation, '--eval_chunk_rows'), '32')
             self.assertEqual(
                 option(evaluation, '--sequence_list'),
                 str(self.runner.split('val_sequences.txt')),
@@ -147,7 +168,7 @@ class BestValidationLauncherTests(unittest.TestCase):
                 total['active'] -= 1
             return True
 
-        with mock.patch.object(
+        with mock.patch.object(self.runner, 'wait_for_gpu_idle'), mock.patch.object(
             launcher.legacy.Launcher,
             'run_job',
             autospec=True,
@@ -162,6 +183,18 @@ class BestValidationLauncherTests(unittest.TestCase):
             {path.name for path in self.runner.queue.glob('.gpu-*.lock')},
             {'.gpu-0.lock', '.gpu-1.lock', '.gpu-2.lock'},
         )
+
+    def test_busy_physical_gpu_waits_before_starting(self):
+        readings = iter((10812, 25))
+        with mock.patch.object(
+            self.runner,
+            'gpu_memory_used_mib',
+            side_effect=lambda _gpu: next(readings),
+        ), mock.patch.object(
+            self.runner.cancel, 'wait', return_value=False
+        ) as wait:
+            self.runner.wait_for_gpu_idle('1')
+        wait.assert_called_once_with(10.0)
 
     def create_valid_artifacts(self, job, best_epoch=19):
         run_dir = self.runner.run_dir(job)
@@ -192,11 +225,13 @@ class BestValidationLauncherTests(unittest.TestCase):
                 'checkpoint_selection': {
                     'metric': 'eval_iou',
                     'mode': 'max',
+                    'overlap_policy': 'official_window',
                     'best_value': 0.625,
                     'best_epoch': best_epoch,
                 },
                 'validation_metrics': {
                     'epoch': best_epoch,
+                    'overlap_policy': 'official_window',
                     'loss': 0.375,
                     'iou': 0.625,
                     'precision': 0.7,
@@ -244,7 +279,7 @@ class BestValidationLauncherTests(unittest.TestCase):
         checkpoint = torch.load(best_path, map_location='cpu', weights_only=True)
         checkpoint['checkpoint_selection']['metric'] = 'eval_f1'
         torch.save(checkpoint, best_path)
-        with self.assertRaisesRegex(ValueError, 'maximize eval_iou'):
+        with self.assertRaisesRegex(ValueError, 'official-window eval_iou'):
             self.runner.validate_artifacts(job)
 
     def test_artifacts_bind_detection_metrics_to_selected_best_epoch(self):

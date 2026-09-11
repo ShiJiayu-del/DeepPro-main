@@ -34,11 +34,19 @@ class Noise8ExactLogitEvaluatorTests(unittest.TestCase):
         expected_false = np.zeros(thresholds.size, dtype=np.int64)
         expected_true = np.zeros(thresholds.size, dtype=np.int64)
         for logits, target in zip(self.logits, self.targets):
-            false, true, _total = ShootingRules().evaluate_thresholds(
-                logits[None], target[None], thresholds,
+            peaks, false_values = exact.legacy.prepared_frame_events(
+                logits, target
             )
-            expected_false += false
-            expected_true += true
+            expected_false += np.count_nonzero(
+                false_values.astype(np.float64)[:, None]
+                >= thresholds[None, :],
+                axis=0,
+            )
+            expected_true += np.count_nonzero(
+                peaks.astype(np.float64)[:, None]
+                >= thresholds[None, :],
+                axis=0,
+            )
         np.testing.assert_array_equal(second.false_counts[:, 0], expected_false)
         np.testing.assert_array_equal(second.true_counts[:, 0], expected_true)
         endpoint = int(np.flatnonzero(thresholds == sentinel)[0])

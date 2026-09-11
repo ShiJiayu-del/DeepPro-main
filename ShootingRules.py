@@ -82,6 +82,9 @@ class ShootingRules(nn.Module):
         for i_batch in range(output.shape[0]):
             output_one = output[i_batch, :, :]
             target_one = target[i_batch, :, :]
+            comparison_thresholds = thresholds.astype(
+                output_one.dtype, copy=False
+            )
             target_coordinates, box2_map = self._prepare_target(target_one)
             target_numbers += len(target_coordinates)
             if np.isfinite(output_one).all():
@@ -111,7 +114,8 @@ class ShootingRules(nn.Module):
                             )
                 if target_peaks.size > 0:
                     true_numbers += np.count_nonzero(
-                        target_peaks[:, None] >= thresholds[None, :],
+                        target_peaks[:, None]
+                        >= comparison_thresholds[None, :],
                         axis=0,
                     )
 
@@ -120,7 +124,7 @@ class ShootingRules(nn.Module):
                 false_values = np.sort(output_one[box2_map].reshape(-1))
                 false_numbers += false_values.size - np.searchsorted(
                     false_values,
-                    thresholds,
+                    comparison_thresholds,
                     side='left',
                 )
             else:
@@ -148,4 +152,3 @@ class ShootingRules(nn.Module):
             int(true_numbers[0]),
             int(target_numbers[0]),
         )
-

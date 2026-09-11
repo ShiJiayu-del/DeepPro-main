@@ -20,7 +20,7 @@
 
 当前论文主线联合考虑 TinaLRJ/DeepPro 的 `Pd@0.5` 越高、`Fa@0.5` 越低与官方
 27 阈值 Pd-Fa AUC 越高，使用 Pareto 关系，不采用 AUC 优先或未登记的加权分数。
-训练 loss 仅用于优化诊断；micro pixel IoU@0.5 只用于同一次 run 内选择
+训练 loss 仅用于优化诊断；官方逐窗口累计的 micro pixel IoU@0.5 只用于同一次 run 内选择
 `best_model.pth`，不得用于不同网络结构的最终排序。旧脚本中的 F1 汇总不得用于 Noise8
 论文检测结论或模型选择。单 seed 无门控实验不生成候选锁。新训练/评测采用路径、清单、参数、
 checkpoint metadata 和整数计数做语义校验，不生成或要求文件哈希。
@@ -31,9 +31,12 @@ checkpoint metadata 和整数计数做语义校验，不生成或要求文件哈
 从 2026-09-11 起，凡是 NUDT-MIRSDT 系列上显式提供内部 train/val 划分的新
 BC-TPro 实验，launcher 必须
 显式传入 `--eval_interval 1 --skip_inprocess_validation 0
---validation_safe_cudnn 1 --early_stopping_patience 0 --run_test_after_train 0`。
-每个 epoch 对完整 internal-val16 验证；训练进程按 micro pixel IoU@0.5 最大化保存
-`best_model.pth`，精确平局时取较晚 epoch。训练仍运行满 32 epochs、不早停。随后 launcher
+--validation_safe_cudnn 1 --validation_overlap_policy official_window
+--eval_chunk_rows 32 --early_stopping_patience 0 --run_test_after_train 0`。
+每个 epoch 对完整 internal-val16 验证；训练进程按官方逐窗口累计的 micro pixel IoU@0.5
+最大化保存 `best_model.pth`，overlap 帧重复计权，精确平局时取较晚 epoch。验证与评测
+使用已验证稳定的 32 行分块路径；其与官方整图路径只有约 `1e-8` 浮点差。训练仍运行满
+32 epochs、不早停。随后 launcher
 独立运行一次不带 `--epoch` 的 `test.py`，默认加载 `best_model.pth` 并生成 Pd/Fa/AUC。
 七结构当前入口为 `tools/run_bc_tpro_bestval.py`，实验协议位于
 [`experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11`](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md)。

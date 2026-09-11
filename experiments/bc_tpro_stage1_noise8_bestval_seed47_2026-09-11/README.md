@@ -14,8 +14,11 @@
 C2、NG1、NG2、NG3。旧 Clean、AMP 和 seed49/51 结果不属于当前有效比较，不重复训练。
 
 固定训练设置：scratch-only、32 epochs、batch4、T=40、Soft-IoU、train64/internal-val16，
-每个 epoch 完整验证一次，关闭早停。`best_model.pth` 按 internal-val micro pixel IoU@0.5
-最大化保存；精确相等时保留较晚 epoch。该指标只负责同一次训练内的 checkpoint 选择。
+每个 epoch 完整验证一次，关闭早停。`best_model.pth` 按官方 `train.py` 的 internal-val
+逐窗口 micro pixel IoU@0.5 最大化保存；overlap 帧重复计权，精确相等时保留较晚 epoch。
+该指标只负责同一次训练内的 checkpoint 选择。验证与评测使用
+`eval_chunk_rows=32` 的行分块 TPro；它与官方整图输出仅有约 `1e-8` 浮点差，并避免本机
+高风险整图验证现场。
 checkpoint 同时记录 `checkpoint_selection`（指标、方向、最佳值、最佳 epoch）和当前
 `validation_metrics`，使后续评测能够核对实际加载的轮次。
 
@@ -29,7 +32,9 @@ checkpoint 同时记录 `checkpoint_selection`（指标、方向、最佳值、�
 - 划分：复用
   [`../bc_tpro_stage1_noise8_upstream_2026-09-09/splits`](../bc_tpro_stage1_noise8_upstream_2026-09-09/splits)；
 - 运行清单：[manifest.tsv](manifest.tsv)；机器协议：[PROTOCOL.json](PROTOCOL.json)；
+- 官方处理复核：[DeepPro 官方仓库处理对齐](../../docs/DEEPPRO_OFFICIAL_ALIGNMENT_2026-09-09.md)；
 - GPU：只使用物理卡 0、1、2，每卡同时最多一个训练；
+- 启动前检查实际显存占用；若某卡正在执行其他任务，对应作业保持排队而不抢占；
 - SwanLab：关闭，避免外部代理故障中断训练；本地日志与队列 marker 为权威证据；
 - 新日志与队列使用 `2026-09-11` 和本实验名，不覆盖任何历史 checkpoint、日志或指标；
 - 每轮 full-val 使用 `validation_safe_cudnn=1`，规避本机确定性全分辨率 cuDNN 路径的
@@ -37,11 +42,12 @@ checkpoint 同时记录 `checkpoint_selection`（指标、方向、最佳值、�
 
 ## 状态
 
-正式重跑已于 2026-09-11 10:55（Asia/Shanghai）启动。后台会话为
-`bc_tpro_bestval_20260911`；B1、C0、C1 首批分别在物理 GPU 0、1、2 运行，后续任务按
-manifest 和同卡互斥锁自动接续。权威实时状态位于
-`log/sem_seg/_queues/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/`。预计七个任务约
-2 小时完成；完成前不得把旧 epoch32 结果或本轮未完成结果写成当前结论。
+10:55 启动的预备重跑在官方处理复核中发现旧 stitched-validation 口径后主动停止，现场
+保存在 `log/sem_seg/_aborted_launches/2026-09-11_bestval_official_alignment_stop/`，其权重
+不得续训或进入结果。当前代码已改为官方逐窗口验证口径并通过三卡 smoke，等待本次对齐
+提交完成后从随机初始化重新启动。正式状态以
+`log/sem_seg/_queues/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/` 为准。完成前不得把
+旧 epoch32 结果或本轮未完成结果写成当前结论。
 
 启动前只读检查：
 

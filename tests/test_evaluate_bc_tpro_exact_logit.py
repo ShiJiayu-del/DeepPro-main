@@ -10,6 +10,19 @@ from tools import evaluate_bc_tpro_exact_logit as exact
 
 
 class ExactLogitEvaluatorTests(unittest.TestCase):
+    def test_shooting_rule_casts_threshold_like_official_scalar_comparison(self):
+        output = np.zeros((1, 10, 10), dtype=np.float32)
+        output[0, 5, 5] = np.float32(0.35)
+        target = np.zeros_like(output)
+        false_counts, true_counts, target_counts = (
+            ShootingRules().evaluate_thresholds(
+                output, target, np.asarray([0.35], dtype=np.float64)
+            )
+        )
+        self.assertEqual(false_counts.tolist(), [1])
+        self.assertEqual(true_counts.tolist(), [0])
+        self.assertEqual(target_counts.tolist(), [0])
+
     def test_target_peaks_and_counts_match_shooting_rules(self):
         logits = np.asarray([
             [-3.0, -2.0, -1.0, -4.0, -5.0],
@@ -139,14 +152,20 @@ class ExactLogitEvaluatorTests(unittest.TestCase):
         for sequence_index, (_name, logits, targets) in enumerate(stream):
             expected_false = np.zeros(thresholds.size, dtype=np.int64)
             expected_true = np.zeros(thresholds.size, dtype=np.int64)
-            expected_targets = np.zeros(thresholds.size, dtype=np.int64)
             for frame_logits, frame_target in zip(logits, targets):
-                false, true, total = ShootingRules().evaluate_thresholds(
-                    frame_logits[None], frame_target[None], thresholds,
+                peaks, false_values = exact.prepared_frame_events(
+                    frame_logits, frame_target
                 )
-                expected_false += false
-                expected_true += true
-                expected_targets += total
+                expected_false += np.count_nonzero(
+                    false_values.astype(np.float64)[:, None]
+                    >= thresholds[None, :],
+                    axis=0,
+                )
+                expected_true += np.count_nonzero(
+                    peaks.astype(np.float64)[:, None]
+                    >= thresholds[None, :],
+                    axis=0,
+                )
             np.testing.assert_array_equal(
                 pass_two.false_counts[:, sequence_index], expected_false,
             )
@@ -155,7 +174,10 @@ class ExactLogitEvaluatorTests(unittest.TestCase):
             )
             self.assertEqual(
                 int(pass_two.targets_by_sequence[sequence_index]),
-                int(expected_targets[0]),
+                sum(
+                    exact.prepared_frame_events(frame_logits, frame_target)[0].size
+                    for frame_logits, frame_target in zip(logits, targets)
+                ),
             )
         sentinel_index = int(np.flatnonzero(thresholds == sentinel)[0])
         self.assertEqual(int(pass_two.false_counts[sentinel_index].sum()), 0)

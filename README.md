@@ -32,7 +32,7 @@ protocol. Models are compared jointly using high Pd, low Fa, and high official
 | Historical upstream comparison | [B1/C0/C1/C2, seed 47](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md) ([Excel](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx)); superseded epoch-32 evidence |
 | Historical non-gated comparison | [NG1/NG2/NG3 results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) ([Excel](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)); superseded epoch-32 evidence |
 | Training protocol | T=40, global batch 4, 32 epochs, FP32, Soft-IoU, seed 47 |
-| Validation and checkpoint | Full internal-val16 after every epoch; maximize micro pixel IoU@0.5, later epoch wins exact ties; save `best_model.pth` |
+| Validation and checkpoint | Full internal-val16 after every epoch; maximize official per-window micro pixel IoU@0.5 with overlap frames repeated; save `best_model.pth` |
 | Post-training evaluation | Run `test.py` without `--epoch` on `best_model.pth`; report internal-val16 Pd@0.5, Fa@0.5, and AUC27 |
 | [New NUDT BC-TPro validation schedule](docs/VALIDATION_SCHEDULE_2026-09-11.md) | Corrected best-checkpoint protocol; old fixed epoch-32 runs are historical only |
 | Initialization | Random weights only; pretrained initialization is forbidden |

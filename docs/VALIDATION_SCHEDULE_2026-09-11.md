@@ -12,13 +12,16 @@
 --eval_interval 1
 --skip_inprocess_validation 0
 --validation_safe_cudnn 1
+--validation_overlap_policy official_window
+--eval_chunk_rows 32
 --early_stopping_metric eval_iou
 --early_stopping_patience 0
 --run_test_after_train 0
 ```
 
-训练进程在每个 epoch 结束后运行一次完整 internal-val16。`train.py` 以全部验证序列聚合的
-micro pixel IoU@0.5 为同一次训练内的 checkpoint 选择指标：IoU 变大时覆盖
+训练进程在每个 epoch 结束后运行一次完整 internal-val16。`train.py` 按官方 `train.py`
+逐滑窗累计 intersection/union：overlap 帧在每个窗口中重复计权，再计算 micro pixel
+IoU@0.5。该 IoU 是同一次训练内的 checkpoint 选择指标：IoU 变大时覆盖
 `best_model.pth`，精确相等时保留较晚 epoch。validation loss、pixel Precision、pixel
 Recall 和 pixel F1 只用于观察优化与过拟合趋势；pixel IoU 也只负责选择该 run 的最佳
 checkpoint，不能用来比较不同网络结构的最终优劣。
@@ -34,6 +37,12 @@ AUC 越高的三指标 Pareto 关系综合判断，不采用 AUC 优先或未登
 验证结束后恢复训练所用的 cuDNN 标志。它不会把内部像素级诊断变成论文检测指标，也不会
 改变固定训练轮数。未显式提供内部 train/val 清单时，BC-TPro 不允许开启进程内验证，
 以免 loader 默认读取 official test20。
+
+`validation_overlap_policy=official_window` 固定官方验证计分。旧 `sequence_max` 验证会先
+按测试阶段的 max 规则合并重叠帧，不等同于官方训练选 best 的口径，不能用于当前确认性
+重跑。`eval_chunk_rows=32` 保留数值等价的行分块安全路径：与官方整图输出只有约 `1e-8`
+浮点差。整图 smoke 期间物理 GPU1 被另一训练并发占用且新增 Xid 31，原因存在混杂；在
+没有干净现场证明其稳定前，正式长跑只使用已通过三卡验证的分块路径。
 
 当前纠正后的七结构重跑入口是
 [`experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11`](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md)
@@ -83,11 +92,11 @@ access，记录见 [CUDA incident](../experiments/bc_tpro_stage1_2026-09-08/CUDA
 SwanLab，以缩短训练时间；内部验证仍是未抽样的完整 val16、原始全分辨率输入。因此该
 验收覆盖逐 epoch 切换和完整验证显存路径，但不代表 32 epoch 正式训练耗时或数据加载负载。
 
-| 物理 GPU | 训练轮数 | 完整 val16 | 验证后 reserved memory | best checkpoint | 新增 Xid |
-|---:|---:|---:|---:|---|---|
-| 0 | 2 | 两轮均 16/16 | 两轮均 0.549 GiB | `best_model.pth` 已按 IoU 更新 | 无 |
-| 1 | 1 | 16/16 | 0.549 GiB | `best_model.pth` 已按 IoU 更新 | 无 |
-| 2 | 1 | 16/16 | 0.549 GiB | `best_model.pth` 已按 IoU 更新 | 无 |
+| 物理 GPU | 训练轮数 | 完整 val16 | overlap policy | best checkpoint | 新增 Xid |
+|---:|---:|---:|---|---|---|
+| 0 | 2 | 两轮均 16/16 | `official_window` | `best_model.pth` 已按 IoU 更新 | 无 |
+| 1 | 1 | 16/16 | `official_window` | `best_model.pth` 已按 IoU 更新 | 无 |
+| 2 | 1 | 16/16 | `official_window` | `best_model.pth` 已按 IoU 更新 | 无 |
 
 专用 validation DataLoader generator 保证逐 epoch 验证不推进训练随机数状态。GPU0
 对照试验中，开启完整验证与跳过验证两组的 epoch2 训练 loss 均为 `0.997440`；checkpoint
@@ -95,7 +104,8 @@ SwanLab，以缩短训练时间；内部验证仍是未抽样的完整 val16、�
 相同数据尺寸、FP32 和确定性训练设置做短 smoke，确认内部验证、checkpoint、显存和
 CUDA 状态正常。
 
-GPU0 的 seed47 两轮端到端 smoke 还确认：两轮均完成 full val16，`best_model.pth` 随 IoU
-更新；训练后以不带 `--epoch` 的 `test.py` 成功加载该文件，指标 JSON 记录
-`checkpoint_epoch=2`、`checkpoint_selection.metric=eval_iou`、`mode=max`、
-`best_epoch=2`，并持久化 `validation_metrics`。该流程未产生新增 Xid。
+GPU0 的 seed47 两轮端到端 smoke 还确认：两轮均按官方逐窗口规则完成 full val16，
+`best_model.pth` 随 IoU 更新；训练后以不带 `--epoch` 的 `test.py` 成功加载该文件，指标
+JSON 记录 `checkpoint_epoch=2`。checkpoint 记录 `metric=eval_iou`、`mode=max`、
+`overlap_policy=official_window`、`best_epoch=2`，并持久化 `validation_metrics`。三卡分块
+smoke 之后未产生新增 Xid。

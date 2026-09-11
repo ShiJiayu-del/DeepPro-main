@@ -28,7 +28,7 @@
 |---|---|---|
 | `.gitignore` | 定义不进入 Git 的大体积日志、checkpoint、缓存和临时文件。 | 整理仓库或提交前必须保留。 |
 | `README.md` | 上游 DeepPro 项目总览，包含论文简介、数据下载、基础训练测试命令和原论文结果。 | 用于了解 baseline；部分比赛说明和旧命令不是当前论文实验协议。 |
-| `train.py` | 当前统一训练入口。负责参数解析、随机种子、单卡/DDP、数据加载、模型动态导入、损失构造、AMP、梯度累积、逐 epoch 验证、best checkpoint、SwanLab 和安全续训。 | 新 BC-TPro 以 internal-val16 micro pixel IoU@0.5 选择同一 run 的 `best_model.pth`；当前代码拒绝非空预训练 checkpoint。 |
+| `train.py` | 当前统一训练入口。负责参数解析、随机种子、单卡/DDP、数据加载、模型动态导入、损失构造、AMP、梯度累积、逐 epoch 验证、best checkpoint、SwanLab 和安全续训。 | 新 BC-TPro 以 internal-val16 官方逐窗口 micro pixel IoU@0.5 选择同一 run 的 `best_model.pth`；当前代码拒绝非空预训练 checkpoint。 |
 | `test.py` | 当前统一推理和评测入口。按序列拼接重叠窗口，计算目标级 Pd、像素级 Fa 与官方 27 阈值 Pd-Fa AUC；旧 Pixel 指标只作兼容诊断。支持 AMP、分块推理、可视化、质心 TXT 和机器可读 JSON。 | best-validation 重跑不传 `--epoch`，默认加载 `best_model.pth`；不同架构只按 Pd/Fa/AUC 综合比较。 |
 | `runtime_utils.py` | 训练和测试共享的运行工具，包括 GPU 参数解析、DDP 上下文、原子 checkpoint 写入、checkpoint 加载和进程环境处理。 | 不直接执行，由入口脚本导入。 |
 | `sequence_utils.py` | 时序窗口辅助模块。`SequenceAccumulator` 将有重叠的窗口预测合并成完整序列，并处理有效帧范围。 | 需要改推理拼接规则时检查。 |
@@ -153,8 +153,9 @@
 ### 当前 Noise8 BC-TPro 实验
 
 - `bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/`：当前七结构 seed47 重跑。每个 epoch
-  完整验证 internal-val16，按 micro pixel IoU@0.5 最大化选择 `best_model.pth`，32 轮不
-  早停，再由不带 `--epoch` 的 `test.py` 评测 best checkpoint。
+  完整验证 internal-val16，按官方逐窗口 micro pixel IoU@0.5 最大化选择
+  `best_model.pth`（overlap 帧重复计权），32 轮不早停，再由不带 `--epoch` 的 `test.py`
+  评测 best checkpoint。
 - `bc_tpro_stage1_noise8_upstream_2026-09-09/`：上游 B1/C0/C1/C2 固定 epoch32 历史证据；
   已被 best-validation 协议取代，不再代表当前结论。
 - `bc_tpro_nongate_noise8_seed47_2026-09-10/`：NG1/NG2/NG3 及旧七结构固定 epoch32
@@ -212,9 +213,12 @@
 从 2026-09-11 起，NUDT-MIRSDT 系列上所有显式提供内部 train/val 划分的新 BC-TPro
 launcher 必须设置
 `eval_interval=1`、`skip_inprocess_validation=0`、`validation_safe_cudnn=1`、
+`validation_overlap_policy=official_window`、`eval_chunk_rows=32`、
 `early_stopping_patience=0` 和 `run_test_after_train=0`。每 epoch 完整验证 internal-val16，
-并以 micro pixel IoU@0.5 选择同一 run 的 `best_model.pth`（平局取较晚 epoch）；训练运行满
-32 epochs，随后由不带 `--epoch` 的 `test.py` 对 best 独立计算 Pd/Fa/AUC。pixel IoU 不
+并以官方逐窗口累计的 micro pixel IoU@0.5 选择同一 run 的 `best_model.pth`（overlap 帧
+重复计权，平局取较晚 epoch）；验证与评测使用数值等价且在本机稳定的 32 行分块路径。
+训练运行满 32 epochs，随后由不带 `--epoch` 的 `test.py`
+对 best 独立计算 Pd/Fa/AUC。pixel IoU 不
 用于结构排名。旧 upstream/nongate launcher 与结果只保留作历史复现。official test20
 不参与；final80 因无独立 val 而暂停，不能每 epoch 读取 test20。详见
 [验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)。

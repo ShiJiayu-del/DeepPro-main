@@ -20,6 +20,8 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             eval_interval=1,
             skip_inprocess_validation=0,
             validation_safe_cudnn=1,
+            validation_overlap_policy='official_window',
+            eval_chunk_rows=32,
             early_stopping_patience=0,
             early_stopping_metric='eval_iou',
             run_test_after_train=0,
@@ -37,6 +39,8 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             dict(eval_interval=8),
             dict(skip_inprocess_validation=1),
             dict(validation_safe_cudnn=0),
+            dict(validation_overlap_policy='sequence_max'),
+            dict(eval_chunk_rows=0),
             dict(early_stopping_patience=2),
             dict(early_stopping_metric='eval_f1'),
             dict(run_test_after_train=1),
@@ -59,6 +63,8 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             eval_interval=8,
             skip_inprocess_validation=1,
             validation_safe_cudnn=0,
+            validation_overlap_policy='official_window',
+            eval_chunk_rows=32,
             early_stopping_patience=0,
             early_stopping_metric='eval_iou',
             run_test_after_train=0,
@@ -85,6 +91,8 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             eval_interval=8,
             skip_inprocess_validation=1,
             validation_safe_cudnn=0,
+            validation_overlap_policy='official_window',
+            eval_chunk_rows=32,
             early_stopping_patience=0,
             early_stopping_metric='eval_iou',
             run_test_after_train=0,
@@ -106,6 +114,8 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             eval_interval=1,
             skip_inprocess_validation=0,
             validation_safe_cudnn=1,
+            validation_overlap_policy='official_window',
+            eval_chunk_rows=32,
             early_stopping_patience=0,
             early_stopping_metric='eval_iou',
             run_test_after_train=0,
@@ -126,6 +136,7 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             args = train.parse_args()
         self.assertEqual(args.eval_interval, 1)
         self.assertEqual(args.skip_inprocess_validation, 0)
+        self.assertEqual(args.validation_overlap_policy, 'official_window')
         self.assertEqual(args.early_stopping_metric, 'eval_iou')
 
     def test_checkpoint_records_best_validation_epoch_and_current_metrics(self):
@@ -142,20 +153,80 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             args=Namespace(model='DeepPro-Plus_BCTPro'),
             config={},
             best_epoch=7,
-            validation_metrics={'epoch': 9, 'iou': 0.40},
+            validation_metrics={
+                'epoch': 9,
+                'iou': 0.40,
+                'overlap_policy': 'official_window',
+            },
         )
         self.assertEqual(
             state['checkpoint_selection'],
             {
                 'metric': 'eval_iou',
                 'mode': 'max',
+                'overlap_policy': 'official_window',
                 'best_value': 0.42,
                 'best_epoch': 7,
             },
         )
         self.assertEqual(
-            state['validation_metrics'], {'epoch': 9, 'iou': 0.40}
+            state['validation_metrics'],
+            {
+                'epoch': 9,
+                'iou': 0.40,
+                'overlap_policy': 'official_window',
+            },
         )
+
+    def test_official_validation_repeats_overlap_frames(self):
+        class QueuedDetector(train.torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.outputs = [
+                    train.torch.tensor([[[[10.0]], [[-10.0]]]]),
+                    train.torch.tensor([[[[10.0]], [[-10.0]]]]),
+                ]
+
+            def forward(self, _images):
+                return None, self.outputs.pop(0)
+
+        class ZeroLoss:
+            def __call__(self, logits, _targets, **_kwargs):
+                return logits.sum() * 0.0
+
+        def validation_inputs():
+            images = train.torch.zeros(1, 1, 2, 1, 1)
+            centroids = train.torch.zeros(1, 2, 1, 1)
+            return [
+                (
+                    images.clone(),
+                    train.torch.tensor([[[[0.0]], [[1.0]]]]),
+                    centroids.clone(),
+                    [train.torch.tensor([0]), train.torch.tensor([1])],
+                ),
+                (
+                    images.clone(),
+                    train.torch.tensor([[[[1.0]], [[0.0]]]]),
+                    centroids.clone(),
+                    [train.torch.tensor([1]), train.torch.tensor([2])],
+                ),
+            ]
+
+        def counts(policy):
+            return train.evaluate_sequences(
+                QueuedDetector(),
+                ZeroLoss(),
+                [[None, None]],
+                validation_inputs(),
+                train.torch.device('cpu'),
+                threshold=0.5,
+                epoch=0,
+                show_progress=False,
+                overlap_policy=policy,
+            )[2].tolist()
+
+        self.assertEqual(counts('official_window'), [1, 2, 2])
+        self.assertEqual(counts('sequence_max'), [1, 2, 1])
 
     def test_safe_validation_cudnn_context_restores_training_flags(self):
         original_deterministic = train.torch.backends.cudnn.deterministic

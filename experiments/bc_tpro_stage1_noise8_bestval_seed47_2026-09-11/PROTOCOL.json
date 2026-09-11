@@ -2,6 +2,8 @@
   "schema_version": 2,
   "experiment": "bc_tpro_stage1_noise8_bestval_seed47_2026-09-11",
   "registration_date": "2026-09-11",
+  "official_repository": "https://github.com/TinaLRJ/DeepPro",
+  "official_commit": "8fa1a68b94eb22e94ccd0529e6c5ceccdaa7ec28",
   "purpose": "Correct the fixed-epoch32 protocol by validating every epoch and evaluating the validation-selected checkpoint",
   "superseded_result_sets": [
     "bc_tpro_stage1_noise8_upstream_2026-09-09",
@@ -32,8 +34,11 @@
     "interval_epochs": 1,
     "split": "internal_val16",
     "safe_cudnn": true,
+    "eval_chunk_rows": 32,
+    "inference_path": "row_chunked_numerical_equivalent_safety_path",
     "early_stopping": false,
-    "checkpoint_selection_metric": "micro_pixel_iou_at_0.5",
+    "checkpoint_selection_metric": "official_window_micro_pixel_iou_at_0.5",
+    "overlap_policy": "repeat_overlap_frames_per_official_train.py",
     "checkpoint_selection_direction": "maximize",
     "exact_tie_policy": "later_epoch",
     "selected_checkpoint": "best_model.pth"
@@ -49,7 +54,12 @@
     "rule": "Report all three metrics and Pareto relations; no AUC-first or unregistered scalar score"
   },
   "allowed_physical_gpus": [0, 1, 2],
-  "parallelism": "one complete run per physical GPU",
+  "parallelism": "one complete run per physical GPU; wait while a GPU exceeds 512 MiB used",
   "official_test20_usage": "forbidden_during_training_and_checkpoint_selection",
+  "intentional_official_differences": [
+    "train64_internal_val16_replaces_official_test20_checkpoint_selection",
+    "deterministic_seed47_replaces_unseeded_time_dependent_worker_rng",
+    "eval_chunk_rows32_replaces_unstable_full_frame_execution_with_numerically_equivalent_rows"
+  ],
   "final80_status": "deferred_because_train80_has_no_independent_validation_split"
 }

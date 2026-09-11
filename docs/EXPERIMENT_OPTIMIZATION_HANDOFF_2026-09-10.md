@@ -12,8 +12,9 @@
 > 统一入口为 `tools/run_bc_tpro_bestval.py`。下方正文记录的旧三 seed 预注册现场、旧结果和
 > 恢复计划均只用于审计；凡与本覆盖块冲突，均以本覆盖块和验证节奏文档为准。
 >
-> **2026-09-11 best-validation 协议：** 每个 epoch 后完整验证 internal-val16；以聚合的
-> micro pixel IoU@0.5 最大化保存 `best_model.pth`，精确平局取较晚 epoch。训练仍跑满
+> **2026-09-11 best-validation 协议：** 每个 epoch 后完整验证 internal-val16；以官方
+> 逐窗口累计的 micro pixel IoU@0.5 最大化保存 `best_model.pth`，overlap 帧重复计权，
+> 精确平局取较晚 epoch。训练仍跑满
 > 32 epochs、不早停。训练后由不带 `--epoch` 的独立 `test.py` 加载 best checkpoint，
 > 在 internal-val16 计算 Pd@0.5、Fa@0.5 和 AUC27。pixel IoU 只负责同一 run 的 checkpoint
 > 选择；七个结构之间仍按 Pd 越高、Fa 越低、AUC 越高的三指标 Pareto 关系综合比较。
@@ -52,7 +53,8 @@
 > 然后读取 `docs/VALIDATION_SCHEDULE_2026-09-11.md` 和
 > `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md`。先做一次只读状态、
 > GPU、磁盘、SwanLab 和 Git 差异检查，再用 `tools/run_bc_tpro_bestval.py` 继续或启动七结构
-> seed47 重跑。每 epoch 验证 internal-val16，按 micro pixel IoU@0.5 保存 best，跑满 32
+> seed47 重跑。每 epoch 验证 internal-val16，按官方逐窗口累计的 micro pixel IoU@0.5
+> 保存 best，跑满 32
 > epochs 后用不带 `--epoch` 的 `test.py` 评测 `best_model.pth`。不要读取 official test20，
 > 不要启动 final80，不要使用预训练权重，不要用 F1 选模，不要生成 SHA256/MD5，不要使用
 > GPU3，也不要覆盖历史产物。结构之间只按 Pd/Fa/AUC 三指标 Pareto 关系综合判断。
@@ -86,11 +88,11 @@
    `Pd@0.5`、`Fa@0.5`、官方 27 阈值 Pd-Fa AUC。
 7. F1 不得作为 NUDT/Noise8 检测指标、早停依据、checkpoint 选择依据或候选排序依据。
    历史 JSON/日志中的 Pixel F1 仅为兼容字段，active analyzer 会忽略它。
-8. micro pixel IoU@0.5 只用于同一 run 内选择 `best_model.pth`；训练 loss 和其余 pixel
+8. 官方逐窗口累计的 micro pixel IoU@0.5 只用于同一 run 内选择 `best_model.pth`；训练 loss 和其余 pixel
    指标只作优化诊断。不同架构仍用 Pd/Fa/AUC 三指标综合比较。
 9. raw-logit 与 0.01 dense-grid 若执行，只是敏感性分析，不得参与门控或选模。
 10. 不生成、不要求、不校验 SHA256、MD5 等文件内容哈希。
-11. 使用 SwanLab cloud，但网络故障不得导致已完成权重被否定或被自动重训。
+11. 当前确认性重跑关闭 SwanLab，避免代理故障中断；本地训练日志和队列 marker 为权威。
 12. 当前 BC-TPro Stage1 不读取 official test20 图像或生成其预测；test20 不参与逐 epoch
     验证、checkpoint 选择或七结构比较。final80 因没有独立 val 而暂停。历史 29 模型实验
     已评测过同一 test20，论文必须披露该历史暴露。
@@ -175,7 +177,8 @@
 
 - 官方训练代码会在训练过程中反复使用 test20 评测并选择 best checkpoint，存在测试集
   参与选模的问题。本项目使用 train80 派生的固定 train64/internal-val16 做 Stage1；每个
-  epoch 只在 internal-val16 验证，并按 micro pixel IoU@0.5 选择该 run 的 best checkpoint，
+  epoch 只在 internal-val16 验证，并按官方逐窗口累计的 micro pixel IoU@0.5 选择该 run
+  的 best checkpoint，
   official test20 不参与。
 - 本项目显式固定 seeds 47/49/51 并启用确定性训练；不复制官方的时间相关 worker seed。
 - 官方 `train.py` 虽定义 `seed_everything()` 却没有调用；`gpu_num>1` 分支硬编码
@@ -698,7 +701,7 @@ flowchart LR
 
 当前论文对齐：
 重新固定官方 Soft-IoU
- → micro pixel IoU@0.5 只选同一 run 的 best checkpoint
+ → 官方逐窗口 micro pixel IoU@0.5 只选同一 run 的 best checkpoint
  → 架构比较只用 Pd@0.5、Fa@0.5、AUC27 的三指标 Pareto 关系
 ```
 

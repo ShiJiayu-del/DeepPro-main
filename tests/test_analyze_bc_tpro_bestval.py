@@ -160,10 +160,12 @@ class BestValidationFixture:
                 'model_config': {'structure_variant': job['structure_variant']},
                 'checkpoint_selection': {
                     'metric': 'eval_iou', 'mode': 'max',
+                    'overlap_policy': 'official_window',
                     'best_value': best_iou, 'best_epoch': best_epoch,
                 },
                 'validation_metrics': {
                     'epoch': best_epoch, 'loss': 1.0 - best_iou,
+                    'overlap_policy': 'official_window',
                     'iou': best_iou, 'precision': 0.7, 'recall': 0.6,
                     'f1': 0.646153846,
                 },

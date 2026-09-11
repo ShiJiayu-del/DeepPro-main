@@ -36,7 +36,7 @@ LABEL_BY_RUN_ID = {
 PROTOCOL_NOTES = (
     '状态要求：7 个作业均有成功 done marker，且 launcher 产物核验通过。',
     '数据集：NUDT-MIRSDT-Noise8.0_FJY；固定 train64/internal-val16；仅 seed47。',
-    '每个 epoch 完整验证一次，共 32 次；每个模型仅按 internal-val pixel IoU 最大值保存 best_model.pth。',
+    '每个 epoch 完整验证一次，共 32 次；每个模型按官方逐窗口累计的 internal-val pixel IoU 最大值保存 best_model.pth。',
     '最终 Pd@0.5、Fa@0.5 和 AUC27 必须由该模型的 best_model.pth 在同一 internal-val16 上独立评测。',
     'Pd、Fa、AUC 均从逐序列整数计数重新计算，不信任仅有的汇总小数。',
     '跨模型联合目标为 Pd@0.5 越高、Fa@0.5 越低、AUC27 越高；使用三目标 Pareto 非支配关系。',

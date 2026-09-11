@@ -43,7 +43,7 @@ BC-TPro 单 seed 实验。此前 B1/C0/C1/C2 与 NG1/NG2/NG3 只在训练后评�
 - 当前 Noise8 对比只使用 seed47；单 seed 结果不提供训练随机性标准差或显著性结论；
 - NUDT/Noise8 检测联合考虑 `Pd@0.5` 越高、`Fa@0.5` 越低和官方 27 阈值 Pd-Fa AUC 越高；使用 Pareto 关系，不采用 AUC 优先或未登记的加权分数；
 - 后续结构优先采用无门控的加法残差、固定差分或滤波思路；
-- 2026-09-11 起，NUDT-MIRSDT 系列上所有显式划分内部 train/val 的新 BC-TPro 实验每个 epoch 完整验证一次；同一 run 按 micro pixel IoU@0.5 最大化保存 `best_model.pth`（精确平局取较晚 epoch），32 轮不早停，训练后由不带 `--epoch` 的 `test.py` 对 best 评测 Pd/Fa/AUC；
+- 2026-09-11 起，NUDT-MIRSDT 系列上所有显式划分内部 train/val 的新 BC-TPro 实验每个 epoch 完整验证一次；同一 run 按官方逐窗口累计的 micro pixel IoU@0.5 最大化保存 `best_model.pth`（overlap 帧重复计权，精确平局取较晚 epoch），32 轮不早停，训练后由不带 `--epoch` 的 `test.py` 对 best 评测 Pd/Fa/AUC；
 - 不同架构仍按 Pd 越高、Fa 越低、AUC 越高的三指标 Pareto 关系综合比较；pixel IoU 只用于同一 run 的 checkpoint 选择；
 - upstream/nongate 固定 epoch32 结果和 launcher 仅保留作历史复现，不再代表当前结论；当前重跑入口为 `tools/run_bc_tpro_bestval.py`；
 - official test20 不参与当前逐轮验证或选模；final80 因 train80 无独立 val 而暂停，不能通过每 epoch 读取 test20 来选择 best；

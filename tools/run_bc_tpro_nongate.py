@@ -92,6 +92,7 @@ class Launcher:
         self.cancel = threading.Event()
         self.signal_number = None
         self.eval_lock = threading.Lock()
+        self.max_workers = 3
         self.environment = os.environ.copy()
         self.environment['PYTHONDONTWRITEBYTECODE'] = '1'
         self.environment.setdefault('PYTORCH_CUDA_ALLOC_CONF', 'expandable_segments:True')
@@ -345,7 +346,7 @@ class Launcher:
             try:
                 for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
                     previous[number] = signal.signal(number, interrupted)
-                with ThreadPoolExecutor(max_workers=3) as pool:
+                with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
                     futures = [pool.submit(self.run_job, job) for job in jobs]
                     results = []
                     for future in as_completed(futures):

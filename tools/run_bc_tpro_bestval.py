@@ -30,6 +30,7 @@ EPOCHS = 32
 VAL_SEQUENCE_COUNT = 16
 VAL_EVALUATION_WINDOWS = 48
 METRICS_SUFFIX = '__best_val_internal_val.json'
+GPU_IDLE_MEMORY_MIB = 512
 
 REGISTERED_VARIANTS = (
     ('bv_b1_none_seed47', '1', 'none', '0', 'B1'),
@@ -74,6 +75,57 @@ def read_manifest(path):
     return rows
 
 
+def validate_protocol(path):
+    payload = json.loads(Path(path).read_text(encoding='utf-8'))
+    expected = {
+        'official_commit': '8fa1a68b94eb22e94ccd0529e6c5ceccdaa7ec28',
+        'training_dataset': DATASET,
+        'seed': 47,
+        'epochs': EPOCHS,
+        'initialization': 'scratch_only',
+        'precision': 'FP32',
+        'learning_rate': 0.001,
+        'loss': 'soft_iou',
+        'swanlab': False,
+        'allowed_physical_gpus': [0, 1, 2],
+    }
+    for field, value in expected.items():
+        if payload.get(field) != value:
+            raise ValueError(
+                'Best-validation protocol %s must be %r.' % (field, value)
+            )
+    validation = payload.get('validation')
+    required_validation = {
+        'interval_epochs': 1,
+        'split': 'internal_val16',
+        'safe_cudnn': True,
+        'eval_chunk_rows': 32,
+        'checkpoint_selection_metric': (
+            'official_window_micro_pixel_iou_at_0.5'
+        ),
+        'overlap_policy': 'repeat_overlap_frames_per_official_train.py',
+        'checkpoint_selection_direction': 'maximize',
+        'exact_tie_policy': 'later_epoch',
+        'selected_checkpoint': 'best_model.pth',
+    }
+    if not isinstance(validation, dict):
+        raise ValueError('Best-validation protocol validation block is missing.')
+    for field, value in required_validation.items():
+        if validation.get(field) != value:
+            raise ValueError(
+                'Best-validation protocol validation.%s must be %r.'
+                % (field, value)
+            )
+    post_training = payload.get('post_training_evaluation')
+    if not isinstance(post_training, dict) or post_training.get(
+        'checkpoint'
+    ) != 'best_model.pth':
+        raise ValueError(
+            'Post-training evaluation must use best_model.pth.'
+        )
+    return payload
+
+
 def _set_option(command, flag, value):
     """Replace one required option in an argv list."""
     try:
@@ -107,6 +159,7 @@ class Launcher(legacy.Launcher):
         self.old_experiment = self.repo / 'experiments' / SOURCE_EXPERIMENT_NAME
         self.queue = self.save / 'sem_seg' / '_queues' / EXPERIMENT_NAME
         self.status = self.queue / 'status'
+        self.max_workers = len(REGISTERED_VARIANTS)
         # This is a new protocol, not one of the frozen external-only runs.
         self.environment.pop('CSIG_ALLOW_FROZEN_EXTERNAL_ONLY_VALIDATION', None)
 
@@ -128,6 +181,7 @@ class Launcher(legacy.Launcher):
             '--protocol-config', str(self.old_experiment / 'UPSTREAM_PROTOCOL.json'),
         ]
         subprocess.run(command, cwd=self.repo, env=self.environment, check=True)
+        validate_protocol(self.experiment / 'PROTOCOL.json')
         return read_manifest(self.experiment / 'manifest.tsv')
 
     def train_command(self, job):
@@ -136,6 +190,7 @@ class Launcher(legacy.Launcher):
             ('--epoch', EPOCHS),
             ('--train_amp', 0),
             ('--eval_amp', 0),
+            ('--eval_chunk_rows', 32),
             ('--eval_interval', 1),
             ('--skip_inprocess_validation', 0),
             ('--early_stopping_patience', 0),
@@ -151,13 +206,60 @@ class Launcher(legacy.Launcher):
             _set_option(command, '--validation_safe_cudnn', 1)
         else:
             command.extend(['--validation_safe_cudnn', '1'])
+        if '--validation_overlap_policy' in command:
+            _set_option(
+                command, '--validation_overlap_policy', 'official_window'
+            )
+        else:
+            command.extend([
+                '--validation_overlap_policy', 'official_window'
+            ])
         return command
 
     def eval_command(self, job):
         command = super().eval_command(job)
         epoch_index = command.index('--epoch')
         del command[epoch_index:epoch_index + 2]
+        _set_option(command, '--eval_chunk_rows', 32)
         return command
+
+    def gpu_memory_used_mib(self, gpu):
+        result = subprocess.run(
+            [
+                'nvidia-smi', '--id=' + str(gpu),
+                '--query-gpu=memory.used',
+                '--format=csv,noheader,nounits',
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        values = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+        if len(values) != 1 or not values[0].isdigit():
+            raise ValueError(
+                'Cannot read physical GPU %s memory usage: %r'
+                % (gpu, result.stdout)
+            )
+        return int(values[0])
+
+    def wait_for_gpu_idle(self, gpu):
+        announced = False
+        while True:
+            used_mib = self.gpu_memory_used_mib(gpu)
+            if used_mib <= GPU_IDLE_MEMORY_MIB:
+                if announced:
+                    print('GPU %s is now idle; starting queued job.' % gpu, flush=True)
+                return
+            if not announced:
+                print(
+                    'WAIT GPU %s is occupied (%d MiB used); keeping this job queued.'
+                    % (gpu, used_mib),
+                    flush=True,
+                )
+                announced = True
+            if self.cancel.wait(10.0):
+                raise RuntimeError('Launcher interrupted while waiting for idle GPU.')
 
     def run_job(self, job):
         """Hold a per-physical-GPU lock for training plus final evaluation."""
@@ -171,6 +273,7 @@ class Launcher(legacy.Launcher):
                     break
                 except BlockingIOError:
                     self.cancel.wait(0.5)
+            self.wait_for_gpu_idle(job['gpu'])
             return super().run_job(job)
 
     def validate_artifacts(self, job):
@@ -230,8 +333,15 @@ class Launcher(legacy.Launcher):
         selection = checkpoint.get('checkpoint_selection')
         if not isinstance(selection, dict):
             raise ValueError('%s: checkpoint_selection is missing.' % job['run_id'])
-        if selection.get('metric') != 'eval_iou' or selection.get('mode') != 'max':
-            raise ValueError('%s: checkpoint selection must maximize eval_iou.' % job['run_id'])
+        if (
+            selection.get('metric') != 'eval_iou'
+            or selection.get('mode') != 'max'
+            or selection.get('overlap_policy') != 'official_window'
+        ):
+            raise ValueError(
+                '%s: checkpoint selection must maximize official-window '
+                'eval_iou.' % job['run_id']
+            )
         best_epoch = _required_int(
             selection.get('best_epoch'), '%s checkpoint best_epoch' % job['run_id']
         )
@@ -249,6 +359,11 @@ class Launcher(legacy.Launcher):
             validation.get('epoch'), '%s validation_metrics.epoch' % job['run_id']
         ) != best_epoch:
             raise ValueError('%s: validation_metrics epoch does not match best_epoch.' % job['run_id'])
+        if validation.get('overlap_policy') != 'official_window':
+            raise ValueError(
+                '%s: validation metrics do not use official window overlap.'
+                % job['run_id']
+            )
         for field in ('loss', 'iou', 'precision', 'recall', 'f1'):
             _required_finite(
                 validation.get(field), '%s validation_metrics.%s' % (job['run_id'], field)
