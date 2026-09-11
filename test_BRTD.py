@@ -20,7 +20,6 @@ import torch.nn.functional as F
 from ShootingRules import ShootingRules
 from sequence_utils import SequenceAccumulator, frame_range_length
 from runtime_utils import load_checkpoint, parse_visible_devices
-# from attribution.core import IR_Integrated_gradient, MeanLinearPath, ZeroLinearPath
 from write_results import writeNUDTMIRSDT_ROC, writeMIRST_ROC
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

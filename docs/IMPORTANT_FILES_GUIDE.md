@@ -367,13 +367,9 @@ launcher 必须设置
 
 ## 13. Attribution 目录
 
-| 文件 | 作用 |
-|---|---|
-| `attribution/core.py` | 早期 integrated gradients / temporal attribution 实验核心。 |
-| `attribution/utils.py` | Attribution 的张量与可视化辅助函数。 |
-
-当前 `test.py --attribution` 会明确报 `NotImplementedError`，因为完整 attribution 依赖没有
-随仓库保留。论文中若需要归因图，必须先补齐实现和验证，不能把该目录描述成可直接复现。
+原 `attribution/core.py` 和 `attribution/utils.py` 只有 import、没有任何函数实现，已在
+2026-09-11 仓库清理中删除。`test.py --attribution` 继续明确报 `NotImplementedError`，
+避免把缺失功能误写成可复现工具；论文中若需要归因图，必须重新实现并验证。
 
 ## 14. 日志与大体积产物：`log/`
 

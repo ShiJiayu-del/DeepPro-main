@@ -25,6 +25,7 @@ BC-TPro 单 seed 实验。此前 B1/C0/C1/C2 与 NG1/NG2/NG3 只在训练后评�
 | [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md) | 每 epoch 完整 internal-val16、按 micro pixel IoU@0.5 选 best、best 外部检测评测及 final80 暂停边界 | 2026-09-11 起生效 |
 | [实验改进与优化交接](EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md) | 当前状态覆盖、完整网络/损失演进、历史实验和官方来源 | 当前首选接手入口 |
 | [重要文件与目录说明](IMPORTANT_FILES_GUIDE.md) | 训练、测试、模型、模块、损失、实验、论文指标、发布集与日志目录的逐项说明 | 当前仓库导航入口 |
+| [仓库清理记录](REPOSITORY_CLEANUP_2026-09-11.md) | 已删除缓存、空壳和失败运行，以及保留的大体积历史证据边界 | 2026-09-11 已执行 |
 | [DeepPro 官方仓库对齐](DEEPPRO_OFFICIAL_ALIGNMENT_2026-09-09.md) | 官方提交、模型/loader/训练参数对齐项及有意保留的科研约束 | 架构与数据对齐依据；checkpoint 规则以 09-11 文档为准 |
 | [BC-TPro best-validation 重跑](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md) | 七结构 seed47 逐 epoch 验证、best checkpoint 选择与评测 | 当前结果入口；等待完成 |
 | [BC-TPro 无门控结果](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) | B1/C0/C1/C2/NG1/NG2/NG3 固定 epoch32 三指标与 Pareto 对比 | 历史、已被取代；[Excel](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx) |
