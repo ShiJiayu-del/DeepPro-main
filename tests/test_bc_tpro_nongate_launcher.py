@@ -45,6 +45,12 @@ class LauncherTests(unittest.TestCase):
                 for path in self.root.rglob('*')}
 
     def test_dry_run_has_no_writes_and_uses_fixed_protocol(self):
+        self.assertEqual(
+            self.runner.environment.get(
+                'CSIG_ALLOW_FROZEN_EXTERNAL_ONLY_VALIDATION'
+            ),
+            '1',
+        )
         before = self.tree()
         stream = io.StringIO()
         with redirect_stdout(stream), mock.patch.object(launcher.subprocess, 'Popen') as popen:

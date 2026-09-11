@@ -30,6 +30,7 @@ score or AUC-first ordering.
 | Non-gated comparison | [NG1/NG2/NG3 results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) ([Excel](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)) |
 | Training protocol | T=40, global batch 4, 32 epochs, FP32, Soft-IoU, seed 47 |
 | Validation | Fixed internal-val16; Pd@0.5, Fa@0.5, official AUC27 |
+| [New NUDT BC-TPro validation schedule](docs/VALIDATION_SCHEDULE_2026-09-11.md) | Validate the explicit internal split after every epoch; completed runs retain their frozen schedule |
 | Initialization | Random weights only; pretrained initialization is forbidden |
 | Training devices | Independent single-GPU runs on physical GPUs `0`, `1`, `2` |
 | Current conclusion | C1 is the strongest overall trade-off; no new non-gated branch jointly exceeds it |

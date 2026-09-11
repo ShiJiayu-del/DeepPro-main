@@ -22,6 +22,8 @@ EXPECTED_TRAIN_SHA="3e18da9a5c8dccea57b5155c244de1327ded05c6867f0059336f7a231ebb
 EXPECTED_VAL_SHA="bb92ecfdb0c379acc9971eaffed99154a2f985b063fd1f091aa8bceb09b07338"
 
 export DATA_ROOT="$CLEAN_DATA" PYTHON_BIN REPO_ROOT
+# Preserve this completed historical experiment's external-only schedule.
+export CSIG_ALLOW_FROZEN_EXTERNAL_ONLY_VALIDATION=1
 # shellcheck source=project_runtime_env.sh
 source "$TOOLS_DIR/project_runtime_env.sh"
 csig_require_allowed_gpus "0,1,2"

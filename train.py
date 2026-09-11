@@ -3,7 +3,7 @@ Author: Benny
 Date: Nov 2019
 """
 import argparse
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 import gc
 import inspect
 import os
@@ -69,6 +69,34 @@ def seed_everything(seed=46, deterministic=False):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = deterministic
     torch.backends.cudnn.benchmark = not deterministic
+
+
+@contextmanager
+def validation_cudnn_context(use_safe_full_resolution_path=False):
+    """Avoid the deterministic cuDNN Conv3d path that triggers Xid 31.
+
+    The validation metrics produced in this context are optimization
+    diagnostics. Training flags are restored before the next epoch, and paper
+    Pd/Fa/AUC remain a separate fresh-process evaluation.
+    """
+    previous_deterministic = torch.backends.cudnn.deterministic
+    previous_benchmark = torch.backends.cudnn.benchmark
+    if use_safe_full_resolution_path:
+        torch.backends.cudnn.deterministic = False
+        torch.backends.cudnn.benchmark = False
+    try:
+        yield
+    finally:
+        torch.backends.cudnn.deterministic = previous_deterministic
+        torch.backends.cudnn.benchmark = previous_benchmark
+
+
+def evaluate_sequences_with_cudnn_policy(
+    use_safe_full_resolution_path, *args, **kwargs
+):
+    """Apply the validation-only cuDNN policy at the evaluation call site."""
+    with validation_cudnn_context(use_safe_full_resolution_path):
+        return evaluate_sequences(*args, **kwargs)
 
 
 def seed_worker(_worker_id):
@@ -363,11 +391,16 @@ def build_validation_data(args, runtime, root, sequence_length):
     if not sequence_datasets:
         finalize_distributed(runtime)
         raise RuntimeError('Validation shard contains no sequences.')
+    # Iterating a DataLoader consumes one RNG draw for its worker base seed.
+    # Keep validation from changing the next epoch's training crop sequence.
+    validation_generator = torch.Generator()
+    validation_generator.manual_seed(args.seed + 100000 + runtime.rank)
     validation_loader = torch.utils.data.DataLoader(
         ConcatDataset(sequence_datasets),
         batch_size=1,
         shuffle=False,
         pin_memory=True,
+        generator=validation_generator,
         **multiprocessing_loader_options(
             args.val_workers,
             args.prefetch_factor,
@@ -636,6 +669,14 @@ def parse_args():
         help='Use FP16 CUDA autocast during validation [default: 0].',
     )
     parser.add_argument(
+        '--validation_safe_cudnn', type=int, default=0, choices=[0, 1],
+        help=(
+            'Temporarily disable deterministic cuDNN algorithm selection '
+            'during full-resolution in-process validation. Required for new '
+            'BC-TPro internal-split runs on this server.'
+        ),
+    )
+    parser.add_argument(
         '--eval_interval', type=int, default=1,
         help='Run full validation every N epochs and always on the final epoch.',
     )
@@ -707,6 +748,70 @@ def parse_args():
     return parser.parse_args()
 
 
+def validate_bctpro_validation_schedule(args, environment=None):
+    """Require every-epoch validation for NUDT BC-TPro internal splits.
+
+    Completed Stage1 experiments used external-only validation and retain that
+    exact provenance through an explicit launcher environment marker. Final80
+    has no separate validation list and is outside this internal-split policy.
+    """
+    if environment is None:
+        environment = os.environ
+    is_nudt_bctpro = (
+        str(args.model).startswith('DeepPro-Plus_BCTPro')
+        and str(args.dataset).startswith('NUDT-MIRSDT')
+    )
+    if not is_nudt_bctpro:
+        return
+    has_internal_split = bool(
+        args.train_sequence_list and args.val_sequence_list
+    )
+    if not has_internal_split:
+        if not bool(args.skip_inprocess_validation):
+            raise ValueError(
+                'BC-TPro in-process validation requires explicit '
+                '--train_sequence_list and --val_sequence_list files. '
+                'Without them, the dataset loader may use the official test '
+                'split during training.'
+            )
+        if bool(args.run_test_after_train):
+            raise ValueError(
+                'BC-TPro without an explicit internal validation split must '
+                'set --run_test_after_train 0. The final checkpoint must be '
+                'evaluated by an explicit, test-isolated launcher.'
+            )
+        return
+    validates_every_epoch = (
+        not bool(args.skip_inprocess_validation)
+        and int(args.eval_interval) == 1
+        and bool(getattr(args, 'validation_safe_cudnn', 0))
+        and int(args.early_stopping_patience) == 0
+        and not bool(args.run_test_after_train)
+    )
+    if validates_every_epoch:
+        return
+    is_frozen_external_only_schedule = (
+        bool(args.skip_inprocess_validation)
+        and int(args.eval_interval) == 8
+        and not bool(getattr(args, 'validation_safe_cudnn', 0))
+        and int(args.early_stopping_patience) == 0
+        and not bool(args.run_test_after_train)
+    )
+    if (
+        environment.get('CSIG_ALLOW_FROZEN_EXTERNAL_ONLY_VALIDATION') == '1'
+        and is_frozen_external_only_schedule
+    ):
+        return
+    raise ValueError(
+        'New NUDT BC-TPro runs with an explicit train/validation split must '
+        'use '
+        '--eval_interval 1, --skip_inprocess_validation 0, and '
+        '--validation_safe_cudnn 1, disable early stopping, and set '
+        '--run_test_after_train 0. The legacy '
+        'override only permits the exact frozen external-only schedule.'
+    )
+
+
 def main(args):
     pretrained_inputs = {
         '--base_ckpt': args.base_ckpt,
@@ -726,6 +831,7 @@ def main(args):
         raise ValueError(
             '--train_sequence_list and --val_sequence_list must be supplied together.'
         )
+    validate_bctpro_validation_schedule(args)
     if args.train_sequence_list and args.val_sequence_list:
         args.train_sequence_list = str(
             Path(args.train_sequence_list).expanduser().resolve()
@@ -1671,7 +1777,8 @@ def main(args):
         if runtime.is_main:
             log_string('---- EPOCH %03d EVALUATION ----' % (epoch + 1))
         local_loss_sum, local_loss_count, local_metric_counts = (
-            evaluate_sequences(
+            evaluate_sequences_with_cudnn_policy(
+                bool(args.validation_safe_cudnn),
                 unwrap_model(detector),
                 criterion,
                 sequence_datasets,

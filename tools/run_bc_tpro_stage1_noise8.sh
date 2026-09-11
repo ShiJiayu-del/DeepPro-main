@@ -46,6 +46,9 @@ case "$PROTOCOL_PROFILE" in
 esac
 
 export DATA_ROOT="$NOISE_DATA" PYTHON_BIN REPO_ROOT
+# Preserve the completed Stage1 experiment's original external-only schedule.
+# Newly registered BC-TPro experiments validate their internal split each epoch.
+export CSIG_ALLOW_FROZEN_EXTERNAL_ONLY_VALIDATION=1
 # shellcheck source=project_runtime_env.sh
 source "$TOOLS_DIR/project_runtime_env.sh"
 csig_require_allowed_gpus "0,1,2"

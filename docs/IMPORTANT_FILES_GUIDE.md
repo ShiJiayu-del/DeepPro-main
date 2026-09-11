@@ -14,13 +14,13 @@
 首次接手项目时建议按以下顺序阅读：
 
 1. `README.md`：当前研发状态、结果入口和原始 DeepPro 项目说明。
-2. `experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md`：当前无门控实验结果。
-3. `paper/DEEPPRO_PLUS_METRIC_ALIGNMENT.md`：当前论文工作的指标口径和可比性边界。
-4. `experiments/<实验名>/README.md` 与 `manifest.tsv`：固定协议和实际运行清单。
-5. `train.py`、`test.py`：当前权威训练与测试入口。
-6. `networks/models/`、`networks/layers/`、`networks/losses/`：模型、模块和损失实现。
-7. `tools/run_bc_tpro_nongate.py`、`tools/analyze_bc_tpro_nongate.py`：当前实验和汇总入口。
-8. `experiments/<实验名>/PAPER_METRICS.md`：历史论文指标对照（如存在）。
+2. `docs/VALIDATION_SCHEDULE_2026-09-11.md`：新 NUDT BC-TPro 实验的验证节奏与 final80 例外。
+3. `experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md`：当前无门控实验结果。
+4. `paper/DEEPPRO_PLUS_METRIC_ALIGNMENT.md`：当前论文工作的指标口径和可比性边界。
+5. `experiments/<实验名>/README.md` 与 `manifest.tsv`：固定协议和实际运行清单。
+6. `train.py`、`test.py`：当前权威训练与测试入口。
+7. `networks/models/`、`networks/layers/`、`networks/losses/`：模型、模块和损失实现。
+8. `tools/run_bc_tpro_nongate.py`、`tools/analyze_bc_tpro_nongate.py`：已完成实验和汇总入口。
 
 ## 2. 根目录文件
 
@@ -205,6 +205,15 @@
 当前单 seed 结果不支持显著性或跨 seed 稳定性结论。三项指标联合解释，不使用 AUC 优先
 或未登记的加权综合分。
 
+从 2026-09-11 起，NUDT-MIRSDT 系列上所有显式提供内部 train/val 划分的新 BC-TPro
+launcher 必须设置
+`eval_interval=1`、`skip_inprocess_validation=0`、`validation_safe_cudnn=1`、
+`early_stopping_patience=0` 和 `run_test_after_train=0`。每 epoch 内部验证只记录 loss
+与 pixel IoU/P/R/F1；固定 epoch32 后仍由 launcher 独立运行一次 Pd/Fa/AUC 评测。
+已完成 upstream/nongate 保留
+旧 external-only provenance；final80 保持测试隔离。详见
+[验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)。
+
 ### 环境与历史批量实验
 
 | 文件 | 作用 |
@@ -278,6 +287,7 @@
 |---|---|---|
 | `IMPORTANT_FILES_GUIDE.md` | 本文件，当前仓库重要文件字典。 | 接手和整理仓库的第一入口。 |
 | `README.md` | 文档总索引、当前规则和历史材料导航。 | 某些“当前任务”状态需结合 experiments 实时文件。 |
+| `VALIDATION_SCHEDULE_2026-09-11.md` | 新 BC-TPro 每 epoch 内部诊断、固定 epoch32 外部检测评测、历史实验和 final80 例外。 | 2026-09-11 起的新实验必须遵循。 |
 | `EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md` | 当前 BC-TPro、完整网络/损失演进、官方指标、现场状态、恢复和 final80 协议。 | 新对话和当前论文实验的首选入口。 |
 | `MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md` | DeepPro 到 BRTD/Raw-APMD/Hybrid-RMS/FeedbackSTS 前期的历史结构与损失快照。 | 仅作历史素材；完整更新和当前状态见 `EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md`。 |
 | `F1_MAXIMIZATION_RESEARCH_2026-08-27.md` | 遥感、视频恢复、检测等跨领域思路及 PointCenter 决策。 | 历史研究依据；当前论文主指标已改为 Pd/Fa/AUC。 |

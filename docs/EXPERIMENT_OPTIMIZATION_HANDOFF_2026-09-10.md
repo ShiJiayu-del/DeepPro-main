@@ -8,9 +8,16 @@
 > 更低 Fa，但 Pd 明显下降，三个新分支均未综合超过 C1。完整结果见
 > [`RESULTS.md`](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) 和
 > [Excel](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)。
->
 > 下方正文记录的是本日较早证据截点的三 seed 预注册现场及恢复计划，保留用于审计；其中
 > “当前状态”“下一步执行”和 C0/C1/C2 未完成表述均已由本覆盖块取代。
+>
+> **2026-09-11 验证节奏：** 此后 NUDT-MIRSDT 系列上所有显式提供内部 train/val
+> 划分的新 BC-TPro 实验固定 `eval_interval=1`、`skip_inprocess_validation=0`、
+> `validation_safe_cudnn=1`、`early_stopping_patience=0`、
+> `run_test_after_train=0`。每 epoch 的 validation loss 与 pixel IoU/P/R/F1 只作训练诊断；
+> epoch32 后仍由独立 `test.py --epoch 32` 评测一次 Pd/Fa/AUC。已完成 upstream/nongate
+> 保留原 external-only provenance；final80 因使用全部 train80、没有独立 val，继续跳过
+> 进程内验证。完整规则见 [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)。
 
 | 模型 | Pd@0.5 (%) ↑ | Fa@0.5 (×10⁻⁵) ↓ | AUC27 ↑ |
 |---|---:|---:|---:|

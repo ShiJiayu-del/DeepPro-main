@@ -42,11 +42,16 @@
 - 全部从随机权重开始；不续训、不导入任何外部模型权重。
 - SwanLab cloud：project `DeepPro-BC-TPro`，group
   `bc-tpro-final80-noise8-upstream8fa1a68-fp32-scratch-locked`。
-- 训练期间 `skip_inprocess_validation=1` 且 `run_test_after_train=0`；`train.py` 会在构造
-  `TestIRSeqDataLoader` 前直接返回。final validator 只检查 test 清单和文件名元数据，
-  不解码图像；当前 BC-TPro 的实际 test 图像读取只发生在全部 final80 训练通过屏障后的
-  独立 `test.py` 阶段。历史 29 模型实验曾评测过同一 test20，因此该屏障是当前协议的
-  防泄漏约束，不代表 test20 在整个项目中从未暴露。
+- 训练期间保持 `skip_inprocess_validation=1`、`early_stopping_patience=0` 和
+  `run_test_after_train=0`。final80 使用全部 official train80，没有独立内部 val；若在未提供
+  验证清单时开启进程内验证，当前 loader 会默认读取 official `test.txt`，使 test20 在每个
+  epoch 进入训练流程。因此 final80 不适用 2026-09-11 的逐 epoch 内部验证规则。
+- `train.py` 会在构造 `TestIRSeqDataLoader` 前直接返回。final validator 只检查 test 清单和
+  文件名元数据，不解码图像；当前 BC-TPro 的实际 test 图像读取只发生在全部 final80 训练
+  通过屏障后的独立 `test.py --epoch 32` 阶段。历史 29 模型实验曾评测过同一 test20，因此
+  该屏障是当前协议的防泄漏约束，不代表 test20 在整个项目中从未暴露。
+- 若需要逐 epoch validation，必须另建使用 train-only 内部划分的非 final80 协议。规则见
+  [`docs/VALIDATION_SCHEDULE_2026-09-11.md`](../../docs/VALIDATION_SCHEDULE_2026-09-11.md)。
 - 本流程只核对规范化路径、逐帧唯一清单与文件名配对、参数、checkpoint 元数据和
   逐序列整数计数；不生成或校验 SHA256、MD5 等内容哈希。
 

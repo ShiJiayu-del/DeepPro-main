@@ -21,6 +21,7 @@ BC-TPro 单 seed 实验。B1/C0/C1/C2 与 NG1/NG2/NG3 的 seed47 训练和 inter
 
 | 文档 | 内容 | 状态 |
 |---|---|---|
+| [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md) | 新实验逐 epoch 内部诊断、固定 epoch32 外部检测评测、历史实验和 final80 例外 | 2026-09-11 起生效 |
 | [实验改进与优化交接](EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md) | 当前状态覆盖、完整网络/损失演进、历史实验和官方来源 | 当前首选接手入口 |
 | [重要文件与目录说明](IMPORTANT_FILES_GUIDE.md) | 训练、测试、模型、模块、损失、实验、论文指标、发布集与日志目录的逐项说明 | 当前仓库导航入口 |
 | [DeepPro 官方仓库对齐](DEEPPRO_OFFICIAL_ALIGNMENT_2026-09-09.md) | 官方提交、模型/loader/训练参数对齐项及有意保留的科研约束 | 当前协议总览 |
@@ -40,6 +41,8 @@ BC-TPro 单 seed 实验。B1/C0/C1/C2 与 NG1/NG2/NG3 的 seed47 训练和 inter
 - 当前 Noise8 对比只使用 seed47；单 seed 结果不提供训练随机性标准差或显著性结论；
 - NUDT/Noise8 检测联合考虑 `Pd@0.5` 越高、`Fa@0.5` 越低和官方 27 阈值 Pd-Fa AUC 越高；使用 Pareto 关系，不采用 AUC 优先或未登记的加权分数；
 - 后续结构优先采用无门控的加法残差、固定差分或滤波思路；
+- 2026-09-11 起，NUDT-MIRSDT 系列上所有显式划分内部 train/val 的新 BC-TPro 实验每个 epoch 做一次像素级诊断验证，固定 epoch32 后再独立评测一次 Pd/Fa/AUC；完整边界见 [验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)；
+- 已完成 upstream/nongate 实验保留原 external-only 环境；使用全部 train80 的 final80 没有独立 val，继续跳过进程内验证以隔离 official test20；
 - 从 2026-09-09 起，新训练与评测不生成或要求 SHA256、MD5 等文件哈希；历史发布记录中的哈希只作既有审计证据；
 - SwanLab 云端异常不能使已经完成的本地训练失效。
 

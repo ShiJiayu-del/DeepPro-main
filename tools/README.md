@@ -23,6 +23,21 @@
 checkpoint metadata 和整数计数做语义校验，不生成或要求文件哈希。
 旧发布/迁移脚本中的 SHA256 逻辑只服务其历史归档，不应复制到新实验。
 
+## 新 BC-TPro 验证节奏
+
+从 2026-09-11 起，凡是 NUDT-MIRSDT 系列上显式提供内部 train/val 划分的新
+BC-TPro 实验，launcher 必须
+显式传入 `--eval_interval 1 --skip_inprocess_validation 0
+--validation_safe_cudnn 1 --early_stopping_patience 0 --run_test_after_train 0`。
+每个 epoch 的进程内验证只提供 validation loss 和 pixel IoU/P/R/F1 诊断；完整
+32 epoch 后，launcher 仍须对
+`epoch_32_model.pth` 独立运行一次 `test.py --epoch 32`，生成 Pd/Fa/AUC。
+
+已完成的 upstream 和 nongate 实验保持原 external-only 参数与产物，不追改。final80
+使用全部 train80、没有独立 val，必须继续跳过进程内验证，否则当前 loader 会读取
+official test20。完整规则与启动前 smoke 要求见
+[验证节奏](../docs/VALIDATION_SCHEDULE_2026-09-11.md)。
+
 无门控实验完成后的结果入口：
 
 ```bash

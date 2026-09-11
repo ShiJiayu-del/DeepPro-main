@@ -96,6 +96,9 @@ class Launcher:
         self.environment['PYTHONDONTWRITEBYTECODE'] = '1'
         self.environment.setdefault('PYTORCH_CUDA_ALLOC_CONF', 'expandable_segments:True')
         self.environment['CSIG_ALLOWED_GPU_IDS'] = '0,1,2'
+        # This run-once launcher reproduces the completed external-only
+        # validation protocol. New BC-TPro experiments validate every epoch.
+        self.environment['CSIG_ALLOW_FROZEN_EXTERNAL_ONLY_VALIDATION'] = '1'
 
     def run_dir(self, job):
         return self.save / 'sem_seg' / job['log_dir']
