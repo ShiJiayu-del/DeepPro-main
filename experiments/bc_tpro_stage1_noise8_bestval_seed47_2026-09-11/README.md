@@ -44,8 +44,12 @@ checkpoint 同时记录 `checkpoint_selection`（指标、方向、最佳值、�
 
 10:55 启动的预备重跑在官方处理复核中发现旧 stitched-validation 口径后主动停止，现场
 保存在 `log/sem_seg/_aborted_launches/2026-09-11_bestval_official_alignment_stop/`，其权重
-不得续训或进入结果。当前代码已改为官方逐窗口验证口径并通过三卡 smoke，等待本次对齐
-提交完成后从随机初始化重新启动。正式状态以
+不得续训或进入结果。当前代码已改为官方逐窗口验证口径并通过三卡 smoke；该预备运行
+没有恢复。
+
+修正后的正式重跑已于 2026-09-11 11:36（Asia/Shanghai）在后台会话
+`bc_tpro_bestval_official_20260911` 启动。B1/C1 已分别使用物理 GPU0/GPU2；GPU1 正被
+另一个任务占用，C0 及同卡后续作业会等待显存释放，不抢占运行。正式状态以
 `log/sem_seg/_queues/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/` 为准。完成前不得把
 旧 epoch32 结果或本轮未完成结果写成当前结论。
 
