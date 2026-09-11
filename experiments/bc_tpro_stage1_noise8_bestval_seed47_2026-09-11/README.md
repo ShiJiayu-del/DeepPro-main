@@ -37,8 +37,11 @@ checkpoint 同时记录 `checkpoint_selection`（指标、方向、最佳值、�
 
 ## 状态
 
-协议已登记，等待启动。预计七个任务三卡并行排队约 2 小时。完成前不得把旧 epoch32
-结果或本轮未完成结果写成当前结论。
+正式重跑已于 2026-09-11 10:55（Asia/Shanghai）启动。后台会话为
+`bc_tpro_bestval_20260911`；B1、C0、C1 首批分别在物理 GPU 0、1、2 运行，后续任务按
+manifest 和同卡互斥锁自动接续。权威实时状态位于
+`log/sem_seg/_queues/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/`。预计七个任务约
+2 小时完成；完成前不得把旧 epoch32 结果或本轮未完成结果写成当前结论。
 
 启动前只读检查：
 
