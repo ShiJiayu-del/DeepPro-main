@@ -18,30 +18,36 @@
 ## Current Development Status
 
 The active research line is an upstream-aligned, scratch-only BC-TPro study on
-`NUDT-MIRSDT-Noise8.0_FJY`. The seed-47 B1/C0/C1/C2 comparison and the three
-non-gated NG1/NG2/NG3 ablations are complete. Models are compared jointly using
-high Pd, low Fa, and high official 27-threshold Pd-Fa AUC; there is no scalar
-score or AUC-first ordering.
+`NUDT-MIRSDT-Noise8.0_FJY`. The earlier seed-47 B1/C0/C1/C2 and non-gated
+NG1/NG2/NG3 runs evaluated only the epoch-32 checkpoints; those results are now
+historical and do not support a current model conclusion. All seven structures
+are being rerun under the corrected every-epoch validation and best-checkpoint
+protocol. Models are compared jointly using high Pd, low Fa, and high official
+27-threshold Pd-Fa AUC; there is no scalar score or AUC-first ordering.
 
 | Item | Current setting |
 |---|---|
 | Active dataset | `../datasets/NUDT-MIRSDT-Noise8.0_FJY` |
-| Upstream comparison | [B1/C0/C1/C2, seed 47](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md) ([Excel](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx)) |
-| Non-gated comparison | [NG1/NG2/NG3 results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) ([Excel](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)) |
+| Current rerun | [Seven-structure best-validation protocol](experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md); launcher: `tools/run_bc_tpro_bestval.py` |
+| Historical upstream comparison | [B1/C0/C1/C2, seed 47](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md) ([Excel](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx)); superseded epoch-32 evidence |
+| Historical non-gated comparison | [NG1/NG2/NG3 results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) ([Excel](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)); superseded epoch-32 evidence |
 | Training protocol | T=40, global batch 4, 32 epochs, FP32, Soft-IoU, seed 47 |
-| Validation | Fixed internal-val16; Pd@0.5, Fa@0.5, official AUC27 |
-| [New NUDT BC-TPro validation schedule](docs/VALIDATION_SCHEDULE_2026-09-11.md) | Validate the explicit internal split after every epoch; completed runs retain their frozen schedule |
+| Validation and checkpoint | Full internal-val16 after every epoch; maximize micro pixel IoU@0.5, later epoch wins exact ties; save `best_model.pth` |
+| Post-training evaluation | Run `test.py` without `--epoch` on `best_model.pth`; report internal-val16 Pd@0.5, Fa@0.5, and AUC27 |
+| [New NUDT BC-TPro validation schedule](docs/VALIDATION_SCHEDULE_2026-09-11.md) | Corrected best-checkpoint protocol; old fixed epoch-32 runs are historical only |
 | Initialization | Random weights only; pretrained initialization is forbidden |
 | Training devices | Independent single-GPU runs on physical GPUs `0`, `1`, `2` |
-| Current conclusion | C1 is the strongest overall trade-off; no new non-gated branch jointly exceeds it |
+| Current conclusion | Pending corrected rerun; no structure may be declared current from the superseded epoch-32 results |
+| Official test20 | Excluded from training, checkpoint selection, and the current Stage1 comparison; final80 is paused because it has no independent validation split |
 | Completed competition release | Scratch Hybrid-RMS epoch 86, website score **91.30** |
 
 Start with these documents before running or changing an experiment:
 
 - [Documentation index](docs/README.md)
 - [Current experiment handoff](docs/EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md)
-- [Upstream-aligned BC-TPro comparison](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md)
-- [Non-gated BC-TPro results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md)
+- [Current best-validation rerun](experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md)
+- [Historical upstream-aligned BC-TPro comparison](experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md)
+- [Historical non-gated BC-TPro results](experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md)
 - [Model evolution history](docs/MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md)
 - [Scratch-only model improvement record](docs/SCRATCH_MODEL_IMPROVEMENT_2026-08-25.md)
 - [Website result analysis](docs/WEBSITE_RESULTS_ANALYSIS_2026-08-25.md)
@@ -56,7 +62,9 @@ networks/models/DeepPro-Plus_BCTPro.py        current BC-TPro model family
 networks/layers/bc_tpro_adapter.py            current evidence/residual variants
 networks/losses/segmentation_losses.py        selectable segmentation losses
 tools/project_runtime_env.sh                  paths and GPU allowlist
-tools/run_bc_tpro_nongate.py                  three-GPU non-gated experiment runner
+tools/run_bc_tpro_bestval.py                  corrected three-GPU best-validation rerun
+tools/analyze_bc_tpro_bestval.py              verified best-checkpoint Pareto/Excel report
+tools/run_bc_tpro_nongate.py                  historical non-gated reproduction runner
 tools/analyze_bc_tpro_nongate.py              Pareto analysis and result export
 ```
 

@@ -175,6 +175,8 @@ def make_checkpoint_state(
     best_iou,
     args,
     config,
+    best_epoch=0,
+    validation_metrics=None,
     early_stopping_state=None,
 ):
     stored_config = dict(config)
@@ -192,7 +194,15 @@ def make_checkpoint_state(
         'model_state_dict': unwrap_model(detector).state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'grad_scaler_state_dict': grad_scaler.state_dict(),
+        'checkpoint_selection': {
+            'metric': 'eval_iou',
+            'mode': 'max',
+            'best_value': float(best_iou),
+            'best_epoch': int(best_epoch),
+        },
     }
+    if validation_metrics is not None:
+        state['validation_metrics'] = dict(validation_metrics)
     if early_stopping_state is not None:
         state['early_stopping_state'] = dict(early_stopping_state)
     return state
@@ -786,6 +796,7 @@ def validate_bctpro_validation_schedule(args, environment=None):
         and int(args.eval_interval) == 1
         and bool(getattr(args, 'validation_safe_cudnn', 0))
         and int(args.early_stopping_patience) == 0
+        and args.early_stopping_metric == 'eval_iou'
         and not bool(args.run_test_after_train)
     )
     if validates_every_epoch:
@@ -795,6 +806,7 @@ def validate_bctpro_validation_schedule(args, environment=None):
         and int(args.eval_interval) == 8
         and not bool(getattr(args, 'validation_safe_cudnn', 0))
         and int(args.early_stopping_patience) == 0
+        and args.early_stopping_metric == 'eval_iou'
         and not bool(args.run_test_after_train)
     )
     if (
@@ -806,7 +818,8 @@ def validate_bctpro_validation_schedule(args, environment=None):
         'New NUDT BC-TPro runs with an explicit train/validation split must '
         'use '
         '--eval_interval 1, --skip_inprocess_validation 0, and '
-        '--validation_safe_cudnn 1, disable early stopping, and set '
+        '--validation_safe_cudnn 1, select by --early_stopping_metric '
+        'eval_iou with early stopping disabled, and set '
         '--run_test_after_train 0. The legacy '
         'override only permits the exact frozen external-only schedule.'
     )
@@ -1379,6 +1392,7 @@ def main(args):
     )
 
     best_iou = 0
+    best_epoch = 0
     start_epoch = 0
     early_stopping_state = None
     if args.early_stopping_patience > 0:
@@ -1404,6 +1418,17 @@ def main(args):
                 grad_scaler.load_state_dict(saved_grad_scaler)
             start_epoch = int(checkpoint['epoch']) + 1
             best_iou = float(checkpoint.get('class_avg_iou', 0.0))
+            checkpoint_selection = checkpoint.get('checkpoint_selection')
+            if checkpoint_selection is not None:
+                if (
+                    checkpoint_selection.get('metric') != 'eval_iou'
+                    or checkpoint_selection.get('mode') != 'max'
+                ):
+                    raise ValueError(
+                        'Checkpoint selection policy is not eval_iou/max.'
+                    )
+                best_iou = float(checkpoint_selection['best_value'])
+                best_epoch = int(checkpoint_selection['best_epoch'])
             saved_early_stopping_state = checkpoint.get(
                 'early_stopping_state'
             )
@@ -1743,6 +1768,7 @@ def main(args):
                     best_iou,
                     args,
                     config,
+                    best_epoch=best_epoch,
                     early_stopping_state=early_stopping_state,
                 )
                 latest_path = checkpoints_dir / 'latest_model.pth'
@@ -1854,6 +1880,15 @@ def main(args):
             improved = mIoU_mid >= best_iou
             if mIoU_mid >= best_iou:
                 best_iou = mIoU_mid
+                best_epoch = epoch + 1
+            validation_metrics = {
+                'epoch': epoch + 1,
+                'loss': float(eval_loss),
+                'iou': float(mIoU_mid),
+                'precision': float(eval_precision),
+                'recall': float(eval_recall),
+                'f1': float(eval_f1),
+            }
             state = make_checkpoint_state(
                 detector,
                 optimizer,
@@ -1862,6 +1897,8 @@ def main(args):
                 best_iou,
                 args,
                 config,
+                best_epoch=best_epoch,
+                validation_metrics=validation_metrics,
                 early_stopping_state=early_stopping_state,
             )
             latest_path = checkpoints_dir / 'latest_model.pth'
@@ -1892,7 +1929,10 @@ def main(args):
                     % early_best_path
                 )
             del state
-            log_string('Best mIoU_mid: %f' % best_iou)
+            log_string(
+                'Best validation pixel IoU: %f at epoch %d'
+                % (best_iou, best_epoch)
+            )
             if swanlab_run is not None:
                 eval_swanlab_metrics = {
                     'eval/loss': eval_loss,
@@ -1901,6 +1941,7 @@ def main(args):
                     'eval/recall': eval_recall,
                     'eval/f1': eval_f1,
                     'eval/best_iou': best_iou,
+                    'eval/best_epoch': best_epoch,
                 }
                 if early_stopping_state is not None:
                     eval_swanlab_metrics.update({
@@ -1935,6 +1976,10 @@ def main(args):
 
         best_iou = broadcast_object(
             best_iou if runtime.is_main else None,
+            runtime,
+        )
+        best_epoch = broadcast_object(
+            best_epoch if runtime.is_main else None,
             runtime,
         )
         stop_training = broadcast_object(

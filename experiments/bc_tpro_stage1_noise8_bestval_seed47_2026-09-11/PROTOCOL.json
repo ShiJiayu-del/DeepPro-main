@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "experiment": "bc_tpro_stage1_noise8_bestval_seed47_2026-09-11",
+  "registration_date": "2026-09-11",
+  "purpose": "Correct the fixed-epoch32 protocol by validating every epoch and evaluating the validation-selected checkpoint",
+  "superseded_result_sets": [
+    "bc_tpro_stage1_noise8_upstream_2026-09-09",
+    "bc_tpro_nongate_noise8_seed47_2026-09-10"
+  ],
+  "training_dataset": "NUDT-MIRSDT-Noise8.0_FJY",
+  "training_sequences": 64,
+  "validation_sequences": 16,
+  "split_source": "experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/splits",
+  "seed": 47,
+  "epochs": 32,
+  "initialization": "scratch_only",
+  "resume": "never",
+  "precision": "FP32",
+  "global_batch_size": 4,
+  "sequence_length": 40,
+  "patch_size": 128,
+  "sample_rate": 0.1,
+  "optimizer": "Adam",
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "lr_step_epochs": 10,
+  "lr_decay": 0.7,
+  "loss": "soft_iou",
+  "swanlab": false,
+  "report_python": "/home/user/anaconda3/envs/compress/bin/python",
+  "validation": {
+    "interval_epochs": 1,
+    "split": "internal_val16",
+    "safe_cudnn": true,
+    "early_stopping": false,
+    "checkpoint_selection_metric": "micro_pixel_iou_at_0.5",
+    "checkpoint_selection_direction": "maximize",
+    "exact_tie_policy": "later_epoch",
+    "selected_checkpoint": "best_model.pth"
+  },
+  "post_training_evaluation": {
+    "checkpoint": "best_model.pth",
+    "metrics_suffix": "__best_val_internal_val.json",
+    "split": "internal_val16",
+    "primary_metrics": ["Pd@0.5", "Fa@0.5", "Pd-Fa_AUC27"]
+  },
+  "architecture_comparison": {
+    "directions": {"pd": "maximize", "fa": "minimize", "auc": "maximize"},
+    "rule": "Report all three metrics and Pareto relations; no AUC-first or unregistered scalar score"
+  },
+  "allowed_physical_gpus": [0, 1, 2],
+  "parallelism": "one complete run per physical GPU",
+  "official_test20_usage": "forbidden_during_training_and_checkpoint_selection",
+  "final80_status": "deferred_because_train80_has_no_independent_validation_split"
+}

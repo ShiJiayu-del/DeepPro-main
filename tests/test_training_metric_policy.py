@@ -21,6 +21,7 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             skip_inprocess_validation=0,
             validation_safe_cudnn=1,
             early_stopping_patience=0,
+            early_stopping_metric='eval_iou',
             run_test_after_train=0,
         )
         train.validate_bctpro_validation_schedule(
@@ -37,6 +38,7 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             dict(skip_inprocess_validation=1),
             dict(validation_safe_cudnn=0),
             dict(early_stopping_patience=2),
+            dict(early_stopping_metric='eval_f1'),
             dict(run_test_after_train=1),
         ):
             with self.subTest(changed=changed):
@@ -58,6 +60,7 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             skip_inprocess_validation=1,
             validation_safe_cudnn=0,
             early_stopping_patience=0,
+            early_stopping_metric='eval_iou',
             run_test_after_train=0,
         )
         train.validate_bctpro_validation_schedule(
@@ -83,6 +86,7 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             skip_inprocess_validation=1,
             validation_safe_cudnn=0,
             early_stopping_patience=0,
+            early_stopping_metric='eval_iou',
             run_test_after_train=0,
         )
         train.validate_bctpro_validation_schedule(final80, environment={})
@@ -103,6 +107,7 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             skip_inprocess_validation=0,
             validation_safe_cudnn=1,
             early_stopping_patience=0,
+            early_stopping_metric='eval_iou',
             run_test_after_train=0,
         )
         with self.assertRaisesRegex(
@@ -121,6 +126,36 @@ class TrainingMetricPolicyTests(unittest.TestCase):
             args = train.parse_args()
         self.assertEqual(args.eval_interval, 1)
         self.assertEqual(args.skip_inprocess_validation, 0)
+        self.assertEqual(args.early_stopping_metric, 'eval_iou')
+
+    def test_checkpoint_records_best_validation_epoch_and_current_metrics(self):
+        detector = train.torch.nn.Linear(2, 1)
+        optimizer = train.torch.optim.SGD(detector.parameters(), lr=0.1)
+        grad_scaler = mock.Mock()
+        grad_scaler.state_dict.return_value = {}
+        state = train.make_checkpoint_state(
+            detector,
+            optimizer,
+            grad_scaler,
+            epoch=8,
+            best_iou=0.42,
+            args=Namespace(model='DeepPro-Plus_BCTPro'),
+            config={},
+            best_epoch=7,
+            validation_metrics={'epoch': 9, 'iou': 0.40},
+        )
+        self.assertEqual(
+            state['checkpoint_selection'],
+            {
+                'metric': 'eval_iou',
+                'mode': 'max',
+                'best_value': 0.42,
+                'best_epoch': 7,
+            },
+        )
+        self.assertEqual(
+            state['validation_metrics'], {'epoch': 9, 'iou': 0.40}
+        )
 
     def test_safe_validation_cudnn_context_restores_training_flags(self):
         original_deterministic = train.torch.backends.cudnn.deterministic

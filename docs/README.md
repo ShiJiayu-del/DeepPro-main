@@ -14,19 +14,21 @@
 
 当前分支为 `paper-experiments-2026-09-10`。研发主线是在
 `NUDT-MIRSDT-Noise8.0_FJY` 上与 TinaLRJ/DeepPro 官方提交 `8fa1a68` 对齐的
-BC-TPro 单 seed 实验。B1/C0/C1/C2 与 NG1/NG2/NG3 的 seed47 训练和 internal-val16
-评测均已完成；当前综合结论和全部产物见
-[无门控实验结果](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md)。
-此前的三 seed 预注册矩阵和两套 29 项全模型对比保留为历史筛选证据。
+BC-TPro 单 seed 实验。此前 B1/C0/C1/C2 与 NG1/NG2/NG3 只在训练后评测固定 epoch32，
+未逐 epoch 选择验证集最佳 checkpoint，因而其指标和 C1 结论已被新协议取代，仅作历史
+证据。当前正在按逐 epoch internal-val16 和 `best_model.pth` 协议重跑七个结构；入口见
+[best-validation 重跑](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md)。
+此前的三 seed 预注册矩阵和两套 29 项全模型对比同样只保留为历史筛选证据。
 
 | 文档 | 内容 | 状态 |
 |---|---|---|
-| [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md) | 新实验逐 epoch 内部诊断、固定 epoch32 外部检测评测、历史实验和 final80 例外 | 2026-09-11 起生效 |
+| [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md) | 每 epoch 完整 internal-val16、按 micro pixel IoU@0.5 选 best、best 外部检测评测及 final80 暂停边界 | 2026-09-11 起生效 |
 | [实验改进与优化交接](EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md) | 当前状态覆盖、完整网络/损失演进、历史实验和官方来源 | 当前首选接手入口 |
 | [重要文件与目录说明](IMPORTANT_FILES_GUIDE.md) | 训练、测试、模型、模块、损失、实验、论文指标、发布集与日志目录的逐项说明 | 当前仓库导航入口 |
-| [DeepPro 官方仓库对齐](DEEPPRO_OFFICIAL_ALIGNMENT_2026-09-09.md) | 官方提交、模型/loader/训练参数对齐项及有意保留的科研约束 | 当前协议总览 |
-| [BC-TPro 无门控结果](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) | B1/C0/C1/C2/NG1/NG2/NG3 的 seed47 三指标与 Pareto 对比 | 当前结果入口；[Excel](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx) |
-| [Noise8 BC-TPro upstream](../experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md) | 上游语义对齐的 B1/C0/C1/C2 单 seed 对照 | 已完成；[Excel](../experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx) |
+| [DeepPro 官方仓库对齐](DEEPPRO_OFFICIAL_ALIGNMENT_2026-09-09.md) | 官方提交、模型/loader/训练参数对齐项及有意保留的科研约束 | 架构与数据对齐依据；checkpoint 规则以 09-11 文档为准 |
+| [BC-TPro best-validation 重跑](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md) | 七结构 seed47 逐 epoch 验证、best checkpoint 选择与评测 | 当前结果入口；等待完成 |
+| [BC-TPro 无门控结果](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) | B1/C0/C1/C2/NG1/NG2/NG3 固定 epoch32 三指标与 Pareto 对比 | 历史、已被取代；[Excel](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx) |
+| [Noise8 BC-TPro upstream](../experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md) | 上游语义对齐的 B1/C0/C1/C2 固定 epoch32 单 seed 对照 | 历史、已被取代；[Excel](../experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx) |
 | [NUDT-MIRSDT 全模型实验](../experiments/nudt_mirsdt_all_models_2026-09-01/README.md) | 统一数据、训练协议、29 项模型清单、运行与汇总方式 | 历史筛选证据 |
 | [模型演进历史快照](MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md) | DeepPro 到 BRTD/Raw-APMD/Hybrid-RMS/FeedbackSTS 前期的历史结构与损失 | 2026-08-26 历史快照；当前状态以新交接为准 |
 | [F1 最大化跨领域研究与 PointCenter 决策](F1_MAXIMIZATION_RESEARCH_2026-08-27.md) | SatVideoIRSDT 阶段的证据和候选决策 | 历史研发依据 |
@@ -41,8 +43,10 @@ BC-TPro 单 seed 实验。B1/C0/C1/C2 与 NG1/NG2/NG3 的 seed47 训练和 inter
 - 当前 Noise8 对比只使用 seed47；单 seed 结果不提供训练随机性标准差或显著性结论；
 - NUDT/Noise8 检测联合考虑 `Pd@0.5` 越高、`Fa@0.5` 越低和官方 27 阈值 Pd-Fa AUC 越高；使用 Pareto 关系，不采用 AUC 优先或未登记的加权分数；
 - 后续结构优先采用无门控的加法残差、固定差分或滤波思路；
-- 2026-09-11 起，NUDT-MIRSDT 系列上所有显式划分内部 train/val 的新 BC-TPro 实验每个 epoch 做一次像素级诊断验证，固定 epoch32 后再独立评测一次 Pd/Fa/AUC；完整边界见 [验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)；
-- 已完成 upstream/nongate 实验保留原 external-only 环境；使用全部 train80 的 final80 没有独立 val，继续跳过进程内验证以隔离 official test20；
+- 2026-09-11 起，NUDT-MIRSDT 系列上所有显式划分内部 train/val 的新 BC-TPro 实验每个 epoch 完整验证一次；同一 run 按 micro pixel IoU@0.5 最大化保存 `best_model.pth`（精确平局取较晚 epoch），32 轮不早停，训练后由不带 `--epoch` 的 `test.py` 对 best 评测 Pd/Fa/AUC；
+- 不同架构仍按 Pd 越高、Fa 越低、AUC 越高的三指标 Pareto 关系综合比较；pixel IoU 只用于同一 run 的 checkpoint 选择；
+- upstream/nongate 固定 epoch32 结果和 launcher 仅保留作历史复现，不再代表当前结论；当前重跑入口为 `tools/run_bc_tpro_bestval.py`；
+- official test20 不参与当前逐轮验证或选模；final80 因 train80 无独立 val 而暂停，不能通过每 epoch 读取 test20 来选择 best；
 - 从 2026-09-09 起，新训练与评测不生成或要求 SHA256、MD5 等文件哈希；历史发布记录中的哈希只作既有审计证据；
 - SwanLab 云端异常不能使已经完成的本地训练失效。
 
@@ -91,9 +95,11 @@ pretrained/scratch 对照的历史目录。比赛 ZIP、提交 TXT 和校验清�
 | 推理/概率导出 | `test.py` |
 | 当前模型 | `networks/models/DeepPro-Plus_BCTPro.py` |
 | 当前结构适配器 | `networks/layers/bc_tpro_adapter.py` |
-| 无门控实验调度 | `tools/run_bc_tpro_nongate.py` |
-| 无门控结果核验与汇总 | `tools/analyze_bc_tpro_nongate.py` |
-| 当前实验清单 | `experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/manifest.tsv` |
+| 当前 best-validation 调度 | `tools/run_bc_tpro_bestval.py` |
+| 当前 best-validation 汇总 | `tools/analyze_bc_tpro_bestval.py` |
+| 当前实验清单 | `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/manifest.tsv` |
+| 历史无门控实验调度 | `tools/run_bc_tpro_nongate.py` |
+| 历史无门控结果核验与汇总 | `tools/analyze_bc_tpro_nongate.py` |
 | 历史 29 模型清单 | `experiments/nudt_mirsdt_all_models_2026-09-01/manifest.tsv` |
 | 损失函数 | `networks/losses/segmentation_losses.py` |
 | 运行环境和 GPU 白名单 | `tools/project_runtime_env.sh` |

@@ -8,9 +8,11 @@
 | 文件 | 用途 |
 |---|---|
 | `project_runtime_env.sh` | 解释器、数据路径和 GPU 0/1/2 白名单 |
+| `run_bc_tpro_bestval.py` | 当前入口：在 GPU 0/1/2 排队重跑七个 seed47 结构，每 epoch 验证并评测 `best_model.pth` |
+| `analyze_bc_tpro_bestval.py` | 核验七个 best checkpoint，重算三项检测指标并生成 Markdown、CSV、Excel |
 | `check_bc_tpro_nongate_memory.py` | 用真实 train64 batch 检查三个无门控分支的 FP32 显存、loss 和梯度 |
-| `run_bc_tpro_nongate.py` | 在 GPU 0/1/2 并行运行 NG1/NG2/NG3 单 seed 训练并串行评测 |
-| `analyze_bc_tpro_nongate.py` | 核验七个 seed47 结果，报告 Pd/Fa/AUC27、Pareto 关系并生成 CSV/Markdown/Excel |
+| `run_bc_tpro_nongate.py` | 历史复现：在 GPU 0/1/2 运行旧 NG1/NG2/NG3 固定 epoch32 实验，不作为当前入口 |
+| `analyze_bc_tpro_nongate.py` | 核验已被取代的七个 epoch32 结果，保留历史 CSV/Markdown/Excel |
 | `run_bc_tpro_stage1_noise8_upstream.sh` | 原三 seed、12 项 upstream Stage1 调度；当前单 seed 修订已停止该矩阵 |
 | `analyze_bc_tpro_noise8_stage1.py` | 原三 seed矩阵的 `Pd@0.5`、`Fa@0.5` 和官方 27 阈值 AUC 汇总 |
 | `analyze_bc_tpro_noise8_paper.py` | 三 seed候选锁工具；只接受 Pareto 可决结果，存在指标权衡时 fail-closed |
@@ -18,8 +20,9 @@
 
 当前论文主线联合考虑 TinaLRJ/DeepPro 的 `Pd@0.5` 越高、`Fa@0.5` 越低与官方
 27 阈值 Pd-Fa AUC 越高，使用 Pareto 关系，不采用 AUC 优先或未登记的加权分数。
-训练 loss/IoU 仅用于优化诊断；旧脚本中的 F1 汇总不得用于 Noise8 论文检测结论或
-模型选择。单 seed 无门控实验不生成候选锁。新训练/评测采用路径、清单、参数、
+训练 loss 仅用于优化诊断；micro pixel IoU@0.5 只用于同一次 run 内选择
+`best_model.pth`，不得用于不同网络结构的最终排序。旧脚本中的 F1 汇总不得用于 Noise8
+论文检测结论或模型选择。单 seed 无门控实验不生成候选锁。新训练/评测采用路径、清单、参数、
 checkpoint metadata 和整数计数做语义校验，不生成或要求文件哈希。
 旧发布/迁移脚本中的 SHA256 逻辑只服务其历史归档，不应复制到新实验。
 
@@ -29,13 +32,17 @@ checkpoint metadata 和整数计数做语义校验，不生成或要求文件哈
 BC-TPro 实验，launcher 必须
 显式传入 `--eval_interval 1 --skip_inprocess_validation 0
 --validation_safe_cudnn 1 --early_stopping_patience 0 --run_test_after_train 0`。
-每个 epoch 的进程内验证只提供 validation loss 和 pixel IoU/P/R/F1 诊断；完整
-32 epoch 后，launcher 仍须对
-`epoch_32_model.pth` 独立运行一次 `test.py --epoch 32`，生成 Pd/Fa/AUC。
+每个 epoch 对完整 internal-val16 验证；训练进程按 micro pixel IoU@0.5 最大化保存
+`best_model.pth`，精确平局时取较晚 epoch。训练仍运行满 32 epochs、不早停。随后 launcher
+独立运行一次不带 `--epoch` 的 `test.py`，默认加载 `best_model.pth` 并生成 Pd/Fa/AUC。
+七结构当前入口为 `tools/run_bc_tpro_bestval.py`，实验协议位于
+[`experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11`](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md)。
 
-已完成的 upstream 和 nongate 实验保持原 external-only 参数与产物，不追改。final80
-使用全部 train80、没有独立 val，必须继续跳过进程内验证，否则当前 loader 会读取
-official test20。完整规则与启动前 smoke 要求见
+旧 upstream 和 nongate 固定 epoch32 实验保持原 external-only 参数与产物，只用于历史
+复现；其结果已被新协议取代，不再用于当前结论。不同架构仍按 Pd 高、Fa 低、AUC 高的
+三指标 Pareto 关系综合比较，不按 pixel IoU 或 AUC 单指标排序。official test20 不参与
+当前 Stage1；final80 使用全部 train80、没有独立 val，原固定 epoch32 活动方案已经暂停，
+也不能通过每 epoch 读取 test20 来选择 best。完整规则与启动前 smoke 要求见
 [验证节奏](../docs/VALIDATION_SCHEDULE_2026-09-11.md)。
 
 无门控实验完成后的结果入口：

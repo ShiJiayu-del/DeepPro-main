@@ -1,23 +1,26 @@
 # DeepPro 论文实验改进与优化交接（2026-09-10）
 
 > [!IMPORTANT]
-> **2026-09-10 后续状态覆盖：** 当前分支为 `paper-experiments-2026-09-10`。用户将
-> upstream 实验改为只跑 seed47；B1/C0/C1/C2 及无门控 NG1/NG2/NG3 均已完成并通过
-> 产物核验。当前联合考虑 Pd 越高、Fa 越低、AUC27 越高，使用 Pareto 关系，不采用
-> AUC 优先或未登记的加权分数。C1 是当前最均衡的方案；NG1/NG2 被 C1 支配，NG3 虽有
-> 更低 Fa，但 Pd 明显下降，三个新分支均未综合超过 C1。完整结果见
+> **2026-09-11 最新状态覆盖：** 当前分支为 `paper-experiments-2026-09-10`。此前
+> B1/C0/C1/C2 与无门控 NG1/NG2/NG3 的 seed47 训练跳过了逐 epoch 验证，只评测固定
+> `epoch_32_model.pth`。这些指标和由此得到的 C1 结论已被新协议取代，只能作为历史
+> provenance，不能再写作当前结果。旧表与产物见
 > [`RESULTS.md`](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md) 和
 > [Excel](../experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/NG_EXPERIMENT_RESULTS_2026-09-10.xlsx)。
-> 下方正文记录的是本日较早证据截点的三 seed 预注册现场及恢复计划，保留用于审计；其中
-> “当前状态”“下一步执行”和 C0/C1/C2 未完成表述均已由本覆盖块取代。
+> 当前七结构 seed47 重跑已登记在
+> [`bc_tpro_stage1_noise8_bestval_seed47_2026-09-11`](../experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md)，
+> 统一入口为 `tools/run_bc_tpro_bestval.py`。下方正文记录的旧三 seed 预注册现场、旧结果和
+> 恢复计划均只用于审计；凡与本覆盖块冲突，均以本覆盖块和验证节奏文档为准。
 >
-> **2026-09-11 验证节奏：** 此后 NUDT-MIRSDT 系列上所有显式提供内部 train/val
-> 划分的新 BC-TPro 实验固定 `eval_interval=1`、`skip_inprocess_validation=0`、
-> `validation_safe_cudnn=1`、`early_stopping_patience=0`、
-> `run_test_after_train=0`。每 epoch 的 validation loss 与 pixel IoU/P/R/F1 只作训练诊断；
-> epoch32 后仍由独立 `test.py --epoch 32` 评测一次 Pd/Fa/AUC。已完成 upstream/nongate
-> 保留原 external-only provenance；final80 因使用全部 train80、没有独立 val，继续跳过
-> 进程内验证。完整规则见 [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)。
+> **2026-09-11 best-validation 协议：** 每个 epoch 后完整验证 internal-val16；以聚合的
+> micro pixel IoU@0.5 最大化保存 `best_model.pth`，精确平局取较晚 epoch。训练仍跑满
+> 32 epochs、不早停。训练后由不带 `--epoch` 的独立 `test.py` 加载 best checkpoint，
+> 在 internal-val16 计算 Pd@0.5、Fa@0.5 和 AUC27。pixel IoU 只负责同一 run 的 checkpoint
+> 选择；七个结构之间仍按 Pd 越高、Fa 越低、AUC 越高的三指标 Pareto 关系综合比较。
+> official test20 不参与。final80 因 train80 没有独立 val，无法合法选 best，原固定
+> epoch32 活动方案已暂停。完整规则见 [BC-TPro 验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)。
+
+下表为**已被取代的历史 epoch32 结果**，不得作为当前模型结论：
 
 | 模型 | Pd@0.5 (%) ↑ | Fa@0.5 (×10⁻⁵) ↓ | AUC27 ↑ |
 |---|---:|---:|---:|
@@ -40,18 +43,19 @@
 - Source audit：本地代码/日志/指标、官方固定 commit、官方 eval、Crossref/DOI 元数据
 - Repository：`/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main`
 
-## 历史恢复提示（已由顶部状态覆盖，不再执行）
+## 当前接手提示
 
 将下面这段原样发给新对话即可：
 
 > 请先完整阅读
 > `/home/user/4T_Storage/SJY/CSIG2026/DeepPro-main/docs/EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md`，
-> 然后按其中的“下一步执行顺序”继续 DeepPro 论文实验。先做一次只读状态、GPU、磁盘、
-> SwanLab 和 Git 差异检查；不要重跑已经完成的 B1，不要读取 official test 图像，不要
-> 使用预训练权重，不要用 F1 进行检测评价或选模，不要生成 SHA256/MD5，不要使用 GPU3，
-> 不要清理或覆盖现有用户改动。修复 C0 的历史失败占位后，从 C0/C1/C2 继续，检测指标
-> 只使用 Pd@0.5、Fa@0.5 和官方 27 阈值 Pd-Fa AUC。训练启动后不需要持续轮询，只做
-> 启动验收和完成/失败节点检查。
+> 然后读取 `docs/VALIDATION_SCHEDULE_2026-09-11.md` 和
+> `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md`。先做一次只读状态、
+> GPU、磁盘、SwanLab 和 Git 差异检查，再用 `tools/run_bc_tpro_bestval.py` 继续或启动七结构
+> seed47 重跑。每 epoch 验证 internal-val16，按 micro pixel IoU@0.5 保存 best，跑满 32
+> epochs 后用不带 `--epoch` 的 `test.py` 评测 `best_model.pth`。不要读取 official test20，
+> 不要启动 final80，不要使用预训练权重，不要用 F1 选模，不要生成 SHA256/MD5，不要使用
+> GPU3，也不要覆盖历史产物。结构之间只按 Pd/Fa/AUC 三指标 Pareto 关系综合判断。
 
 ## 1. 当前研究目标
 
@@ -82,14 +86,14 @@
    `Pd@0.5`、`Fa@0.5`、官方 27 阈值 Pd-Fa AUC。
 7. F1 不得作为 NUDT/Noise8 检测指标、早停依据、checkpoint 选择依据或候选排序依据。
    历史 JSON/日志中的 Pixel F1 仅为兼容字段，active analyzer 会忽略它。
-8. 训练 loss 和 pixel IoU 仅用于优化稳定性诊断，不得替代论文检测指标。
+8. micro pixel IoU@0.5 只用于同一 run 内选择 `best_model.pth`；训练 loss 和其余 pixel
+   指标只作优化诊断。不同架构仍用 Pd/Fa/AUC 三指标综合比较。
 9. raw-logit 与 0.01 dense-grid 若执行，只是敏感性分析，不得参与门控或选模。
 10. 不生成、不要求、不校验 SHA256、MD5 等文件内容哈希。
 11. 使用 SwanLab cloud，但网络故障不得导致已完成权重被否定或被自动重训。
-12. 当前 BC-TPro Stage1 不读取 official test20 图像或生成其预测；唯一候选锁定且
-    final80 全部训练完成后，才允许当前协议的每个固定 checkpoint 做一次 test20 评测。
-    但历史 29 模型实验已经评测过同一 test20，所以它不是项目级从未见过的数据；论文
-    必须披露这一历史暴露，不能把 final80/test20 称为完全无偏的首次外部验证。
+12. 当前 BC-TPro Stage1 不读取 official test20 图像或生成其预测；test20 不参与逐 epoch
+    验证、checkpoint 选择或七结构比较。final80 因没有独立 val 而暂停。历史 29 模型实验
+    已评测过同一 test20，论文必须披露该历史暴露。
 13. 不需要持续监视训练；只做启动验收和完成、失败或需要人工决策时的节点检查。
 14. 仓库是脏工作树，禁止 `git reset --hard`、`git checkout --` 或盲目提交全部改动。
 15. 历史比赛 ZIP、提交 TXT 和校验文件的删除是用户明确要求，不要恢复。
@@ -170,8 +174,9 @@
 ### 有意不复制的官方行为
 
 - 官方训练代码会在训练过程中反复使用 test20 评测并选择 best checkpoint，存在测试集
-  参与选模的问题。本项目使用 train80 派生的固定 train64/internal-val16 做 Stage1，
-  固定 epoch32，不按验证或测试结果选择 epoch。
+  参与选模的问题。本项目使用 train80 派生的固定 train64/internal-val16 做 Stage1；每个
+  epoch 只在 internal-val16 验证，并按 micro pixel IoU@0.5 选择该 run 的 best checkpoint，
+  official test20 不参与。
 - 本项目显式固定 seeds 47/49/51 并启用确定性训练；不复制官方的时间相关 worker seed。
 - 官方 `train.py` 虽定义 `seed_everything()` 却没有调用；`gpu_num>1` 分支硬编码
   `0,1,2,3`，且非空目录中的 `best_model.pth` 会被自动恢复。本项目使用三个独立单卡
@@ -221,8 +226,9 @@ AUC=\operatorname{auc}(Fa(\tau),Pd(\tau))
 `(g0.15-o1.3)` 后缀；现有证据只证明 train/test 清单相同，没有证明两份噪声图像逐文件
 同一，因此正式判断优先使用配对本地 B1，不能仅凭名称声称完全复现官方 HiNo 数据。
 
-Stage1 的 internal-val16 与官方 test20 不同，不能把两者直接写成公平性能提升；只有
-final80/test20 才能按相同测试划分与官方表格并列，但仍需注明 test20 曾被历史模型探索
+Stage1 的 internal-val16 与 official test20 不同，不能把两者直接写成公平性能提升。
+理论上只有合规的 final/test20 结果才能按相同测试划分与官方表格并列，但当前 final80
+没有独立 val，无法按 best-checkpoint 规则执行，已经暂停；test20 也曾被历史模型探索
 使用，不能包装为完全独立的未见测试。
 
 指标修订的权威文件为：
@@ -415,9 +421,10 @@ DRY_RUN=1 bash tools/run_bc_tpro_stage1_noise8_upstream.sh
   和官方三指标规则，再实现、测试、训练 C3。
 - 若任何 run 失败：保留现场，不自动重试；区分网络、数据、代码、CUDA 和磁盘原因。
 
-### G. Final80/official test
+### G. 历史 Final80/official test 计划（已废止，不执行）
 
-最终工具入口：`tools/run_bc_tpro_noise8_final.sh`。
+原工具入口为 `tools/run_bc_tpro_noise8_final.sh`。该方案按固定 epoch32 测试，且 train80
+没有独立 val，不能满足当前 best-checkpoint 协议，现已暂停；以下仅保留历史设计：
 
 它必须满足：
 
@@ -435,38 +442,45 @@ DRY_RUN=1 bash tools/run_bc_tpro_stage1_noise8_upstream.sh
 | `experiments/PAPER_COMPARISON_2026-09-08.md` | 旧 29×2 模型的 Pd/Fa/AUC 探索证据与可比性边界 |
 | `paper/DEEPPRO_PLUS_METRIC_ALIGNMENT.md` | 论文书目信息、指标、参数/效率口径与当前可比性 |
 | `docs/DEEPPRO_OFFICIAL_ALIGNMENT_2026-09-09.md` | 官方仓库、模型和 loader 对齐边界 |
-| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md` | Stage1 状态、命令和 B1 指标 |
-| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/UPSTREAM_PROTOCOL.json` | upstream profile 机器可读配置 |
-| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/OFFICIAL_METRIC_AMENDMENT_2026-09-10.md` | 当前有效指标与选模协议 |
-| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/manifest.tsv` | 12 个 Stage1 run 身份 |
-| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/splits/` | 固定 train64/internal-val16 |
-| `networks/models/DeepPro-Plus_BCTPro.py` | B1/C0/C1/C2 检测网络 |
+| `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md` | 当前七结构逐 epoch 验证和 best-checkpoint 重跑协议 |
+| `tools/run_bc_tpro_bestval.py` | 当前七结构三卡排队重跑入口 |
+| `tools/analyze_bc_tpro_bestval.py` | 完成后核验 best checkpoint 并生成 Pareto/Excel 结果 |
+| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/README.md` | 已被取代的固定 epoch32 Stage1 历史证据 |
+| `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/PROTOCOL.json` | 当前 best-validation 机器可读协议 |
+| `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/manifest.tsv` | 当前七个 seed47 run 身份 |
+| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/UPSTREAM_PROTOCOL.json` | 历史 upstream profile 配置 |
+| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/OFFICIAL_METRIC_AMENDMENT_2026-09-10.md` | Pd/Fa/AUC 指标合同仍有效；旧 checkpoint 选择已被取代 |
+| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/manifest.tsv` | 历史 12-run Stage1 身份 |
+| `experiments/bc_tpro_stage1_noise8_upstream_2026-09-09/splits/` | 当前复用的固定 train64/internal-val16 |
+| `networks/models/DeepPro-Plus_BCTPro.py` | B1/C0/C1/C2/NG1/NG2/NG3 检测网络 |
 | `networks/layers/bc_tpro_adapter.py` | BC-TPro 证据和残差适配器 |
 | `data_utils/TrainDataLoader.py` | upstream-compatible mask/window/crop |
 | `test.py`、`ShootingRules.py`、`write_results.py` | 论文 Pd/Fa/AUC 推理与计数 |
-| `tools/run_bc_tpro_stage1_noise8_upstream.sh` | 当前 Stage1 启动入口 |
-| `tools/analyze_bc_tpro_noise8_stage1.py` | 官方指标聚合、bootstrap、C3 门槛 |
-| `tools/analyze_bc_tpro_noise8_paper.py` | 候选资格、排序、schema2 lock |
-| `experiments/bc_tpro_final_noise8_2026-09-09/README.md` | final80/test20 封闭协议 |
-| `tools/run_bc_tpro_noise8_final.sh` | final80 与一次性 official test 入口 |
+| `tools/run_bc_tpro_stage1_noise8_upstream.sh` | 历史 Stage1 固定 epoch32 复现入口 |
+| `tools/analyze_bc_tpro_noise8_stage1.py` | 历史 Stage1 指标聚合、bootstrap、C3 门槛 |
+| `tools/analyze_bc_tpro_noise8_paper.py` | 历史 schema2 candidate-lock 工具；不用于当前重跑 |
+| `experiments/bc_tpro_final_noise8_2026-09-09/README.md` | 已暂停的 final80/test20 历史方案 |
+| `tools/run_bc_tpro_noise8_final.sh` | 已暂停的固定 epoch32 final80 历史入口，不执行 |
 | `tools/validate_bc_tpro_noise8_final.py` | final lock、split、checkpoint 和 test 屏障 |
 | `tools/analyze_bc_tpro_noise8_final.py` | 最终三指标表和配对差 |
-| `log/sem_seg/_queues/bc_tpro_stage1_noise8_upstream_2026-09-09/` | 当前队列状态和失败日志 |
+| `log/sem_seg/_queues/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/` | 当前重跑队列状态和日志 |
 
 旧的 `tools/run_bc_tpro_stage1.sh`、`create_nudt_sequence_split.py`、
 `snapshot_bc_tpro_stage1.py`、`evaluate_bc_tpro_exact_logit.py` 以及历史比赛提交 launcher
-可能包含哈希、预训练路径、旧 GPU 或旧指标逻辑。它们是只读历史入口，当前新对话只使用
-带 `noise8_upstream` 的 Stage1 入口和 schema2 final 工具。
+可能包含哈希、预训练路径、旧 GPU 或旧指标逻辑。它们是只读历史入口；当前新对话只使用
+`tools/run_bc_tpro_bestval.py`，不得启动 schema2 final80 工具。
 
 ## 13. 证据层级
 
 后续报告必须明确区分：
 
 1. 单元测试/shape/梯度检查：证明代码可执行或数学性质，不证明检测提升。
-2. 训练 loss/IoU：优化诊断，不是论文检测指标。
-3. internal-val16 Pd/Fa/AUC：候选筛选证据，不能与官方 test20 直接比较。
-4. final80/test20 三 seed Pd/Fa/AUC：当前冻结协议下的正式论文对比证据，但 test20 已在
-   历史 29 模型探索中暴露，不能描述为项目级完全未见外部测试。
+2. 训练 loss 与 pixel 指标：IoU@0.5 仅用于同一 run 选择 best，其余用于优化诊断；均不
+   替代架构间 Pd/Fa/AUC 比较。
+3. best checkpoint 的 internal-val16 Pd/Fa/AUC：当前候选筛选证据，不能与 official
+   test20 直接比较。
+4. final80/test20：当前没有满足 best-checkpoint 规则的活动协议；旧固定 epoch32 方案已
+   暂停，且 test20 曾在历史 29 模型探索中暴露。
 5. 官方论文/仓库 eval 数值：外部参考，来自官方权重与未完整公开的官方训练环境。
 
 不得把单 seed、训练指标、参数量、代理指标或可视化观感描述为正式性能提升。
@@ -483,8 +497,8 @@ DRY_RUN=1 bash tools/run_bc_tpro_stage1_noise8_upstream.sh
 - B1 snapshot 的核心训练语义已核对，但当前 `test.py` 从 run 顶层加载模型/adapter 后，
   模型内部的 `basic.py/TPro.py` 仍可能从仓库根目录导入。final 前应补充以
   `source_snapshot` 为执行根/PYTHONPATH 的入口，或验证完整快照执行闭包。
-- 在 C0/C1/C2 完成前不要再修改核心模型、adapter、loader、loss、训练或评测语义；如需
-  核对 B1 与当前代码，用 `cmp` 直接比较，不生成哈希。
+- 当前七结构重跑期间不要再修改核心模型、adapter、loader、loss、训练或评测语义；如需
+  核对历史快照与当前代码，用 `cmp` 直接比较，不生成哈希。
 - 当前运行环境不是由官方 requirements 完整锁定；Pillow 默认 resize 语义尤其依赖版本。
   2026-08-24 环境导出只能作为历史记录，每次迁移仍需现场核对。
 - 若目标是发表普适性论文，仅 Noise8 单数据集不够。当前候选锁完成后，应另行预登记
@@ -497,21 +511,23 @@ DRY_RUN=1 bash tools/run_bc_tpro_stage1_noise8_upstream.sh
 
 ## 15. 明确禁止的错误恢复方式
 
-- 不要重跑 B1。
+- 不要使用旧 launcher 单独重放固定 epoch32 结果；七结构统一重跑只通过
+  `tools/run_bc_tpro_bestval.py`。
 - 不要从官方发布 checkpoint 或历史比赛 checkpoint 初始化。
 - 不要恢复 F1 选模、`eval_f1` 早停或 Proxy F1 阈值扫描。
 - 不要把 dense-grid AUC 或 raw-logit fixed workpoint写成主结果。
 - 不要为了加速缩短 40 帧、改变 global batch、使用 AMP 或混入 GPU3。
-- 不要在当前 BC-TPro 候选锁生成前再次查看或扫描 official test20 的预测性能。
+- 不要读取或扫描 official test20 的预测性能，也不要启动已暂停的 final80。
 - 不要自动删除 `.failed`、旧日志或源代码快照。
 - 不要把旧 modernized AMP 实验与 upstream FP32 实验合并统计。
 - 不要向 `deeppro-paper` 官方 remote 推送。
 
 ## 16. 接手后的第一项实际工作
 
-新对话的第一项工作应是：一次性验证代理/SwanLab、GPU、磁盘和当前队列，然后安全归档
-C0 三个训练前失败占位，干跑确认 B1 复用以及 C0/C1/C2 的 FP32 scratch 命令。向用户
-报告恢复计划后，再从 C0 继续，而不是重新设计网络或打开 official test。
+新对话的第一项工作应是：一次性验证 GPU、磁盘、SwanLab、Git 和当前 best-validation
+队列，然后核对 `tools/run_bc_tpro_bestval.py` 的七个 seed47 scratch 命令。继续或启动时
+保持每 epoch internal-val16、32 轮不早停和 best checkpoint 评测；不要打开 official
+test20，也不要启动 final80。
 
 ## 17. 网络历次更新过程
 
@@ -682,8 +698,8 @@ flowchart LR
 
 当前论文对齐：
 重新固定官方 Soft-IoU
- → loss/IoU 只作优化诊断
- → 检测、继续与选模只用 Pd@0.5、Fa@0.5、AUC27
+ → micro pixel IoU@0.5 只选同一 run 的 best checkpoint
+ → 架构比较只用 Pd@0.5、Fa@0.5、AUC27 的三指标 Pareto 关系
 ```
 
 - HAM/HPM 通过目标保护和困难/随机背景抽样缓解类别不平衡，但归约与固定抽样对 batch、
@@ -693,7 +709,7 @@ flowchart LR
 - PointCenter 的专用损失增加组件中心高斯、过滤前 Dice 和 stop-gradient 一致性；不存在
   外部教师模型。
 - 上述带 F1 名称的内容只是历史训练损失，不是当前检测指标。
-- 当前 B1/C0/C1/C2 与 final80 全部固定 `soft_iou`；不得在这一消融中同时改损失。
+- 当前七结构 best-validation 重跑固定 `soft_iou`；不得在这一消融中同时改损失。
 
 ## 19. 历史实验结果及其对当前主线的影响
 
@@ -710,7 +726,7 @@ Pd/Fa/AUC 上优于 DeepPro-Plus。
 两套各 29 项训练均已完成，后续也补算了论文指标，但它们使用单 seed49、lr=0.005、
 历史 F1-OHEM、按像素指标选择 checkpoint，多数模型 AMP 推理，而且同一 official
 test20 已被用于模型比较。因此它们是结构筛选证据，不是当前 upstream/FP32/Soft-IoU/
-固定 epoch32 的确认性结果。
+逐 epoch internal-val16 选 best 的确认性结果。
 
 Noise8 代表项如下：
 

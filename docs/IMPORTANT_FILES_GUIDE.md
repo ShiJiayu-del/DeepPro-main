@@ -14,13 +14,13 @@
 首次接手项目时建议按以下顺序阅读：
 
 1. `README.md`：当前研发状态、结果入口和原始 DeepPro 项目说明。
-2. `docs/VALIDATION_SCHEDULE_2026-09-11.md`：新 NUDT BC-TPro 实验的验证节奏与 final80 例外。
-3. `experiments/bc_tpro_nongate_noise8_seed47_2026-09-10/RESULTS.md`：当前无门控实验结果。
+2. `docs/VALIDATION_SCHEDULE_2026-09-11.md`：新 NUDT BC-TPro 实验的 best checkpoint 规则与 final80 暂停边界。
+3. `experiments/bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/README.md`：当前七结构重跑协议和状态。
 4. `paper/DEEPPRO_PLUS_METRIC_ALIGNMENT.md`：当前论文工作的指标口径和可比性边界。
 5. `experiments/<实验名>/README.md` 与 `manifest.tsv`：固定协议和实际运行清单。
 6. `train.py`、`test.py`：当前权威训练与测试入口。
 7. `networks/models/`、`networks/layers/`、`networks/losses/`：模型、模块和损失实现。
-8. `tools/run_bc_tpro_nongate.py`、`tools/analyze_bc_tpro_nongate.py`：已完成实验和汇总入口。
+8. `tools/run_bc_tpro_bestval.py`：当前逐 epoch 验证和 best checkpoint 重跑入口。
 
 ## 2. 根目录文件
 
@@ -28,8 +28,8 @@
 |---|---|---|
 | `.gitignore` | 定义不进入 Git 的大体积日志、checkpoint、缓存和临时文件。 | 整理仓库或提交前必须保留。 |
 | `README.md` | 上游 DeepPro 项目总览，包含论文简介、数据下载、基础训练测试命令和原论文结果。 | 用于了解 baseline；部分比赛说明和旧命令不是当前论文实验协议。 |
-| `train.py` | 当前统一训练入口。负责参数解析、随机种子、单卡/DDP、数据加载、模型动态导入、损失构造、AMP、梯度累积、验证、checkpoint、SwanLab 和安全续训。 | 新实验优先使用；当前代码拒绝非空预训练 checkpoint。 |
-| `test.py` | 当前统一推理和评测入口。按序列拼接重叠窗口，计算目标级 Pd、像素级 Fa 与官方 27 阈值 Pd-Fa AUC；旧 Pixel 指标只作兼容诊断。支持 AMP、分块推理、可视化、质心 TXT 和机器可读 JSON。 | 当前 Noise8 论文工具强制 FP32，检测、门控与选模只消费 Pd/Fa/AUC。 |
+| `train.py` | 当前统一训练入口。负责参数解析、随机种子、单卡/DDP、数据加载、模型动态导入、损失构造、AMP、梯度累积、逐 epoch 验证、best checkpoint、SwanLab 和安全续训。 | 新 BC-TPro 以 internal-val16 micro pixel IoU@0.5 选择同一 run 的 `best_model.pth`；当前代码拒绝非空预训练 checkpoint。 |
+| `test.py` | 当前统一推理和评测入口。按序列拼接重叠窗口，计算目标级 Pd、像素级 Fa 与官方 27 阈值 Pd-Fa AUC；旧 Pixel 指标只作兼容诊断。支持 AMP、分块推理、可视化、质心 TXT 和机器可读 JSON。 | best-validation 重跑不传 `--epoch`，默认加载 `best_model.pth`；不同架构只按 Pd/Fa/AUC 综合比较。 |
 | `runtime_utils.py` | 训练和测试共享的运行工具，包括 GPU 参数解析、DDP 上下文、原子 checkpoint 写入、checkpoint 加载和进程环境处理。 | 不直接执行，由入口脚本导入。 |
 | `sequence_utils.py` | 时序窗口辅助模块。`SequenceAccumulator` 将有重叠的窗口预测合并成完整序列，并处理有效帧范围。 | 需要改推理拼接规则时检查。 |
 | `ShootingRules.py` | 论文目标级评测规则。对标签连通域统计目标，在目标邻域判定命中，并统计保护区域外的误警像素；支持一次扫描多个阈值。 | Pd/Fa 的核心定义，改动会直接改变论文结果。 |
@@ -152,11 +152,13 @@
 
 ### 当前 Noise8 BC-TPro 实验
 
-- `bc_tpro_stage1_noise8_upstream_2026-09-09/`：上游语义对齐的 B1/C0/C1/C2；当前采用
-  seed47 单 seed 结果，Excel 为 `BC_TPRO_STAGE1_SEED47_RESULTS_2026-09-10.xlsx`。
-- `bc_tpro_nongate_noise8_seed47_2026-09-10/`：NG1/NG2/NG3 无门控消融及与 B1/C0/C1/C2
-  的联合 Pd/Fa/AUC27 Pareto 对比；结果入口为 `RESULTS.md`、`results.csv` 和
-  `NG_EXPERIMENT_RESULTS_2026-09-10.xlsx`。
+- `bc_tpro_stage1_noise8_bestval_seed47_2026-09-11/`：当前七结构 seed47 重跑。每个 epoch
+  完整验证 internal-val16，按 micro pixel IoU@0.5 最大化选择 `best_model.pth`，32 轮不
+  早停，再由不带 `--epoch` 的 `test.py` 评测 best checkpoint。
+- `bc_tpro_stage1_noise8_upstream_2026-09-09/`：上游 B1/C0/C1/C2 固定 epoch32 历史证据；
+  已被 best-validation 协议取代，不再代表当前结论。
+- `bc_tpro_nongate_noise8_seed47_2026-09-10/`：NG1/NG2/NG3 及旧七结构固定 epoch32
+  Pareto 汇总；结果和 Excel 仅作历史审计，不能作为当前结构结论。
 - 原三 seed、12 项 Stage1 矩阵在 6/12 后因用户改为单 seed 而停止，不作为当前待完成队列。
 
 ### `experiments/nudt_mirsdt_all_models_2026-09-01/`
@@ -196,22 +198,25 @@
 
 | 文件 | 作用 |
 |---|---|
+| `run_bc_tpro_bestval.py` | 当前入口：在物理 GPU 0/1/2 排队重跑七个 seed47 结构，每 epoch 验证并在训练后评测 `best_model.pth`。 |
+| `analyze_bc_tpro_bestval.py` | 核验 best checkpoint 与逐轮验证记录，并输出 Pd/Fa/AUC Pareto 报告及 Excel。 |
 | `check_bc_tpro_nongate_memory.py` | 使用真实 train64 batch 验证三个无门控分支的 FP32 显存、loss 和梯度。 |
-| `run_bc_tpro_nongate.py` | 在物理 GPU 0/1/2 上各运行一个 seed47 任务，训练后按锁串行评测。 |
-| `analyze_bc_tpro_nongate.py` | 核验七个 seed47 产物，重算 Pd/Fa/AUC27、报告 Pareto 关系并生成 Markdown、CSV 和 Excel。 |
+| `run_bc_tpro_nongate.py` | 历史固定 epoch32 复现入口；不再作为当前实验启动器。 |
+| `analyze_bc_tpro_nongate.py` | 核验已被取代的七个 epoch32 产物；其 Markdown、CSV 和 Excel 仅作历史审计。 |
 | `run_bc_tpro_stage1_noise8_upstream.sh` | 原三 seed upstream 矩阵入口；当前单 seed 修订不再要求补齐它。 |
 | `analyze_bc_tpro_noise8_paper.py` | 三 seed候选锁工具；只有 Pareto 可决时才可锁定，指标权衡时 fail-closed。 |
 
-当前单 seed 结果不支持显著性或跨 seed 稳定性结论。三项指标联合解释，不使用 AUC 优先
-或未登记的加权综合分。
+当前单 seed 结果不支持显著性或跨 seed 稳定性结论。不同架构按 Pd 高、Fa 低、AUC 高的
+三指标 Pareto 关系联合解释，不使用 AUC 优先或未登记的加权综合分。
 
 从 2026-09-11 起，NUDT-MIRSDT 系列上所有显式提供内部 train/val 划分的新 BC-TPro
 launcher 必须设置
 `eval_interval=1`、`skip_inprocess_validation=0`、`validation_safe_cudnn=1`、
-`early_stopping_patience=0` 和 `run_test_after_train=0`。每 epoch 内部验证只记录 loss
-与 pixel IoU/P/R/F1；固定 epoch32 后仍由 launcher 独立运行一次 Pd/Fa/AUC 评测。
-已完成 upstream/nongate 保留
-旧 external-only provenance；final80 保持测试隔离。详见
+`early_stopping_patience=0` 和 `run_test_after_train=0`。每 epoch 完整验证 internal-val16，
+并以 micro pixel IoU@0.5 选择同一 run 的 `best_model.pth`（平局取较晚 epoch）；训练运行满
+32 epochs，随后由不带 `--epoch` 的 `test.py` 对 best 独立计算 Pd/Fa/AUC。pixel IoU 不
+用于结构排名。旧 upstream/nongate launcher 与结果只保留作历史复现。official test20
+不参与；final80 因无独立 val 而暂停，不能每 epoch 读取 test20。详见
 [验证节奏](VALIDATION_SCHEDULE_2026-09-11.md)。
 
 ### 环境与历史批量实验
@@ -287,7 +292,7 @@ launcher 必须设置
 |---|---|---|
 | `IMPORTANT_FILES_GUIDE.md` | 本文件，当前仓库重要文件字典。 | 接手和整理仓库的第一入口。 |
 | `README.md` | 文档总索引、当前规则和历史材料导航。 | 某些“当前任务”状态需结合 experiments 实时文件。 |
-| `VALIDATION_SCHEDULE_2026-09-11.md` | 新 BC-TPro 每 epoch 内部诊断、固定 epoch32 外部检测评测、历史实验和 final80 例外。 | 2026-09-11 起的新实验必须遵循。 |
+| `VALIDATION_SCHEDULE_2026-09-11.md` | 新 BC-TPro 每 epoch internal-val16、按 IoU 选 best、best 外部检测评测、历史实验与 final80 暂停。 | 2026-09-11 起的新实验必须遵循。 |
 | `EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md` | 当前 BC-TPro、完整网络/损失演进、官方指标、现场状态、恢复和 final80 协议。 | 新对话和当前论文实验的首选入口。 |
 | `MODEL_EVOLUTION_ARCHITECTURE_AND_LOSS_2026-08-26.md` | DeepPro 到 BRTD/Raw-APMD/Hybrid-RMS/FeedbackSTS 前期的历史结构与损失快照。 | 仅作历史素材；完整更新和当前状态见 `EXPERIMENT_OPTIMIZATION_HANDOFF_2026-09-10.md`。 |
 | `F1_MAXIMIZATION_RESEARCH_2026-08-27.md` | 遥感、视频恢复、检测等跨领域思路及 PointCenter 决策。 | 历史研究依据；当前论文主指标已改为 Pd/Fa/AUC。 |
@@ -408,7 +413,7 @@ launcher 必须设置
 | `logs/<ModelName>.txt` | epoch 级学习率、训练损失、IoU/F1、验证结果、checkpoint 路径和错误信息。 |
 | `checkpoints/best_model.pth` | 按验证 pixel IoU 保存的最佳 checkpoint，也是默认 `test.py` 读取文件。 |
 | `checkpoints/latest_model.pth` | 最近一次可恢复训练状态，主要用于断点续训。 |
-| `checkpoints/epoch_<N>_model.pth` | 固定轮次快照，便于无测试调参的固定 epoch 评测和回溯。 |
+| `checkpoints/epoch_<N>_model.pth` | 固定轮次快照，仅用于回溯；当前 BC-TPro 最终评测读取验证选出的 `best_model.pth`。 |
 | `swanlog/` | SwanLab 本地/离线运行记录，包括 `.swanlab` 备份文件。 |
 | `eval.txt` / `eval_epoch-<N>.txt` | `test.py` 生成的目标级和像素级完整评测日志。 |
 

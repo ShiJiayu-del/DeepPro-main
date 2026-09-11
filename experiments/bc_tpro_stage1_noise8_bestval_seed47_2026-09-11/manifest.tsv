@@ -1,0 +1,8 @@
+run_id	wave	model	structure_variant	seed	gpu	log_dir
+bv_b1_none_seed47	1	DeepPro-Plus_BCTPro	none	47	0	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-BCTPro-B1_seed47_E32_ValEveryEpoch_BestIoU
+bv_c0_temporal_control_seed47	1	DeepPro-Plus_BCTPro	temporal_control	47	1	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-BCTPro-C0_seed47_E32_ValEveryEpoch_BestIoU
+bv_c1_center_multiscale_seed47	1	DeepPro-Plus_BCTPro	center_multiscale	47	2	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-BCTPro-C1_seed47_E32_ValEveryEpoch_BestIoU
+bv_c2_center_ring_seed47	2	DeepPro-Plus_BCTPro	center_ring	47	0	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-BCTPro-C2_seed47_E32_ValEveryEpoch_BestIoU
+bv_ng1_ring_difference_seed47	2	DeepPro-Plus_BCTPro	center_ring_difference	47	1	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-NG1_seed47_E32_ValEveryEpoch_BestIoU
+bv_ng2_bandpass_seed47	2	DeepPro-Plus_BCTPro	temporal_bandpass	47	2	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-NG2_seed47_E32_ValEveryEpoch_BestIoU
+bv_ng3_spatial_smooth_seed47	3	DeepPro-Plus_BCTPro	center_spatial_smooth	47	0	2026-09-11/NUDT-MIRSDT-Noise8.0_FJY__Upstream8fa1a68-FP32-SoftIoU-NG3_seed47_E32_ValEveryEpoch_BestIoU
